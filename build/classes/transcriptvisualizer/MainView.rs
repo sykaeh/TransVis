@@ -1,2 +1,0 @@
-transcriptvisualizer.MainView
-transcriptvisualizer.XMLFileFilter
