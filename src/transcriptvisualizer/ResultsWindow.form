@@ -29,6 +29,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="importantInfo" min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="924" max="32767" attributes="1"/>
                   <Component id="jInternalFrame1" alignment="0" max="32767" attributes="1"/>
               </Group>
@@ -40,10 +41,12 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="importantInfo" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="66" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jInternalFrame1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="43" max="32767" attributes="0"/>
+              <EmptySpace pref="48" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -93,5 +96,11 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JLabel" name="importantInfo">
+      <Properties>
+        <Property name="text" type="java.lang.String" resourceKey="importantInfo.text"/>
+        <Property name="name" type="java.lang.String" value="importantInfo" noResource="true"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

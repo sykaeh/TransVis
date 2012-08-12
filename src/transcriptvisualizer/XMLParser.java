@@ -20,30 +20,37 @@ import org.xml.sax.SAXException;
  */
 public class XMLParser {
 
-    /**
-     * The name of the file to be analyzed.
-     */
+    /* The name of the file to be analyzed. */
     public String name;
-    public int totallength;
+    /* The total length of the process. */
+    public int lengthProcess;
+    /* The total length of the time span we're looking at. */
+    public int lengthAdjustment;
 
-    
-    /*
-     * List of all of the sources for the consults.
-     */
+    /* List of all of the sources for the consults. */
     public List<Object[]> sourcesList = new LinkedList<Object[]>();
     
     private Document doc;
     private Element rootElement;
-    /* startTransProcess in recording tag */
-    private int actualstart;
-    /* endTransProcess in recording tag */
-    private int actualend;
-    public int givenstart;
-    public int givenend;
+    
+    /* Adjustment time */
+    public int startAdjustment;
+    /* last time to show */
+    private int endAdjustment;
+    
+    /* the end time of the statistics */
     public int statistics;
     
-    /* startRevision in recording tag */
+    /* startTransProcess in recording tag (in real time) */
+    public int startProcess;
+    /* first write tag  (in real time) */
+    public int startDrafting;
+    /* startRevision in recording tag (in real time) */
     public int startRevision;
+    /* endTransProcess in recording tag (in real time) */
+    public int endProcess;
+    
+    
     /* transProcessComplete in recording tag */
     public boolean complete;
     /* concurrentVisibilitySTTT in recording tag */
@@ -71,15 +78,13 @@ public class XMLParser {
      * @throws SAXException
      * @throws IOException
      */
-    public XMLParser(File fxmlFile, int start, int end, int stats) 
+    public XMLParser(File fxmlFile, int stats) 
             throws ParserConfigurationException, SAXException, IOException {
 
         initializeTagList();
         revisiontypes = new String[]{"deletes", "inserts", "cuts", "pastes",
             "moves from", "moves to", "undoes", "autocorrects"};
 
-        givenstart = start;
-        givenend = end;
         statistics = stats * 60;
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -89,6 +94,9 @@ public class XMLParser {
                 
     }
     
+    /**
+     * Initializes all of the tags.
+     */
     private void initializeTagList() {
         
         String[] searcheng = new String[]{"google", "yahoo", "bing"};
@@ -122,7 +130,6 @@ public class XMLParser {
         consults.add(new Tag("Workflow parallel text", c, "Workflow parallel text", new String[] {"workflowparalleltext"}));
         consults.add(new Tag("Concordance", c, "Concordance", new String[] {"concordance"}));
         consults.add(new Tag("Other Resources", c, "Other Resources", new String[] {}));
-            
         
         revisions.add(new Tag("deletes", "deletes", "revision"));
         revisions.add(new Tag("deletes", "deletes", "revision2"));
@@ -160,7 +167,7 @@ public class XMLParser {
      * @return the string containing the error messages. If there are no errors
      * return the empty string.
      */
-    public String check() {
+    public String check(int type, int start, int end) {
 
         String error = "";
         rootElement = doc.getDocumentElement();
@@ -181,19 +188,22 @@ public class XMLParser {
         } else {
             Element recording = (Element) nl.item(0);
             if (recording.hasAttribute("startTransProcess")) {
-                actualstart = convertToSeconds(recording.getAttribute("startTransProcess"));
+                startProcess = convertToSeconds(recording.getAttribute("startTransProcess"));
             } else {
+                startProcess = 0;
                 error = error.concat("Missing startTransProcess attribute in recording tag.\n");
             }
             if (recording.hasAttribute("endTransProcess")) {
-                actualend = convertToSeconds(recording.getAttribute("endTransProcess"));
+                endProcess = convertToSeconds(recording.getAttribute("endTransProcess"));
             } else {
+                endProcess = 0;
                 error = error.concat("Missing endTransProcess attribute in recording tag.\n");
             }
             
             if (recording.hasAttribute("startRevision")) {
                 startRevision = convertToSeconds(recording.getAttribute("startRevision"));
             } else {
+                startRevision = 0;
                 error = error.concat("Missing startRevision attribute in recording tag.\n");
             }
             if (recording.hasAttribute("transProcessComplete")) {
@@ -208,11 +218,48 @@ public class XMLParser {
             }
         }
         
-
-        if (givenend > actualend) {
-            givenend = actualend;
+        startDrafting = endProcess;
+        // Find startDrafting (i.e. first write occurence)
+        NodeList incidentList = doc.getElementsByTagName("incident");
+        for (int i=0; i < incidentList.getLength(); i++) {
+            Element e = (Element) incidentList.item(i);
+            if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
+                if (e.hasAttribute("start")) {
+                    int time = convertToSeconds(e.getAttribute("start"));
+                    if (time > startProcess && time < startDrafting) {
+                        startDrafting = time;
+                    } 
+                }
+            }
         }
-        totallength = givenend - givenstart;
+        
+        System.out.println("Start process: " + startProcess);
+        System.out.println("Start drafting: " + startDrafting);
+        System.out.println("Start revision: " + startRevision);
+        System.out.println("End process: " + endProcess);
+        
+        if (type == 0) { // partial
+            startAdjustment = startProcess + start;
+            endAdjustment = startProcess + end;
+        } else if (type == 1) { // complete
+            startAdjustment = startProcess;
+            endAdjustment = endProcess;
+        } else if (type == 2) { // orientation
+            startAdjustment = startProcess;
+            endAdjustment = startDrafting;
+        } else if (type == 3) { // drafting
+            startAdjustment = startDrafting;
+            endAdjustment = startRevision;
+        } else if (type == 4) { // revision
+            startAdjustment = startRevision;
+            endAdjustment = endProcess;
+        }
+
+        if (endAdjustment > endProcess) {
+            endAdjustment = endProcess;
+        }
+        lengthProcess = endProcess - startProcess;
+        lengthAdjustment = endAdjustment - startAdjustment;
         return error;
     }
 
@@ -233,13 +280,13 @@ public class XMLParser {
 
     /**
      * Converts a time (String) of the format HH:MM:SS to seconds and adjusts
-     * it to the starting time (in actualstart).
+     * it to the adjustment start time.
      * @param timestring a String representing a time (HH:MM:SS)
      * @return an int representing the time in seconds
      */
     private int convertToReal(String timestring) {
         int time = convertToSeconds(timestring);
-        return time - actualstart;
+        return time - startAdjustment;
     }
     
     /**
@@ -247,32 +294,12 @@ public class XMLParser {
      */
     public void parse() {
 
-        NodeList nList = rootElement.getChildNodes();
-        for (int i = 0; i < nList.getLength(); i++) {
-            Node n = nList.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                Element e = (Element) n;
-                String nodeName = e.getNodeName();
-                if (nodeName.equalsIgnoreCase("u")) {
-                    handleUtterance(e);
-                } else if (nodeName.equalsIgnoreCase("incident")) {
-                    handleIncident(e);
-                }
-            }
-        }
-    }
-
-    private void handleUtterance(Element u) {
-
-        NodeList nodes = u.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node n = nodes.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                Element e = (Element) n;
-                String nodeName = e.getNodeName();
-                if (nodeName.equalsIgnoreCase("incident")) {
-                    handleIncident(e);
-                }
+        // Find all incident tags and handle them accordingly
+        NodeList incidentList = doc.getElementsByTagName("incident");
+        for (int i=0; i < incidentList.getLength(); i++) {
+            if (incidentList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element e = (Element) incidentList.item(i);
+                handleIncident(e);
             }
         }
     }
@@ -282,13 +309,13 @@ public class XMLParser {
         int end = 0;
         boolean time = true;
         if (e.hasAttribute("start")) {
-            start = convertToReal(e.getAttribute("start"));
+            start = convertToReal(e.getAttribute("start")); // adjusted times
         } else {
             time = false;
         }
 
         if (e.hasAttribute("end")) {
-            end = convertToReal(e.getAttribute("end"));
+            end = convertToReal(e.getAttribute("end")); // adjusted times
         } 
         if (end == 0 || end < start) {
             end = start;
@@ -297,8 +324,7 @@ public class XMLParser {
         Integer[] times = {start, end};
         int length = end - start;
 
-        if (start >= givenstart && end <= givenend && 
-                e.hasAttribute("type")) {
+        if (start >= 0 && end <= lengthAdjustment && e.hasAttribute("type")) {
             String type = e.getAttribute("type");
             if (type.equalsIgnoreCase("consults")) {
                 handleConsults(e, times, length);
@@ -463,6 +489,7 @@ public class XMLParser {
     }
 
     private void handleWrite(Element e, Integer[] times, int length) {
+        
         if (e.getAttribute("type").equalsIgnoreCase("writes")) {
             writes.times.add(times);
             writes.lengths.add(length);

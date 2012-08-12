@@ -572,6 +572,8 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="1">
                               <Component id="customGraphButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="showIndCB" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="statsButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -597,6 +599,7 @@
                           <Component id="customGraphButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="dataButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="statsButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="showIndCB" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -665,6 +668,12 @@
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="dataButton.text"/>
                 <Property name="name" type="java.lang.String" value="dataButton" noResource="true"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="showIndCB">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="showIndCB.text"/>
+                <Property name="name" type="java.lang.String" value="showIndCB" noResource="true"/>
               </Properties>
             </Component>
           </SubComponents>

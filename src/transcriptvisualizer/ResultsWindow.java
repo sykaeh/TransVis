@@ -22,7 +22,7 @@ import org.jfree.ui.TextAnchor;
  * Class that displays the results (i.e. the graph, the list of sources
  * and the statistics) of the Translation Process Visualizer.
  * @author Sybil Ehrensberger
- * @version 0.2
+ * @version 0.3
  */
 public class ResultsWindow extends javax.swing.JFrame {
 
@@ -39,6 +39,10 @@ public class ResultsWindow extends javax.swing.JFrame {
      */
     public void setNameField(String name) {
         processNameField.setText(name);
+    }
+    
+    public void setInfo(String info) {
+        importantInfo.setText(info);
     }
 
     /**
@@ -138,6 +142,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jScrollPane1 = new javax.swing.JScrollPane();
         processNameField = new javax.swing.JTextArea();
+        importantInfo = new javax.swing.JLabel();
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(transcriptvisualizer.MainApp.class).getContext().getResourceMap(ResultsWindow.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
@@ -169,6 +174,9 @@ public class ResultsWindow extends javax.swing.JFrame {
         processNameField.setName("processNameField"); // NOI18N
         jScrollPane1.setViewportView(processNameField);
 
+        importantInfo.setText(resourceMap.getString("importantInfo.text")); // NOI18N
+        importantInfo.setName("importantInfo"); // NOI18N
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -176,6 +184,7 @@ public class ResultsWindow extends javax.swing.JFrame {
             .add(layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(importantInfo)
                     .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 924, Short.MAX_VALUE)
                     .add(jInternalFrame1))
                 .addContainerGap())
@@ -184,10 +193,12 @@ public class ResultsWindow extends javax.swing.JFrame {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
+                .add(importantInfo)
+                .add(18, 18, 18)
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(18, 18, 18)
                 .add(jInternalFrame1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         pack();
@@ -195,6 +206,7 @@ public class ResultsWindow extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel importantInfo;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea processNameField;

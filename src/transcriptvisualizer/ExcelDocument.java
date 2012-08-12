@@ -41,15 +41,15 @@ public class ExcelDocument {
             sheet.addCell(label);
             label = new Label(0, j, p.name);
             sheet.addCell(label);
-            num = new Number(1, i, p.givenstart);
+            num = new Number(1, i, p.startAdjustment - p.startProcess);
             sheet.addCell(num);
-            num = new Number(1, j, p.givenstart);
+            num = new Number(1, j, p.startAdjustment - p.startProcess);
             sheet.addCell(num);
-            num = new Number(2, i, p.givenend);
+            num = new Number(2, i, p.endProcess);
             sheet.addCell(num);
             num = new Number(2, j, p.statistics);
             sheet.addCell(num);
-            num = new Number(3, i, p.totallength);
+            num = new Number(3, i, p.lengthProcess);
             sheet.addCell(num);
             num = new Number(3, j, p.statistics);
             sheet.addCell(num);
@@ -296,7 +296,7 @@ public class ExcelDocument {
         
         int totaltime = 0;
         int totalnum = 0;
-        int shortest = p.totallength;
+        int shortest = p.lengthProcess;
         int longest = 0;
         int totalfirstnum = 0;
         

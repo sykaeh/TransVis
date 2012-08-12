@@ -21,9 +21,11 @@ import org.jfree.data.xy.XYSeriesCollection;
 /**
  * The main class of the application.
  * @author Sybil Ehrensberger
- * @version 0.2
+ * @version 0.3
  */
 public class MainApp extends SingleFrameApplication {
+    
+    private String info;
 
     private static MainView view;
 
@@ -72,8 +74,19 @@ public class MainApp extends SingleFrameApplication {
             view.reportError("No files selected.");
         } else {
             List<XMLParser> parsers = parseFiles();
+            if (view.getIndividualGraphs() && view.fileList.size() > 1) {
+                for (XMLParser p : parsers) {
+                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                    plist.add(p);
+                    ResultsWindow r = new ResultsWindow();
+                    displayMainGraph(plist, r);
+                    r.setInfo("Main graph: " + info);
+                    r.setVisible(true);
+                }
+            }
             ResultsWindow results = new ResultsWindow();
             displayMainGraph(parsers, results);
+            results.setInfo("Main graph: " + info);
             results.setVisible(true);
         }
     }
@@ -83,13 +96,30 @@ public class MainApp extends SingleFrameApplication {
      * @return a List of XMLParsers
      */
     private List<XMLParser> parseFiles() {
+        
         int start = view.getStart();
         int end = view.getEnd();
         int stats = view.getStat();
-
+        
+        int type = 0;
+        info = "Partial view (" + start + "sec - " + end + "sec)";
+        if (view.getComplete()) {
+            info = "Complete process";
+            type = 1;
+        } else if (view.getOrientationPhase()) {
+            info = "Orientation phase";
+            type = 2;
+        } else if (view.getDraftingPhase()) {
+            info = "Drafting phase";
+            type = 3;
+        } else if (view.getRevisionPhase()) {
+            info = "Revision phase";
+            type = 4;
+        }
+        
         List<XMLParser> parsers = new LinkedList<XMLParser>();
         for (File f : view.fileList) {
-            XMLParser p = analyzeFile(f, start, end, stats);
+            XMLParser p = analyzeFile(f, type, start, end, stats);
             if (p != null) {
                 parsers.add(p);
             }
@@ -107,8 +137,19 @@ public class MainApp extends SingleFrameApplication {
             view.reportError("No files selected.");
         } else {
             List<XMLParser> parsers = parseFiles();
+            if (view.getIndividualGraphs() && view.fileList.size() > 1) {
+                for (XMLParser p : parsers) {
+                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                    plist.add(p);
+                    ResultsWindow r = new ResultsWindow();
+                    displayConsultsGraph(plist, r);
+                    r.setInfo("Consults graph: " + info);
+                    r.setVisible(true);
+                }
+            }
             ResultsWindow results = new ResultsWindow();
             displayConsultsGraph(parsers, results);
+            results.setInfo("Consults graph: " + info);
             results.setVisible(true);
         }
     }
@@ -122,8 +163,19 @@ public class MainApp extends SingleFrameApplication {
             view.reportError("No files selected.");
         } else {
             List<XMLParser> parsers = parseFiles();
+            if (view.getIndividualGraphs() && view.fileList.size() > 1) {
+                for (XMLParser p : parsers) {
+                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                    plist.add(p);
+                    ResultsWindow r = new ResultsWindow();
+                    displayRevisionGraph(plist, r);
+                    r.setInfo("Revision graph: " + info);
+                    r.setVisible(true);
+                }
+            }
             ResultsWindow results = new ResultsWindow();
             displayRevisionGraph(parsers, results);
+            results.setInfo("Revision graph: " + info);
             results.setVisible(true);
         }
 
@@ -138,8 +190,19 @@ public class MainApp extends SingleFrameApplication {
             view.reportError("No files selected.");
         } else {
             List<XMLParser> parsers = parseFiles();
+            if (view.getIndividualGraphs() && view.fileList.size() > 1) {
+                for (XMLParser p : parsers) {
+                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                    plist.add(p);
+                    ResultsWindow r = new ResultsWindow();
+                    displayPausesGraph(plist, r);
+                    r.setInfo("No activity graph: " + info);
+                    r.setVisible(true);
+                }
+            }
             ResultsWindow results = new ResultsWindow();
             displayPausesGraph(parsers, results);
+            results.setInfo("No activity graph: " + info);
             results.setVisible(true);
         }
 
@@ -154,8 +217,19 @@ public class MainApp extends SingleFrameApplication {
             view.reportError("No files selected.");
         } else {
             List<XMLParser> parsers = parseFiles();
+            if (view.getIndividualGraphs() && view.fileList.size() > 1) {
+                for (XMLParser p : parsers) {
+                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                    plist.add(p);
+                    ResultsWindow r = new ResultsWindow();
+                    displayCustomGraph(plist, r);
+                    r.setInfo("Custom graph: " + info);
+                    r.setVisible(true);
+                }
+            }
             ResultsWindow results = new ResultsWindow();
             displayCustomGraph(parsers, results);
+            results.setInfo("Custom graph: " + info);
             results.setVisible(true);
         }
 
@@ -198,18 +272,14 @@ public class MainApp extends SingleFrameApplication {
      * Generates a single graph with the corresponding statistical data
      * in a separate window.
      * @param f the file containing the transcript
-     * @param starttime the start time
-     * @param endtime the end time
-     * @param stats the time for the statistical analysis
      * @return the XMLParser generated
      */
-    private XMLParser analyzeFile(File f, int starttime, int endtime,
-            int stats) {
-
+    private XMLParser analyzeFile(File f, int type, int start, int end, int stats) {
+        
         XMLParser parser = null;
         try {
-            parser = new XMLParser(f, starttime, endtime, stats);
-            String error = parser.check();
+            parser = new XMLParser(f, stats);
+            String error = parser.check(type, start, end);
             if (!error.isEmpty()) {
                 view.reportError("Error while parsing document "
                         + f.getName() + ": \n" + error);

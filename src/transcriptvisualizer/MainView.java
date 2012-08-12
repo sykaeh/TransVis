@@ -179,12 +179,8 @@ public class MainView extends FrameView {
      * @return the start time in seconds.
      */
     public int getStart() {
-        if (wholeRB.isSelected()) {
-            return 0;
-        } else {
-            String start = startTimeField.getText();
-            return getTime(start);
-        }
+        String start = startTimeField.getText();
+        return getTime(start);
     }
 
     /**
@@ -192,14 +188,30 @@ public class MainView extends FrameView {
      * @return the end time in seconds.
      */
     public int getEnd() {
-        if (wholeRB.isSelected()) {
-            return 999999999;
-        } else {
-            String end = endTimeField.getText();
-            return getTime(end);
-        }
+        String end = endTimeField.getText();
+        return getTime(end);
+    }
+    
+    public boolean getComplete() {
+        return wholeRB.isSelected();
+    }
+    
+    public boolean getOrientationPhase() {
+        return orientationRB.isSelected();
+    }
+    
+    public boolean getDraftingPhase() {
+        return draftingRB.isSelected();
+    }
+    
+    public boolean getRevisionPhase() {
+        return revisionRB.isSelected();
     }
 
+    public boolean getIndividualGraphs() {
+        return showIndCB.isSelected();
+    }
+    
     /**
      * Returns the statistical minimum.
      * @return the statistical minimum in minutes.
@@ -364,6 +376,7 @@ public class MainView extends FrameView {
         customGraphButton = new javax.swing.JButton();
         statsButton = new javax.swing.JButton();
         dataButton = new javax.swing.JButton();
+        showIndCB = new javax.swing.JCheckBox();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -720,6 +733,9 @@ public class MainView extends FrameView {
         dataButton.setText(resourceMap.getString("dataButton.text")); // NOI18N
         dataButton.setName("dataButton"); // NOI18N
 
+        showIndCB.setText(resourceMap.getString("showIndCB.text")); // NOI18N
+        showIndCB.setName("showIndCB"); // NOI18N
+
         org.jdesktop.layout.GroupLayout buttonPanelLayout = new org.jdesktop.layout.GroupLayout(buttonPanel);
         buttonPanel.setLayout(buttonPanelLayout);
         buttonPanelLayout.setHorizontalGroup(
@@ -737,6 +753,8 @@ public class MainView extends FrameView {
                         .add(pausesGraphButton))
                     .add(buttonPanelLayout.createSequentialGroup()
                         .add(customGraphButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(showIndCB)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .add(statsButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -756,7 +774,8 @@ public class MainView extends FrameView {
                 .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(customGraphButton)
                     .add(dataButton)
-                    .add(statsButton))
+                    .add(statsButton)
+                    .add(showIndCB))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -865,6 +884,7 @@ public class MainView extends FrameView {
     private javax.swing.JRadioButton revisionsingleRB;
     private javax.swing.JFileChooser saveFileChooser;
     private javax.swing.JRadioButton selectedRB;
+    private javax.swing.JCheckBox showIndCB;
     private javax.swing.JCheckBox stCB;
     private javax.swing.JTextField startTimeField;
     private javax.swing.JTextField statDataField;
