@@ -3,8 +3,11 @@ package transcriptvisualizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jxl.read.biff.BiffException;
-import jxl.*; 
+import jxl.*;
 import jxl.write.*;
 import jxl.write.Number;
 
@@ -16,20 +19,45 @@ public class ExcelDocument {
 
     private List<XMLParser> parserList;
     private File ofile;
-    
+    private final static Logger LOGGER = Logger.getLogger("TranVis");
+
     ExcelDocument(List<XMLParser> parsers, File outputfile) {
-        
+
         parserList = parsers;
         ofile = outputfile;
     }
-    
-    public void makeExcelFile() throws IOException, WriteException, BiffException {
-                
-        Workbook originalworkbook = Workbook.getWorkbook(new File("template.xls"));
-        WritableWorkbook workbook = Workbook.createWorkbook(ofile, originalworkbook);
-        WritableSheet sheet = workbook.getSheet(0);
-       
-        Label label; 
+
+    public void makeExcelFile() {
+
+        try {
+            // Create an appending file handler
+            FileHandler handler = new FileHandler("tranvis.log");
+            LOGGER.addHandler(handler);
+        } catch (IOException e) {
+        }
+
+        try {
+            LOGGER.log(Level.INFO, "Getting template.xls");
+            Workbook originalworkbook = Workbook.getWorkbook(new File("template.xls"));
+            LOGGER.log(Level.INFO, "Creating new workbook");
+            WritableWorkbook workbook = Workbook.createWorkbook(ofile, originalworkbook);
+            WritableSheet sheet = workbook.getSheet(0);
+
+            fillSheet(sheet);
+
+
+            LOGGER.log(Level.INFO, "Writing");
+            workbook.write();
+            workbook.close();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error with Excel...", ex);
+
+        }
+    }
+
+    private void fillSheet(WritableSheet sheet) throws WriteException {
+
+        Label label;
         Number num;
         Formula f;
 
@@ -53,54 +81,48 @@ public class ExcelDocument {
             sheet.addCell(num);
             num = new Number(3, j, p.statistics);
             sheet.addCell(num);
-            
+
             label = new Label(4, j, "partial");
             sheet.addCell(label);
             label = new Label(4, i, "full");
             sheet.addCell(label);
-            
-            f = new Formula(14, i, "SUM(P" + (i+1) + ":V" + (i+1) + ")" );
-            sheet.addCell(f);
-            f = new Formula(14, j, "SUM(P" + (j+1) + ":V" + (j+1) + ")" );
-            sheet.addCell(f);
+
             addPauses(sheet, p, i, j);
             addConsults(sheet, p, i, j);
-            
+
             p.typos.getStats();
             num = new Number(34, i, p.typos.getTotalNum());
             sheet.addCell(num);
             num = new Number(34, j, p.typos.getFirstNum());
             sheet.addCell(num);
-            
+
             addRevisions(sheet, p, i, j);
-            
-            f = new Formula(51, i, "SUM(BA" + (i+1) + ":BB" + (i+1) + ")" );
-            sheet.addCell(f);
-            f = new Formula(51, j, "SUM(BA" + (j+1) + ":BB" + (j+1) + ")" );
-            sheet.addCell(f);
+
             p.writes.getStats();
+            p.accepts.getStats();
+            num = new Number(51, i, p.writes.getTotalNum() + p.accepts.getTotalNum());
+            sheet.addCell(num);
+            num = new Number(51, j, p.accepts.getFirstNum() + p.writes.getFirstNum());
+            sheet.addCell(num);
+            
             num = new Number(52, i, p.writes.getTotalNum());
             sheet.addCell(num);
             num = new Number(52, j, p.writes.getFirstNum());
             sheet.addCell(num);
-            p.accepts.getStats();
+            
             num = new Number(53, i, p.accepts.getTotalNum());
             sheet.addCell(num);
             num = new Number(53, j, p.accepts.getFirstNum());
             sheet.addCell(num);
-            
+
             p.sourcetext.getStats();
             num = new Number(54, i, p.sourcetext.getTotalNum());
             sheet.addCell(num);
             num = new Number(54, j, p.sourcetext.getFirstNum());
             sheet.addCell(num);
-            
-            f = new Formula(55, i, "SUM(BE" + (i+1) + ":BJ" + (i+1) + ")" );
-            sheet.addCell(f);
-            f = new Formula(55, j, "SUM(BE" + (j+1) + ":BJ" + (j+1) + ")" );
-            sheet.addCell(f);
+
             addInterrupts(sheet, p, i, j);
-            
+
             num = new Number(9, i, p.writes.getFirstTime());
             sheet.addCell(num);
             num = new Number(10, i, p.writes.getTotalTime());
@@ -111,14 +133,13 @@ public class ExcelDocument {
             sheet.addCell(num);
             num = new Number(13, i, p.writes.getAvgLength());
             sheet.addCell(num);
-            
-            i++; i++;
+
+            i++;
+            i++;
         }
 
-        workbook.write(); 
-        workbook.close();
     }
-    
+
     /**
      * 
      * @param sheet
@@ -126,15 +147,15 @@ public class ExcelDocument {
      * @param i
      * @param j 
      */
-    private void addRevisions(WritableSheet sheet, XMLParser p, int i , int j) throws WriteException {
-        Number num1 = new Number(0,0,0);
-        Number num2 = new Number(0,0,0);
-        
+    private void addRevisions(WritableSheet sheet, XMLParser p, int i, int j) throws WriteException {
+        Number num1 = new Number(0, 0, 0);
+        Number num2 = new Number(0, 0, 0);
+
         int numrev = 0;
         int numrevfirst = 0;
         int numrev2 = 0;
         int numrev2first = 0;
-        
+
         for (Tag t : p.revisions) {
             t.getStats();
             if (t.subtype.equalsIgnoreCase("revision")) {
@@ -144,7 +165,7 @@ public class ExcelDocument {
                 numrev2 += t.getTotalNum();
                 numrev2first += t.getFirstNum();
             }
-            
+
             if (t.type.equalsIgnoreCase("deletes") && t.subtype.equalsIgnoreCase("revision")) {
                 num1 = new Number(37, i, t.getTotalNum());
                 num2 = new Number(37, j, t.getFirstNum());
@@ -191,7 +212,7 @@ public class ExcelDocument {
             sheet.addCell(num1);
             sheet.addCell(num2);
         }
-        
+
         num1 = new Number(35, i, numrev2 + numrev);
         num2 = new Number(35, j, numrev2first + numrevfirst);
         sheet.addCell(num1);
@@ -211,12 +232,15 @@ public class ExcelDocument {
      * @throws WriteException 
      */
     private void addInterrupts(WritableSheet sheet, XMLParser p, int i, int j) throws WriteException {
-        Number num1 = new Number(0,0,0);
-        Number num2 = new Number(0,0,0);
-        
+        Number num1 = new Number(0, 0, 0);
+        Number num2 = new Number(0, 0, 0);
+
+        int total = 0;
+        int firstTotal = 0;
+
         for (Tag t : p.interrupts) {
             t.getStats();
-            
+
             if (t.subtype.equalsIgnoreCase("privatemail")) {
                 num1 = new Number(56, i, t.getTotalNum());
                 num2 = new Number(56, j, t.getFirstNum());
@@ -236,9 +260,17 @@ public class ExcelDocument {
                 num1 = new Number(61, i, t.getTotalNum());
                 num2 = new Number(61, j, t.getFirstNum());
             }
+            total = total + t.getTotalNum();
+            firstTotal = firstTotal + t.getFirstNum();
+
             sheet.addCell(num1);
             sheet.addCell(num2);
         }
+
+        num1 = new Number(55, i, total);
+        sheet.addCell(num1);
+        num2 = new Number(55, j, firstTotal);
+        sheet.addCell(num2);
     }
 
     /**
@@ -250,9 +282,12 @@ public class ExcelDocument {
      * @throws WriteException 
      */
     private void addPauses(WritableSheet sheet, XMLParser p, int i, int j) throws WriteException {
-        Number num1 = new Number(0,0,0);
-        Number num2 = new Number(0,0,0);
-        
+        Number num1 = new Number(0, 0, 0);
+        Number num2 = new Number(0, 0, 0);
+
+        int total = 0;
+        int firstTotal = 0;
+
         for (Tag t : p.pauses) {
             t.getStats();
             if (t.type.equalsIgnoreCase("pause")) {
@@ -277,9 +312,16 @@ public class ExcelDocument {
                 num1 = new Number(21, i, t.getTotalNum());
                 num2 = new Number(21, j, t.getFirstNum());
             }
+            total = total + t.getTotalNum();
+            firstTotal = firstTotal + t.getFirstNum();
             sheet.addCell(num1);
             sheet.addCell(num2);
         }
+
+        num1 = new Number(14, i, total);
+        sheet.addCell(num1);
+        num2 = new Number(14, j, firstTotal);
+        sheet.addCell(num2);
     }
 
     /**
@@ -290,22 +332,22 @@ public class ExcelDocument {
      * @param j
      * @throws WriteException 
      */
-    private void addConsults(WritableSheet sheet, XMLParser p, int i, int j) throws WriteException {           
-        Number num1 = new Number(0,0,0);
-        Number num2 = new Number(0,0,0);
-        
+    private void addConsults(WritableSheet sheet, XMLParser p, int i, int j) throws WriteException {
+        Number num1 = new Number(0, 0, 0);
+        Number num2 = new Number(0, 0, 0);
+
         int totaltime = 0;
         int totalnum = 0;
         int shortest = p.lengthProcess;
         int longest = 0;
         int totalfirstnum = 0;
-        
+
         for (Tag t : p.consults) {
             t.getStats();
-            
+
             totalnum += t.getTotalNum();
             totalfirstnum += t.getFirstNum();
-            
+
             totaltime += t.getTotalTime();
             if (t.getMinLength() < shortest) {
                 shortest = t.getMinLength();
@@ -313,7 +355,7 @@ public class ExcelDocument {
             if (t.getMaxLength() > longest) {
                 longest = t.getMaxLength();
             }
-            
+
             if (t.subtype.equalsIgnoreCase("Search engines")) {
                 num1 = new Number(23, i, t.getTotalNum());
                 num2 = new Number(23, j, t.getFirstNum());
@@ -351,9 +393,9 @@ public class ExcelDocument {
             sheet.addCell(num1);
             sheet.addCell(num2);
         }
-        
+
         double average = totaltime / totalnum;
-        
+
         num1 = new Number(5, i, totaltime);
         sheet.addCell(num1);
         num1 = new Number(6, i, shortest);
@@ -362,11 +404,10 @@ public class ExcelDocument {
         sheet.addCell(num1);
         num1 = new Number(8, i, average);
         sheet.addCell(num1);
-        
+
         num1 = new Number(22, i, totalnum);
         sheet.addCell(num1);
         num2 = new Number(22, j, totalfirstnum);
         sheet.addCell(num2);
     }
-    
 }
