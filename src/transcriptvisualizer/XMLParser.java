@@ -103,7 +103,7 @@ public class XMLParser {
         String[] encyclopedias = new String[]{"wikipedia", "britannica", "encyclopedia"};
         String[] dictionaries = new String[]{"dict.cc", "leo", "pons", "collins", "colins",
             "larousse", "duden", "reverso", "thefreedictionary", "langenscheidt",
-            "langenscheit"};
+            "langenscheit", "linguee"};
         String[] portals = new String[]{"term-minator", "admin", "Europa",
             "Canada", "ourlanguages", "usa"};
         String[] termbanks = new String[]{"iate.europa.eu",

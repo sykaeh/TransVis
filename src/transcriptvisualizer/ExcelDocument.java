@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jxl.read.biff.BiffException;
 import jxl.*;
 import jxl.write.*;
 import jxl.write.Number;

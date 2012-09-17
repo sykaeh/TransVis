@@ -385,7 +385,7 @@ public class MainApp extends SingleFrameApplication {
 
         List<String> processNames = new LinkedList<String>();
 
-        double pos = 2 * step;
+        double pos = 1 - step;
 
         for (XMLParser p : parsers) {
 
@@ -443,11 +443,11 @@ public class MainApp extends SingleFrameApplication {
             }
             data.addSeries(st);
 
-            pos += step;
+            pos -= step;
         }
 
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle("Translation Process Visualizer: Main graph");
+        r.setTitle("Main graph");
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
@@ -482,7 +482,7 @@ public class MainApp extends SingleFrameApplication {
 
         List<String> processNames = new LinkedList<String>();
 
-        double pos = 2 * step;
+        double pos = 1 - step;
 
         for (XMLParser p : parsers) {
 
@@ -499,10 +499,10 @@ public class MainApp extends SingleFrameApplication {
                 i--;
             }
 
-            pos += step;
+            pos -= step;
         }
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle("Translation Process Visualizer: Consults graph");
+        r.setTitle("Consults graph");
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
@@ -537,7 +537,7 @@ public class MainApp extends SingleFrameApplication {
 
         List<String> processNames = new LinkedList<String>();
 
-        double pos = 2 * step;
+        double pos = 1 - step;
 
         for (XMLParser p : parsers) {
 
@@ -554,10 +554,10 @@ public class MainApp extends SingleFrameApplication {
                 i--;
             }
 
-            pos += step;
+            pos -= step;
         }
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle("Translation Process Visualizer: Pauses graph");
+        r.setTitle("Pauses graph");
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
@@ -591,7 +591,7 @@ public class MainApp extends SingleFrameApplication {
 
         List<String> processNames = new LinkedList<String>();
 
-        double pos = 2 * step;
+        double pos = 1 - step;
 
         XYSeries ins;
         XYSeries del;
@@ -641,12 +641,12 @@ public class MainApp extends SingleFrameApplication {
             data.addSeries(del);
             data.addSeries(pas);
             data.addSeries(cut);
-            pos += step;
+            pos -= step;
         }
         if (view.getCombinedRevisions()) {
-            r.setTitle("Translation Process Visualizer: Combined revision graph");
+            r.setTitle("Combined revision graph");
         } else {
-            r.setTitle("Translation Process Visualizer: Revision graph");
+            r.setTitle("Revision graph");
         }
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
         JFreeChart chart = ChartFactory.createXYLineChart(
@@ -773,7 +773,7 @@ public class MainApp extends SingleFrameApplication {
 
         List<String> processNames = new LinkedList<String>();
 
-        double pos = 2 * step;
+        double pos = 1 - step;
 
         for (XMLParser p : parsers) {
 
@@ -934,11 +934,11 @@ public class MainApp extends SingleFrameApplication {
                 i++;
             }
 
-            pos += step;
+            pos -= step;
         }
         
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle("Translation Process Visualizer: Custom graph");
+        r.setTitle("Custom graph");
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
