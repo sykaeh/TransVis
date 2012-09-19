@@ -26,7 +26,7 @@ public class ExcelDocument {
         ofile = outputfile;
     }
 
-    public void makeExcelFile() {
+    public String makeExcelFile() {
 
         try {
             // Create an appending file handler
@@ -48,8 +48,11 @@ public class ExcelDocument {
             LOGGER.log(Level.INFO, "Writing");
             workbook.write();
             workbook.close();
+            return "";
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error with Excel...", ex);
+            String error = "Error while saving statistics: " + ex.getMessage();
+            return error;
 
         }
     }
@@ -68,22 +71,33 @@ public class ExcelDocument {
             sheet.addCell(label);
             label = new Label(0, j, p.name);
             sheet.addCell(label);
-            num = new Number(1, i, p.startAdjustment - p.startProcess);
+            
+            int starttime = p.startAdjustment - p.startProcess;
+            int endtime = p.endAdjustment - p.startProcess;
+            
+            num = new Number(1, i, starttime);
             sheet.addCell(num);
-            num = new Number(1, j, p.startAdjustment - p.startProcess);
+            num = new Number(1, j, starttime);
             sheet.addCell(num);
-            num = new Number(2, i, p.endProcess);
+            num = new Number(2, i, endtime);
             sheet.addCell(num);
-            num = new Number(2, j, p.statistics);
+            num = new Number(3, i, endtime - starttime);
             sheet.addCell(num);
-            num = new Number(3, i, p.lengthProcess);
-            sheet.addCell(num);
-            num = new Number(3, j, p.statistics);
-            sheet.addCell(num);
-
-            label = new Label(4, j, "partial");
+            if (endtime < p.statistics + starttime) {
+                num = new Number(2, j, endtime);
+                sheet.addCell(num);
+                num = new Number(3, j, endtime - starttime);
+                sheet.addCell(num);
+            } else {
+                num = new Number(2, j, p.statistics + starttime);
+                sheet.addCell(num);
+                num = new Number(3, j, p.statistics);
+                sheet.addCell(num);
+            }
+            
+            label = new Label(4, j, "---");
             sheet.addCell(label);
-            label = new Label(4, i, "full");
+            label = new Label(4, i, p.timespan);
             sheet.addCell(label);
 
             addPauses(sheet, p, i, j);
@@ -97,7 +111,9 @@ public class ExcelDocument {
 
             addRevisions(sheet, p, i, j);
 
+            System.out.println("Writes");
             p.writes.getStats();
+            System.out.println("Accepts");
             p.accepts.getStats();
             num = new Number(51, i, p.writes.getTotalNum() + p.accepts.getTotalNum());
             sheet.addCell(num);
@@ -122,16 +138,50 @@ public class ExcelDocument {
 
             addInterrupts(sheet, p, i, j);
 
+            if (p.writes.getTotalNum() + p.accepts.getTotalNum() > 0) {
+            
             num = new Number(9, i, p.writes.getFirstTime());
             sheet.addCell(num);
+            if (p.writes.getTotalTime() == 0){
+                label = new Label(10, i, "< 1");
+                sheet.addCell(label);
+            } else {
             num = new Number(10, i, p.writes.getTotalTime());
             sheet.addCell(num);
-            num = new Number(11, i, p.writes.getMinLength());
-            sheet.addCell(num);
-            num = new Number(12, i, p.writes.getMaxLength());
-            sheet.addCell(num);
-            num = new Number(13, i, p.writes.getAvgLength());
-            sheet.addCell(num);
+            }
+            if (p.writes.getMinLength() == 0) {
+                label = new Label(11, i, "< 1");
+                sheet.addCell(label);
+            } else {
+                num = new Number(11, i, p.writes.getMinLength());
+                sheet.addCell(num);
+            }
+            if (p.writes.getMaxLength() == 0) {
+                label = new Label(12, i, "< 1");
+                sheet.addCell(label);
+            } else {
+                num = new Number(12, i, p.writes.getMaxLength());
+                sheet.addCell(num);
+            }
+            if (p.writes.getAvgLength() == 0) {
+                label = new Label(13, i, "< 1");
+                sheet.addCell(label);
+            } else {
+                num = new Number(13, i, p.writes.getAvgLength());
+                sheet.addCell(num);
+            }
+            } else {
+                label = new Label(9, i, "n/a");
+                sheet.addCell(label);
+                label = new Label(10, i, "n/a");
+                sheet.addCell(label);
+                label = new Label(11, i, "n/a");
+                sheet.addCell(label);
+                label = new Label(12, i, "n/a");
+                sheet.addCell(label);
+                label = new Label(13, i, "n/a");
+                sheet.addCell(label);
+            }
 
             i++;
             i++;
@@ -347,8 +397,10 @@ public class ExcelDocument {
             totalnum += t.getTotalNum();
             totalfirstnum += t.getFirstNum();
 
-            totaltime += t.getTotalTime();
-            if (t.getMinLength() < shortest) {
+            if (t.getTotalTime() != -1) {
+                totaltime += t.getTotalTime();
+            }
+            if (t.getMinLength() != -1 && t.getMinLength() < shortest) {
                 shortest = t.getMinLength();
             }
             if (t.getMaxLength() > longest) {
@@ -393,8 +445,8 @@ public class ExcelDocument {
             sheet.addCell(num2);
         }
 
-        double average = totaltime / totalnum;
-
+        if (totalnum  > 0) {
+        double average = (double) totaltime / (double) totalnum;
         num1 = new Number(5, i, totaltime);
         sheet.addCell(num1);
         num1 = new Number(6, i, shortest);
@@ -403,10 +455,21 @@ public class ExcelDocument {
         sheet.addCell(num1);
         num1 = new Number(8, i, average);
         sheet.addCell(num1);
-
+        } else {
+            Label label = new Label(5, i, "n/a");
+            sheet.addCell(label);
+            label = new Label(6, i, "n/a");
+            sheet.addCell(label);
+            label = new Label(7, i, "n/a");
+            sheet.addCell(label);
+            label = new Label(8, i, "n/a");
+            sheet.addCell(label);            
+        }
+        
         num1 = new Number(22, i, totalnum);
         sheet.addCell(num1);
         num2 = new Number(22, j, totalfirstnum);
         sheet.addCell(num2);
+
     }
 }

@@ -277,7 +277,10 @@ public class MainApp extends SingleFrameApplication {
             List<XMLParser> parsers = parseFiles();
             try {
                 ExcelDocument e = new ExcelDocument(parsers, saveStatsFile);
-                e.makeExcelFile();
+                String errormsg = e.makeExcelFile();
+                if (!errormsg.isEmpty()) {
+                    view.reportError(errormsg);
+                }
             } catch (Exception ex) {
                 view.reportError(ex.getMessage());
             }

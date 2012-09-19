@@ -1,17 +1,17 @@
 package transcriptvisualizer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.io.IOException;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -33,10 +33,10 @@ public class XMLParser {
     private Document doc;
     private Element rootElement;
     
-    /* Adjustment time */
+    /* Adjustment time in real time*/
     public int startAdjustment;
-    /* last time to show */
-    private int endAdjustment;
+    /* last time to show in real time */
+    public int endAdjustment;
     
     /* the end time of the statistics */
     public int statistics;
@@ -50,6 +50,7 @@ public class XMLParser {
     /* endTransProcess in recording tag (in real time) */
     public int endProcess;
     
+    public String timespan;
     
     /* transProcessComplete in recording tag */
     public boolean complete;
@@ -103,7 +104,7 @@ public class XMLParser {
         String[] encyclopedias = new String[]{"wikipedia", "britannica", "encyclopedia"};
         String[] dictionaries = new String[]{"dict.cc", "leo", "pons", "collins", "colins",
             "larousse", "duden", "reverso", "thefreedictionary", "langenscheidt",
-            "langenscheit", "linguee"};
+            "langenscheit", "linguee", "linguee.com"};
         String[] portals = new String[]{"term-minator", "admin", "Europa",
             "Canada", "ourlanguages", "usa"};
         String[] termbanks = new String[]{"iate.europa.eu",
@@ -201,7 +202,13 @@ public class XMLParser {
             }
             
             if (recording.hasAttribute("startRevision")) {
-                startRevision = convertToSeconds(recording.getAttribute("startRevision"));
+                String attr = recording.getAttribute("startRevision");
+                if (attr.isEmpty()) {
+                    //@TODO: Notify PERSON!!!
+                    startRevision = endProcess;
+                } else {
+                    startRevision = convertToSeconds(attr);
+                }
             } else {
                 startRevision = 0;
                 error = error.concat("Missing startRevision attribute in recording tag.\n");
@@ -227,7 +234,7 @@ public class XMLParser {
                 if (e.hasAttribute("start")) {
                     int time = convertToSeconds(e.getAttribute("start"));
                     if (time > startProcess && time < startDrafting) {
-                        startDrafting = time;
+                        startDrafting = time - 1;
                     } 
                 }
             }
@@ -239,18 +246,23 @@ public class XMLParser {
         System.out.println("End process: " + endProcess);
         
         if (type == 0) { // partial
+            timespan = "Partial Process";
             startAdjustment = startProcess + start;
             endAdjustment = startProcess + end;
         } else if (type == 1) { // complete
+            timespan = "Complete Process";
             startAdjustment = startProcess;
             endAdjustment = endProcess;
         } else if (type == 2) { // orientation
+            timespan = "Orientation Phase";
             startAdjustment = startProcess;
             endAdjustment = startDrafting;
         } else if (type == 3) { // drafting
+            timespan = "Drafting Phase";
             startAdjustment = startDrafting;
             endAdjustment = startRevision;
         } else if (type == 4) { // revision
+            timespan = "Revision Phase";
             startAdjustment = startRevision;
             endAdjustment = endProcess;
         }

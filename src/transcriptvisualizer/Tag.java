@@ -71,14 +71,15 @@ public class Tag {
      */
     public void getStats() {
         
-        maxLength = 0;
-        totalTime = 0;
-        avgLength = 0;
+        maxLength = -1;
+        totalTime = -1;
+        avgLength = -1;
         
         if (lengths.isEmpty()) {
-            minLength = 0;
+            minLength = -1;
         } else {
             minLength = lengths.get(0);
+            totalTime = 0;
             for (int i=0; i < lengths.size(); i++) {
                 int curr = lengths.get(i);
                 if (curr < minLength) {
@@ -98,7 +99,7 @@ public class Tag {
         if (! times.isEmpty()) {
             firstTime = times.get(0)[0];
         } else {
-            firstTime = 0;
+            firstTime = -1;
             return;
         }
         

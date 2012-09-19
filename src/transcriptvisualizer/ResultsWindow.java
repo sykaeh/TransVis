@@ -84,7 +84,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         
         
         Color[] colorlist = new Color[] {Color.BLACK, Color.RED, Color.BLUE,
-        Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE,
+        Color.GREEN, Color.MAGENTA, Color.CYAN, Color.ORANGE,
         Color.GRAY, Color.PINK};
         
         LegendItemCollection chartLegend = new LegendItemCollection();
@@ -92,7 +92,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         
         Color c;
         for (int n=0; n < processes.size(); n++) {
-            if (n < 11) {
+            if (n < 9) {
                 c = colorlist[n];
             } else {
                 c = getRandomColor();
