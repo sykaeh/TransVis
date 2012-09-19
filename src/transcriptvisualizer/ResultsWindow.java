@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import org.jfree.chart.ChartPanel;
@@ -26,12 +27,22 @@ import org.jfree.ui.TextAnchor;
  */
 public class ResultsWindow extends javax.swing.JFrame {
 
+    private List<Color> colorlist = new LinkedList<Color>();
     
     /** Creates new form ResultsWindow */
     public ResultsWindow() {
         initComponents();
-    }
+        colorlist.add(Color.BLACK);
+        colorlist.add(Color.RED);
+        colorlist.add(Color.BLUE);
+        colorlist.add(Color.GREEN);
+        colorlist.add(Color.MAGENTA);
+        colorlist.add(Color.CYAN);
+        colorlist.add(Color.ORANGE);
+        colorlist.add(Color.GRAY);
+        colorlist.add(Color.PINK);
 
+    }
 
     /**
      * Sets the given string in the field for the name.
@@ -81,11 +92,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         
         float lineWidth = 2.5f;
         BasicStroke stroke = new BasicStroke(lineWidth);
-        
-        
-        Color[] colorlist = new Color[] {Color.BLACK, Color.RED, Color.BLUE,
-        Color.GREEN, Color.MAGENTA, Color.CYAN, Color.ORANGE,
-        Color.GRAY, Color.PINK};
+
         
         LegendItemCollection chartLegend = new LegendItemCollection();
         Shape shape = new Rectangle(10, 2);
@@ -93,7 +100,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         Color c;
         for (int n=0; n < processes.size(); n++) {
             if (n < 9) {
-                c = colorlist[n];
+                c = colorlist.get(n);
             } else {
                 c = getRandomColor();
             }
@@ -121,12 +128,19 @@ public class ResultsWindow extends javax.swing.JFrame {
         jInternalFrame1.pack();
         jInternalFrame1.setVisible(true);
     }
-    
-    
-   private Color getRandomColor() {
 
+   
+   private Color getRandomColor() {
+       
        Random numGen = new Random();
-       return new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
+       Color new_color = new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
+       int n = 0;
+       while (colorlist.contains(new_color) && n < 25) {
+           new_color = new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
+           n++;
+       }
+       colorlist.add(new_color);
+       return new_color;
    }
     
     

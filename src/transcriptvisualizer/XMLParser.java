@@ -189,20 +189,20 @@ public class XMLParser {
         } else {
             Element recording = (Element) nl.item(0);
             if (recording.hasAttribute("startTransProcess")) {
-                startProcess = convertToSeconds(recording.getAttribute("startTransProcess"));
+                startProcess = convertToSeconds(recording.getAttribute("startTransProcess").trim());
             } else {
                 startProcess = 0;
                 error = error.concat("Missing startTransProcess attribute in recording tag.\n");
             }
             if (recording.hasAttribute("endTransProcess")) {
-                endProcess = convertToSeconds(recording.getAttribute("endTransProcess"));
+                endProcess = convertToSeconds(recording.getAttribute("endTransProcess").trim());
             } else {
                 endProcess = 0;
                 error = error.concat("Missing endTransProcess attribute in recording tag.\n");
             }
             
             if (recording.hasAttribute("startRevision")) {
-                String attr = recording.getAttribute("startRevision");
+                String attr = recording.getAttribute("startRevision").trim();
                 if (attr.isEmpty()) {
                     //@TODO: Notify PERSON!!!
                     startRevision = endProcess;
@@ -214,12 +214,12 @@ public class XMLParser {
                 error = error.concat("Missing startRevision attribute in recording tag.\n");
             }
             if (recording.hasAttribute("transProcessComplete")) {
-                complete = recording.getAttribute("transProcessComplete").equalsIgnoreCase("yes");
+                complete = recording.getAttribute("transProcessComplete").trim().equalsIgnoreCase("yes");
             } else {
                 error = error.concat("Missing transProcessComplete attribute in recording tag.\n");
             }
             if (recording.hasAttribute("concurrentVisibilitySTTT")) {
-                concurrentVisibility = recording.getAttribute("concurrentVisibilitySTTT").equalsIgnoreCase("yes");
+                concurrentVisibility = recording.getAttribute("concurrentVisibilitySTTT").trim().equalsIgnoreCase("yes");
             } else {
                 error = error.concat("Missing concurrentVisibilitySTTT attribute in recording tag.\n");
             }
@@ -282,7 +282,7 @@ public class XMLParser {
      */
     private int convertToSeconds(String timestring) {
 
-        String[] times = timestring.split(":");
+        String[] times = timestring.trim().split(":");
         int time = Integer.parseInt(times[0]) * 360
                 + Integer.parseInt(times[1]) * 60 + Integer.parseInt(times[2]);
 
@@ -337,7 +337,7 @@ public class XMLParser {
         int length = end - start;
 
         if (start >= 0 && end <= lengthAdjustment && e.hasAttribute("type")) {
-            String type = e.getAttribute("type");
+            String type = e.getAttribute("type").trim();
             if (type.equalsIgnoreCase("consults")) {
                 handleConsults(e, times, length);
             } else if (type.equalsIgnoreCase("interrupts")) {

@@ -731,6 +731,7 @@ public class MainView extends FrameView {
 
         dataButton.setAction(actionMap.get("exportDataClicked")); // NOI18N
         dataButton.setText(resourceMap.getString("dataButton.text")); // NOI18N
+        dataButton.setEnabled(false);
         dataButton.setName("dataButton"); // NOI18N
 
         showIndCB.setText(resourceMap.getString("showIndCB.text")); // NOI18N

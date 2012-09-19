@@ -143,28 +143,28 @@ public class ExcelDocument {
             num = new Number(9, i, p.writes.getFirstTime());
             sheet.addCell(num);
             if (p.writes.getTotalTime() == 0){
-                label = new Label(10, i, "< 1");
+                label = new Label(10, i, "< 5");
                 sheet.addCell(label);
             } else {
             num = new Number(10, i, p.writes.getTotalTime());
             sheet.addCell(num);
             }
             if (p.writes.getMinLength() == 0) {
-                label = new Label(11, i, "< 1");
+                label = new Label(11, i, "< 5");
                 sheet.addCell(label);
             } else {
                 num = new Number(11, i, p.writes.getMinLength());
                 sheet.addCell(num);
             }
             if (p.writes.getMaxLength() == 0) {
-                label = new Label(12, i, "< 1");
+                label = new Label(12, i, "< 5");
                 sheet.addCell(label);
             } else {
                 num = new Number(12, i, p.writes.getMaxLength());
                 sheet.addCell(num);
             }
             if (p.writes.getAvgLength() == 0) {
-                label = new Label(13, i, "< 1");
+                label = new Label(13, i, "< 5");
                 sheet.addCell(label);
             } else {
                 num = new Number(13, i, p.writes.getAvgLength());

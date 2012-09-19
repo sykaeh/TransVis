@@ -667,6 +667,7 @@
                   <action class="transcriptvisualizer.MainApp" id="exportDataClicked" methodName="exportDataClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="dataButton.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="dataButton" noResource="true"/>
               </Properties>
             </Component>
