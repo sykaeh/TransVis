@@ -14,8 +14,6 @@ public class Tag {
     
     public List<Integer> lengths;
     
-    public int firstPart;
-    
     public String type;
     
     public String name;
@@ -153,15 +151,7 @@ public class Tag {
     public int getTotalNum() {
         return lengths.size();
     }
-    
-    /**
-     * Return the total amount of times this tag was found in the first
-     * period (specified by the statistics)
-     * @return the total amount of times this tag was found in the first period
-     */
-    public int getFirstNum() {
-        return firstPart;
-    }
+
     
     /**
      * Return the time of the first occurrence of this tag

@@ -37,10 +37,7 @@ public class XMLParser {
     public int startAdjustment;
     /* last time to show in real time */
     public int endAdjustment;
-    
-    /* the end time of the statistics */
-    public int statistics;
-    
+        
     /* startTransProcess in recording tag (in real time) */
     public int startProcess;
     /* first write tag  (in real time) */
@@ -72,21 +69,16 @@ public class XMLParser {
     /**
      * Public constructor for a XMLParser.
      * @param fxmlFile the file to be parsed.
-     * @param givenstart the start time (in seconds)
-     * @param givenend the end time (in seconds)
-     * @param stats the time for which to analyze the statistics (in min)
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
      */
-    public XMLParser(File fxmlFile, int stats) 
+    public XMLParser(File fxmlFile) 
             throws ParserConfigurationException, SAXException, IOException {
 
         initializeTagList();
         revisiontypes = new String[]{"deletes", "inserts", "cuts", "pastes",
             "moves from", "moves to", "undoes", "autocorrects"};
-
-        statistics = stats * 60;
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -392,9 +384,7 @@ public class XMLParser {
                   classified = true;
                   t.times.add(times);
                   t.lengths.add(l);
-                  if (times[1] <= statistics) {
-                      t.firstPart += 1;
-                  }
+
               }  
             }
         }
@@ -403,10 +393,6 @@ public class XMLParser {
             Tag o = consults.get(consults.size() - 1); // get the Other Resources Tag
             o.times.add(times);
             o.lengths.add(l);
-            if (times[1] <= statistics) {
-                o.firstPart += 1;
-            }
-            
         }
 
     }
@@ -428,17 +414,11 @@ public class XMLParser {
         if (subtype.equalsIgnoreCase("typo") || type.equalsIgnoreCase("autocorrects")) {
             typos.times.add(times);
             typos.lengths.add(length);
-            if (time && times[1] <= statistics) {
-                typos.firstPart += 1;
-            }
         }
         
         else if (subtype.equalsIgnoreCase("ST")) {
             sourcetext.times.add(times);
             sourcetext.lengths.add(length);
-            if (time && times[1] <= statistics) {
-                sourcetext.firstPart += 1;
-            }
         }
         else {
         
@@ -446,9 +426,6 @@ public class XMLParser {
             if (t.type.equalsIgnoreCase(type) && t.subtype.equalsIgnoreCase(subtype)) {
                 t.times.add(times);
                 t.lengths.add(length);
-                if (time && times[1] <= statistics) {
-                    t.firstPart += 1;
-                }
             }
         }
         }
@@ -462,9 +439,6 @@ public class XMLParser {
             if (attr.equalsIgnoreCase(interrupts.get(i).subtype)) {
                 interrupts.get(i).times.add(times);
                 interrupts.get(i).lengths.add(l);
-                if (times[1] <= statistics) {
-                    interrupts.get(i).firstPart += 1;
-                }
             }
         }
         
@@ -479,9 +453,6 @@ public class XMLParser {
                 if (t.type.equalsIgnoreCase("pause")) {
                     t.times.add(times);
                     t.lengths.add(l);
-                    if (times[1] <= statistics) {
-                        t.firstPart += 1;
-                    }
                 }
             }
         }
@@ -492,9 +463,6 @@ public class XMLParser {
                 if (t.subtype.equalsIgnoreCase(type)) {
                     t.times.add(times);
                     t.lengths.add(l);
-                    if (times[1] <= statistics) {
-                        t.firstPart += 1;
-                    }
                 }
             }
         }
@@ -505,15 +473,10 @@ public class XMLParser {
         if (e.getAttribute("type").equalsIgnoreCase("writes")) {
             writes.times.add(times);
             writes.lengths.add(length);
-            if (times[1] <= statistics) {
-                writes.firstPart += 1;
-            }
+
         } else {
             accepts.times.add(times);
             accepts.lengths.add(length);
-            if (times[1] <= statistics) {
-                accepts.firstPart += 1;
-            }
         }
         
     }

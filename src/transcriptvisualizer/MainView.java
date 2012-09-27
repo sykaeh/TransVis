@@ -212,20 +212,6 @@ public class MainView extends FrameView {
         return showIndCB.isSelected();
     }
     
-    /**
-     * Returns the statistical minimum.
-     * @return the statistical minimum in minutes.
-     */
-    public int getStat() {
-        String stat = statDataField.getText();
-        int result = 0;
-        try {
-            result = Integer.parseInt(stat);
-        } catch (NumberFormatException e) {
-            reportError("Invalid number.");
-        }
-        return result;
-    }
     
     public boolean getCombinedRevisions() {
         return revisioncombinedRB.isSelected();
@@ -348,14 +334,11 @@ public class MainView extends FrameView {
         timePanel = new javax.swing.JPanel();
         endTimeField = new javax.swing.JTextField();
         startTimeField = new javax.swing.JTextField();
-        statDataField = new javax.swing.JTextField();
         label1 = new java.awt.Label();
         wholeRB = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
         selectedRB = new javax.swing.JRadioButton();
         jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         orientationRB = new javax.swing.JRadioButton();
         draftingRB = new javax.swing.JRadioButton();
         revisionRB = new javax.swing.JRadioButton();
@@ -526,12 +509,6 @@ public class MainView extends FrameView {
         startTimeField.setText(resourceMap.getString("startTimeField.text")); // NOI18N
         startTimeField.setName("startTimeField"); // NOI18N
 
-        statDataField.setText(resourceMap.getString("statDataField.text")); // NOI18N
-        statDataField.setAutoscrolls(false);
-        statDataField.setDragEnabled(false);
-        statDataField.setMaximumSize(new java.awt.Dimension(30, 28));
-        statDataField.setName("statDataField"); // NOI18N
-
         label1.setName("label1"); // NOI18N
         label1.setText(resourceMap.getString("label1.text")); // NOI18N
 
@@ -549,12 +526,6 @@ public class MainView extends FrameView {
 
         jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
         jLabel4.setName("jLabel4"); // NOI18N
-
-        jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
-        jLabel6.setName("jLabel6"); // NOI18N
-
-        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
-        jLabel5.setName("jLabel5"); // NOI18N
 
         timeBG.add(orientationRB);
         orientationRB.setText(resourceMap.getString("orientationRB.text")); // NOI18N
@@ -588,15 +559,9 @@ public class MainView extends FrameView {
                             .add(endTimeField)))
                     .add(wholeRB)
                     .add(orientationRB)
-                    .add(timePanelLayout.createSequentialGroup()
-                        .add(jLabel5)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(statDataField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jLabel6))
                     .add(draftingRB)
                     .add(revisionRB))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(135, Short.MAX_VALUE))
         );
         timePanelLayout.setVerticalGroup(
             timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -621,12 +586,7 @@ public class MainView extends FrameView {
                 .add(draftingRB)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(revisionRB)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 12, Short.MAX_VALUE)
-                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel5)
-                    .add(statDataField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel6))
-                .add(50, 50, 50))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         filePanel.setName("filePanel"); // NOI18N
@@ -731,7 +691,6 @@ public class MainView extends FrameView {
 
         dataButton.setAction(actionMap.get("exportDataClicked")); // NOI18N
         dataButton.setText(resourceMap.getString("dataButton.text")); // NOI18N
-        dataButton.setEnabled(false);
         dataButton.setName("dataButton"); // NOI18N
 
         showIndCB.setText(resourceMap.getString("showIndCB.text")); // NOI18N
@@ -790,7 +749,7 @@ public class MainView extends FrameView {
                         .addContainerGap()
                         .add(optionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .add(18, 18, 18)
-                        .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 337, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(filePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(mainPanelLayout.createSequentialGroup()
                         .addContainerGap()
@@ -807,7 +766,7 @@ public class MainView extends FrameView {
                 .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(optionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(94, 94, 94))
+                .add(106, 106, 106))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -863,8 +822,6 @@ public class MainView extends FrameView {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
@@ -888,7 +845,6 @@ public class MainView extends FrameView {
     private javax.swing.JCheckBox showIndCB;
     private javax.swing.JCheckBox stCB;
     private javax.swing.JTextField startTimeField;
-    private javax.swing.JTextField statDataField;
     private javax.swing.JButton statsButton;
     private javax.swing.ButtonGroup timeBG;
     private javax.swing.JPanel timePanel;

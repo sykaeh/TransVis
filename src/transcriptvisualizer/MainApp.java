@@ -28,9 +28,8 @@ import org.jfree.data.xy.XYSeriesCollection;
  * @version 0.3
  */
 public class MainApp extends SingleFrameApplication {
-    
-    private String info;
 
+    private String info;
     private static MainView view;
 
     /**
@@ -67,7 +66,7 @@ public class MainApp extends SingleFrameApplication {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
+                    UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -112,11 +111,10 @@ public class MainApp extends SingleFrameApplication {
      * @return a List of XMLParsers
      */
     private List<XMLParser> parseFiles() {
-        
+
         int start = view.getStart();
         int end = view.getEnd();
-        int stats = view.getStat();
-        
+
         int type = 0;
         info = "Partial view (" + start + "sec - " + end + "sec)";
         if (view.getComplete()) {
@@ -132,10 +130,10 @@ public class MainApp extends SingleFrameApplication {
             info = "Revision phase";
             type = 4;
         }
-        
+
         List<XMLParser> parsers = new LinkedList<XMLParser>();
         for (File f : view.fileList) {
-            XMLParser p = analyzeFile(f, type, start, end, stats);
+            XMLParser p = analyzeFile(f, type, start, end);
             if (p != null) {
                 parsers.add(p);
             }
@@ -293,11 +291,11 @@ public class MainApp extends SingleFrameApplication {
      * @param f the file containing the transcript
      * @return the XMLParser generated
      */
-    private XMLParser analyzeFile(File f, int type, int start, int end, int stats) {
-        
+    private XMLParser analyzeFile(File f, int type, int start, int end) {
+
         XMLParser parser = null;
         try {
-            parser = new XMLParser(f, stats);
+            parser = new XMLParser(f);
             String error = parser.check(type, start, end);
             if (!error.isEmpty()) {
                 view.reportError("Error while parsing document "
@@ -373,6 +371,10 @@ public class MainApp extends SingleFrameApplication {
      */
     private void displayMainGraph(List<XMLParser> parsers, ResultsWindow r) {
 
+        if (parsers.isEmpty()) {
+            return;
+        }
+
         int size = parsers.size() + 2;
         double step = 1.0 / size;
         String nameField = parsers.size() + " process(es): ";
@@ -418,15 +420,19 @@ public class MainApp extends SingleFrameApplication {
             for (Integer[] times : p.typos.times) {
                 addToProcess(typos, times, pos + 3);
             }
-            data.addSeries(typos);
-
+            
             XYSeries revisions = new XYSeries("revisions " + p.name);
             // All revisions
             for (Tag t : p.revisions) {
                 for (Integer[] times : t.times) {
-                    addToProcess(revisions, times, pos + 2);
+                    if (t.subtype.equalsIgnoreCase("revision") || t.subtype.equalsIgnoreCase("revision2")) {
+                        addToProcess(revisions, times, pos + 2);
+                    } else if (t.subtype.equalsIgnoreCase("typos")) {
+                        addToProcess(typos, times, pos + 3);
+                    }
                 }
             }
+            data.addSeries(typos);
             data.addSeries(revisions);
 
             XYSeries writing = new XYSeries("writing " + p.name);
@@ -587,10 +593,9 @@ public class MainApp extends SingleFrameApplication {
         int numtypes = 4;
 
         List<Object[]> annotList = new LinkedList<Object[]>();
-        annotList.add(new Object[]{"Insertions", 4});
-        annotList.add(new Object[]{"Deletions", 3});
-        annotList.add(new Object[]{"Pastes & Move to", 2});
-        annotList.add(new Object[]{"Cuts & Move from", 1});
+        annotList.add(new Object[]{"Insertions", 3});
+        annotList.add(new Object[]{"Deletions", 2});
+        annotList.add(new Object[]{"Pastes & Move to", 1});
 
         List<String> processNames = new LinkedList<String>();
 
@@ -608,7 +613,6 @@ public class MainApp extends SingleFrameApplication {
             ins = new XYSeries("insertions " + p.name);
             del = new XYSeries("deletions " + p.name);
             pas = new XYSeries("pastes " + p.name);
-            cut = new XYSeries("cuts " + p.name);
 
             for (Tag t : p.revisions) {
                 if ((view.getCombinedRevisions() && t.subtype.equalsIgnoreCase("revision2"))
@@ -625,17 +629,9 @@ public class MainApp extends SingleFrameApplication {
                         for (Integer[] times : t.times) {
                             addToProcess(pas, times, 1 + pos);
                         }
-                    } else if (t.type.equalsIgnoreCase("cuts")) {
-                        for (Integer[] times : t.times) {
-                            addToProcess(cut, times, 0 + pos);
-                        }
                     } else if (t.type.equalsIgnoreCase("moves to")) {
                         for (Integer[] times : t.times) {
                             addToProcess(pas, times, 1 + pos);
-                        }
-                    } else if (t.type.equalsIgnoreCase("moves from")) {
-                        for (Integer[] times : t.times) {
-                            addToProcess(cut, times, 0 + pos);
                         }
                     }
                 }
@@ -643,7 +639,6 @@ public class MainApp extends SingleFrameApplication {
             data.addSeries(ins);
             data.addSeries(del);
             data.addSeries(pas);
-            data.addSeries(cut);
             pos -= step;
         }
         if (view.getCombinedRevisions()) {
@@ -706,8 +701,6 @@ public class MainApp extends SingleFrameApplication {
             ypos++;
         }
         if (view.getIndRevisions()) {
-            annotList.add((new Object[]{"Cuts", ypos}));
-            ypos++;
             annotList.add((new Object[]{"Pastes", ypos}));
             ypos++;
             annotList.add((new Object[]{"Deletes", ypos}));
@@ -747,7 +740,7 @@ public class MainApp extends SingleFrameApplication {
             ypos++;
             annotList.add((new Object[]{"Search engines", ypos}));
             ypos++;
-               
+
         }
         if (view.getConsults()) {
             annotList.add((new Object[]{"Resources", ypos}));
@@ -832,7 +825,6 @@ public class MainApp extends SingleFrameApplication {
                 XYSeries ins = new XYSeries("insertions " + p.name);
                 XYSeries del = new XYSeries("deletions " + p.name);
                 XYSeries pas = new XYSeries("pastes " + p.name);
-                XYSeries cut = new XYSeries("cuts " + p.name);
 
                 for (Tag t : p.revisions) {
                     if ((view.getCombinedRevisions() && t.subtype.equalsIgnoreCase("revision2"))
@@ -849,17 +841,9 @@ public class MainApp extends SingleFrameApplication {
                             for (Integer[] times : t.times) {
                                 addToProcess(pas, times, 1 + i + pos);
                             }
-                        } else if (t.type.equalsIgnoreCase("cuts")) {
-                            for (Integer[] times : t.times) {
-                                addToProcess(cut, times, i + pos);
-                            }
                         } else if (t.type.equalsIgnoreCase("moves to")) {
                             for (Integer[] times : t.times) {
                                 addToProcess(pas, times, 1 + i + pos);
-                            }
-                        } else if (t.type.equalsIgnoreCase("moves from")) {
-                            for (Integer[] times : t.times) {
-                                addToProcess(cut, times, i + pos);
                             }
                         }
                     }
@@ -867,7 +851,6 @@ public class MainApp extends SingleFrameApplication {
                 data.addSeries(ins);
                 data.addSeries(del);
                 data.addSeries(pas);
-                data.addSeries(cut);
                 i = i + 4;
 
             }
@@ -939,7 +922,7 @@ public class MainApp extends SingleFrameApplication {
 
             pos -= step;
         }
-        
+
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
         r.setTitle("Custom graph");
         JFreeChart chart = ChartFactory.createXYLineChart(

@@ -25,7 +25,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="optionsPanel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="timePanel" min="-2" pref="337" max="-2" attributes="0"/>
+                          <Component id="timePanel" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="filePanel" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
@@ -48,7 +48,7 @@
                       <Component id="optionsPanel" min="-2" max="-2" attributes="0"/>
                       <Component id="timePanel" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="106" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -275,17 +275,10 @@
                           </Group>
                           <Component id="wholeRB" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="orientationRB" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="statDataField" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                          </Group>
                           <Component id="draftingRB" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="revisionRB" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="135" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -314,13 +307,7 @@
                       <Component id="draftingRB" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="revisionRB" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="12" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="statDataField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace pref="78" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -336,17 +323,6 @@
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="startTimeField.text"/>
                 <Property name="name" type="java.lang.String" value="startTimeField" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="statDataField">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="statDataField.text"/>
-                <Property name="autoscrolls" type="boolean" value="false"/>
-                <Property name="dragEnabled" type="boolean" value="false"/>
-                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[30, 28]"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="statDataField" noResource="true"/>
               </Properties>
             </Component>
             <Component class="java.awt.Label" name="label1">
@@ -384,18 +360,6 @@
               <Properties>
                 <Property name="text" type="java.lang.String" resourceKey="jLabel4.text"/>
                 <Property name="name" type="java.lang.String" value="jLabel4" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel6">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jLabel6.text"/>
-                <Property name="name" type="java.lang.String" value="jLabel6" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel5">
-              <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="jLabel5.text"/>
-                <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="orientationRB">
@@ -667,7 +631,6 @@
                   <action class="transcriptvisualizer.MainApp" id="exportDataClicked" methodName="exportDataClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="dataButton.text"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="dataButton" noResource="true"/>
               </Properties>
             </Component>
