@@ -29,7 +29,6 @@ class XMLFileFilter extends javax.swing.filechooser.FileFilter {
     }
 }
 
-
 /**
  * The application's main frame.
  * @author Sybil Ehrensberger
@@ -61,7 +60,7 @@ public class MainView extends FrameView {
         totalFilesField.setText("0");
         multFilesField.setText("");
     }
-    
+
     /**
      * Method invoked when the "Add file" button is clicked.
      */
@@ -97,14 +96,14 @@ public class MainView extends FrameView {
             } else {
                 reportError("Chosen folder is not a folder.");
             }
-            
+
         } else {
             System.out.println("File access cancelled by user.");
         }
         totalFilesField.setText(String.format("%d", fileList.size()));
 
     }
-    
+
     public File showSaveFileChooser() {
         int returnVal = saveFileChooser.showSaveDialog(this.getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -113,7 +112,7 @@ public class MainView extends FrameView {
             System.out.println("File access cancelled by user.");
             return null;
         }
-        
+
     }
 
     /**
@@ -191,19 +190,19 @@ public class MainView extends FrameView {
         String end = endTimeField.getText();
         return getTime(end);
     }
-    
+
     public boolean getComplete() {
         return wholeRB.isSelected();
     }
-    
+
     public boolean getOrientationPhase() {
         return orientationRB.isSelected();
     }
-    
+
     public boolean getDraftingPhase() {
         return draftingRB.isSelected();
     }
-    
+
     public boolean getRevisionPhase() {
         return revisionRB.isSelected();
     }
@@ -211,12 +210,11 @@ public class MainView extends FrameView {
     public boolean getIndividualGraphs() {
         return showIndCB.isSelected();
     }
-    
-    
+
     public boolean getCombinedRevisions() {
         return revisioncombinedRB.isSelected();
     }
-    
+
     /**
      * Returns whether the interrupts should be displayed.
      * @return true if the interrupts should be shown.
@@ -248,7 +246,7 @@ public class MainView extends FrameView {
     public boolean getConsults() {
         return consultsCB.isSelected();
     }
-    
+
     /**
      * Determines whether the typos should be displayed.
      * @return true if the typos should be displayed
@@ -280,7 +278,7 @@ public class MainView extends FrameView {
     public boolean getIndInterrupts() {
         return indinterruptsCB.isSelected();
     }
-    
+
     /**
      * Determines whether the individual pauses should be displayed.
      * @return true if the individual pauses should be displayed
@@ -288,7 +286,7 @@ public class MainView extends FrameView {
     public boolean getIndPauses() {
         return indpausesCB.isSelected();
     }
-    
+
     /**
      * Determines whether the writing actions should be displayed.
      * @return true if the writing actions interrupts should be displayed
@@ -296,7 +294,7 @@ public class MainView extends FrameView {
     public boolean getWriting() {
         return writingCB.isSelected();
     }
-    
+
     /**
      * Determines whether the ST actions should be displayed.
      * @return true if the ST actions should be displayed
@@ -797,8 +795,6 @@ public class MainView extends FrameView {
         setComponent(mainPanel);
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFileButton;
     private javax.swing.JButton addFolderButton;
@@ -853,5 +849,4 @@ public class MainView extends FrameView {
     private javax.swing.JRadioButton wholeRB;
     private javax.swing.JCheckBox writingCB;
     // End of variables declaration//GEN-END:variables
-
 }

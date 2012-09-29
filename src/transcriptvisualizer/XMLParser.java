@@ -29,15 +29,12 @@ public class XMLParser {
 
     /* List of all of the sources for the consults. */
     public List<Object[]> sourcesList = new LinkedList<Object[]>();
-    
     private Document doc;
     private Element rootElement;
-    
     /* Adjustment time in real time*/
     public int startAdjustment;
     /* last time to show in real time */
     public int endAdjustment;
-        
     /* startTransProcess in recording tag (in real time) */
     public int startProcess;
     /* first write tag  (in real time) */
@@ -46,25 +43,23 @@ public class XMLParser {
     public int startRevision;
     /* endTransProcess in recording tag (in real time) */
     public int endProcess;
-    
     public String timespan;
-    
     /* transProcessComplete in recording tag */
     public boolean complete;
     /* concurrentVisibilitySTTT in recording tag */
     public boolean concurrentVisibility;
-
+    /* direction in recording tag */
+    public String direction;
     private String[] revisiontypes;
-    
     List<Tag> interrupts = new LinkedList<Tag>();
     List<Tag> consults = new LinkedList<Tag>();
+    List<Tag> consults2 = new LinkedList<Tag>();
     List<Tag> revisions = new LinkedList<Tag>();
     Tag writes;
     Tag accepts;
     Tag typos;
     Tag sourcetext;
     List<Tag> pauses = new LinkedList<Tag>(); // IL pauses and "normal" pauses
-    
 
     /**
      * Public constructor for a XMLParser.
@@ -73,7 +68,7 @@ public class XMLParser {
      * @throws SAXException
      * @throws IOException
      */
-    public XMLParser(File fxmlFile) 
+    public XMLParser(File fxmlFile)
             throws ParserConfigurationException, SAXException, IOException {
 
         initializeTagList();
@@ -84,14 +79,14 @@ public class XMLParser {
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         doc = dBuilder.parse(fxmlFile);
         doc.getDocumentElement().normalize();
-                
+
     }
-    
+
     /**
      * Initializes all of the tags.
      */
     private void initializeTagList() {
-        
+
         String[] searcheng = new String[]{"google", "yahoo", "bing"};
         String[] encyclopedias = new String[]{"wikipedia", "britannica", "encyclopedia"};
         String[] dictionaries = new String[]{"dict.cc", "leo", "pons", "collins", "colins",
@@ -102,7 +97,7 @@ public class XMLParser {
         String[] termbanks = new String[]{"iate.europa.eu",
             "web4.zhaw.ch/terminologie/online", "EUR-lex", "Eurovoc",
             "franceterme"};
-        
+
         String t = "interrupts";
         interrupts.add(new Tag("Private mail", t, "privatemail"));
         interrupts.add(new Tag("Job mail", t, "jobmail"));
@@ -110,20 +105,20 @@ public class XMLParser {
         interrupts.add(new Tag("Task", t, "task"));
         interrupts.add(new Tag("Workflow", t, "workflow"));
         interrupts.add(new Tag("Break", t, "break"));
-        
+
         String c = "consults";
         consults.add(new Tag("Search engines", c, "Search engines", searcheng));
         consults.add(new Tag("Online encyclopedias", c, "Online encyclopedias", encyclopedias));
         consults.add(new Tag("Online Dictionaries", c, "Online Dictionaries", dictionaries));
         consults.add(new Tag("Portals", c, "Portals", portals));
-        consults.add(new Tag("Termbanks", c, "Termbanks", termbanks));
-        consults.add(new Tag("Workflow context", c, "Workflow context", new String[] {"workflowcontext"}));
-        consults.add(new Tag("Workflow style guide", c, "Workflow style guide", new String[] {"workflowstyleguide"}));
-        consults.add(new Tag("Workflow glossary", c, "Workflow glossary", new String[] {"workflowglossary"}));
-        consults.add(new Tag("Workflow parallel text", c, "Workflow parallel text", new String[] {"workflowparalleltext"}));
-        consults.add(new Tag("Concordance", c, "Concordance", new String[] {"concordance"}));
-        consults.add(new Tag("Other Resources", c, "Other Resources", new String[] {}));
-        
+        consults2.add(new Tag("Termbanks", c, "Termbanks", termbanks));
+        consults2.add(new Tag("Workflow context", c, "Workflow context", new String[]{"workflowcontext"}));
+        consults2.add(new Tag("Workflow style guide", c, "Workflow style guide", new String[]{"workflowstyleguide"}));
+        consults2.add(new Tag("Workflow glossary", c, "Workflow glossary", new String[]{"workflowglossary"}));
+        consults2.add(new Tag("Workflow parallel text", c, "Workflow parallel text", new String[]{"workflowparalleltext"}));
+        consults2.add(new Tag("Concordance", c, "Concordance", new String[]{"concordance"}));
+        consults.add(new Tag("Other Resources", c, "Other Resources", new String[]{}));
+
         revisions.add(new Tag("deletes", "deletes", "revision"));
         revisions.add(new Tag("deletes", "deletes", "revision2"));
         revisions.add(new Tag("inserts", "inserts", "revision"));
@@ -138,12 +133,12 @@ public class XMLParser {
         revisions.add(new Tag("moves to", "moves to", "revision2"));
         revisions.add(new Tag("undoes", "undoes", "revision"));
         revisions.add(new Tag("undoes", "undoes", "revision2"));
-        
+
         writes = new Tag("Writes", "writes", "");
         accepts = new Tag("Accepts", "accepts", "match");
         typos = new Tag("Typos", "*", "Typo");
         sourcetext = new Tag("ST", "*", "ST");
-                
+
         String p = "ILpause";
         pauses.add(new Tag("No screen activity", "pause", "Simple"));
         pauses.add(new Tag("Looks at resource", p, "Consults"));
@@ -152,7 +147,7 @@ public class XMLParser {
         pauses.add(new Tag("Looks at TT", p, "ReadsTT"));
         pauses.add(new Tag("Looks at ST+TT", p, "ReadsST+TT"));
         pauses.add(new Tag("Focus unclear", p, "Unclear"));
-        
+
     }
 
     /**
@@ -163,6 +158,7 @@ public class XMLParser {
     public String check(int type, int start, int end) {
 
         String error = "";
+        String message = "";
         rootElement = doc.getDocumentElement();
         if (!rootElement.getNodeName().equalsIgnoreCase("document")) {
             error = error.concat("Missing document-Tag.\n");
@@ -175,7 +171,7 @@ public class XMLParser {
         }
 
         NodeList nl = doc.getElementsByTagName("recording");
-        
+
         if (nl.getLength() != 1) {
             error = error.concat("No recording information available or multiple recording elements.\n");
         } else {
@@ -192,11 +188,12 @@ public class XMLParser {
                 endProcess = 0;
                 error = error.concat("Missing endTransProcess attribute in recording tag.\n");
             }
-            
+
             if (recording.hasAttribute("startRevision")) {
                 String attr = recording.getAttribute("startRevision").trim();
                 if (attr.isEmpty()) {
                     //@TODO: Notify PERSON!!!
+                    message = message.concat("No revision phase");
                     startRevision = endProcess;
                 } else {
                     startRevision = convertToSeconds(attr);
@@ -215,28 +212,33 @@ public class XMLParser {
             } else {
                 error = error.concat("Missing concurrentVisibilitySTTT attribute in recording tag.\n");
             }
+            if (recording.hasAttribute("direction")) {
+                direction = recording.getAttribute("direction").trim();
+            } else {
+                error = error.concat("Missing direction attribute in recording tag.\n");
+            }
         }
-        
+
         startDrafting = endProcess;
         // Find startDrafting (i.e. first write occurence)
         NodeList incidentList = doc.getElementsByTagName("incident");
-        for (int i=0; i < incidentList.getLength(); i++) {
+        for (int i = 0; i < incidentList.getLength(); i++) {
             Element e = (Element) incidentList.item(i);
             if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
                 if (e.hasAttribute("start")) {
                     int time = convertToSeconds(e.getAttribute("start"));
                     if (time > startProcess && time < startDrafting) {
                         startDrafting = time - 1;
-                    } 
+                    }
                 }
             }
         }
-        
+
         System.out.println("Start process: " + startProcess);
         System.out.println("Start drafting: " + startDrafting);
         System.out.println("Start revision: " + startRevision);
         System.out.println("End process: " + endProcess);
-        
+
         if (type == 0) { // partial
             timespan = "Partial Process";
             startAdjustment = startProcess + start;
@@ -281,7 +283,6 @@ public class XMLParser {
         return time;
     }
 
-
     /**
      * Converts a time (String) of the format HH:MM:SS to seconds and adjusts
      * it to the adjustment start time.
@@ -292,7 +293,7 @@ public class XMLParser {
         int time = convertToSeconds(timestring);
         return time - startAdjustment;
     }
-    
+
     /**
      * Parses to whole document.
      */
@@ -300,27 +301,44 @@ public class XMLParser {
 
         // Find all incident tags and handle them accordingly
         NodeList incidentList = doc.getElementsByTagName("incident");
-        for (int i=0; i < incidentList.getLength(); i++) {
+        for (int i = 0; i < incidentList.getLength(); i++) {
             if (incidentList.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element e = (Element) incidentList.item(i);
-                handleIncident(e);
+                if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
+                    Element possible_typo = (Element) incidentList.item(i + 1);
+                    Element possible_write = (Element) incidentList.item(i + 2);
+                    boolean typo = possible_typo != null && (possible_typo.hasAttribute("subtype") && possible_typo.getAttribute("subtype").equalsIgnoreCase("typo"))
+                            || (possible_typo.hasAttribute("type") && possible_typo.getAttribute("type").equalsIgnoreCase("autocorrects"));
+                    boolean writes2 = possible_write != null && possible_write.hasAttribute("type") && possible_write.getAttribute("type").equalsIgnoreCase("writes");
+                    if (typo && writes2) {
+                        handle_two_step_write(e, possible_write);
+                        i++;
+                        i++;
+
+                    } else {
+                        handleIncident(e);
+                    }
+
+                } else {
+                    handleIncident(e);
+                }
             }
         }
     }
-    
+
     private void handleIncident(Element e) {
         int start = 0;
         int end = 0;
-        boolean time = true;
+
         if (e.hasAttribute("start")) {
             start = convertToReal(e.getAttribute("start")); // adjusted times
         } else {
-            time = false;
+            start = 0;
         }
 
         if (e.hasAttribute("end")) {
             end = convertToReal(e.getAttribute("end")); // adjusted times
-        } 
+        }
         if (end == 0 || end < start) {
             end = start;
         }
@@ -335,13 +353,43 @@ public class XMLParser {
             } else if (type.equalsIgnoreCase("interrupts")) {
                 handleInterrupts(e, times, length);
             } else if (Arrays.asList(revisiontypes).contains(type)) {
-                handleRevisions(e, times, time);
+                handleRevisions(e, times);
             } else if (type.equalsIgnoreCase("pause") || type.equalsIgnoreCase("ILpause")) {
                 handlePauses(e, times, length);
             } else if (type.equalsIgnoreCase("writes") || type.equalsIgnoreCase("accepts")) {
                 handleWrite(e, times, length);
             }
         }
+    }
+
+    private void handle_two_step_write(Element e, Element possible_write) {
+
+        int start = 0;
+        int end = 0;
+
+        if (e.hasAttribute("start")) {
+            start = convertToReal(e.getAttribute("start")); // adjusted times
+        } else {
+            start = 0;
+        }
+
+        if (possible_write.hasAttribute("end")) {
+            end = convertToReal(possible_write.getAttribute("end"));
+        } else if (possible_write.hasAttribute("start")) { // if the write does not have an end-tag, use the start tag
+            end = convertToReal(possible_write.getAttribute("start"));
+        }
+        if (end == 0 || end < start) {
+            end = start;
+        }
+
+        Integer[] times = {start, end};
+        int length = end - start;
+
+        writes.times.add(times);
+        if (length > 0) {
+            writes.lengths.add(length);
+        }
+
     }
 
     private void handleConsults(Element e, Integer[] times, int l) {
@@ -360,126 +408,136 @@ public class XMLParser {
         if (source.contains("wikipedia")) {
             source = "wikipedia";
         }
-        
-        // make a list of all of the sources used and the number of times
-        Boolean found = false;
-        for (Object[] o : sourcesList) {
-
-            if (o[0].equals(source)) {
-                found = true;
-                int prev = (Integer) o[1];
-                prev += 1;
-                o[1] = prev;
-            }
-        }
-        if (!found) {
-            sourcesList.add(new Object[]{source, 1});
-        }
 
         boolean classified = false;
-        
+
         for (Tag t : consults) {
             for (String item : t.src) {
-              if (source.contains(item)) {
-                  classified = true;
-                  t.times.add(times);
-                  t.lengths.add(l);
+                if (source.contains(item)) {
+                    classified = true;
+                    t.times.add(times);
+                    if (l > 0) {
+                        t.lengths.add(l);
+                    }
 
-              }  
+                }
             }
         }
-        
+
+        for (Tag t : consults2) {
+            for (String item : t.src) {
+                if (source.contains(item)) {
+                    classified = true;
+                    t.times.add(times);
+                    if (l > 0) {
+                        t.lengths.add(l);
+                    }
+
+                }
+            }
+        }
+
         if (!classified) {
             Tag o = consults.get(consults.size() - 1); // get the Other Resources Tag
             o.times.add(times);
-            o.lengths.add(l);
+            if (l > 0) {
+                o.lengths.add(l);
+            }
         }
 
     }
 
-    private void handleRevisions(Element e, Integer[] times, boolean time) {
+    private void handleRevisions(Element e, Integer[] times) {
 
-        int length = 0;
-        if (time) {
-            length = times[1] - times[0];
-        }
+        int length = times[1] - times[0];
 
         String type = e.getAttribute("type");
-        
+
         String subtype = "revision";
         if (e.hasAttribute("subtype")) {
             subtype = e.getAttribute("subtype");
         }
-        
+
         if (subtype.equalsIgnoreCase("typo") || type.equalsIgnoreCase("autocorrects")) {
             typos.times.add(times);
-            typos.lengths.add(length);
-        }
-        
-        else if (subtype.equalsIgnoreCase("ST")) {
-            sourcetext.times.add(times);
-            sourcetext.lengths.add(length);
-        }
-        else {
-        
-        for (Tag t : revisions) {
-            if (t.type.equalsIgnoreCase(type) && t.subtype.equalsIgnoreCase(subtype)) {
-                t.times.add(times);
-                t.lengths.add(length);
+            if (length > 0) {
+                typos.lengths.add(length);
             }
-        }
+        } else if (subtype.equalsIgnoreCase("ST")) {
+            sourcetext.times.add(times);
+            if (length > 0) {
+                sourcetext.lengths.add(length);
+            }
+        } else {
+
+            for (Tag t : revisions) {
+                if (t.type.equalsIgnoreCase(type) && t.subtype.equalsIgnoreCase(subtype)) {
+                    t.times.add(times);
+                    if (length > 0) {
+                        t.lengths.add(length);
+                    }
+                }
+            }
         }
     }
 
     private void handleInterrupts(Element e, Integer[] times, int l) {
-        
+
         String attr = e.getAttribute("subtype");
-        
-        for (int i=0; i < interrupts.size(); i++) {
+
+        for (int i = 0; i < interrupts.size(); i++) {
             if (attr.equalsIgnoreCase(interrupts.get(i).subtype)) {
                 interrupts.get(i).times.add(times);
-                interrupts.get(i).lengths.add(l);
+                if (l > 0) {
+                    interrupts.get(i).lengths.add(l);
+                }
             }
         }
-        
+
     }
 
     private void handlePauses(Element e, Integer[] times, int l) {
 
         String attr = e.getAttribute("type");
-        
+
         if (attr.equalsIgnoreCase("pause")) {
             for (Tag t : pauses) {
                 if (t.type.equalsIgnoreCase("pause")) {
                     t.times.add(times);
-                    t.lengths.add(l);
+                    if (l > 0) {
+                        t.lengths.add(l);
+                    }
                 }
             }
         }
-        
+
         if (attr.equalsIgnoreCase("ILpause") && e.hasAttribute("subtype")) {
             String type = e.getAttribute("subtype");
             for (Tag t : pauses) {
                 if (t.subtype.equalsIgnoreCase(type)) {
                     t.times.add(times);
-                    t.lengths.add(l);
+                    if (l > 0) {
+                        t.lengths.add(l);
+                    }
                 }
             }
         }
     }
 
     private void handleWrite(Element e, Integer[] times, int length) {
-        
+
         if (e.getAttribute("type").equalsIgnoreCase("writes")) {
             writes.times.add(times);
-            writes.lengths.add(length);
+            if (length > 0) {
+                writes.lengths.add(length);
+            }
 
         } else {
             accepts.times.add(times);
-            accepts.lengths.add(length);
+            if (length > 0) {
+                accepts.lengths.add(length);
+            }
         }
-        
+
     }
-
-
 }

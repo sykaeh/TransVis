@@ -116,7 +116,7 @@ public class MainApp extends SingleFrameApplication {
         int end = view.getEnd();
 
         int type = 0;
-        info = "Partial view (" + start + "sec - " + end + "sec)";
+        info = "Partial process";
         if (view.getComplete()) {
             info = "Complete process";
             type = 1;
@@ -305,62 +305,12 @@ public class MainApp extends SingleFrameApplication {
             }
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             view.reportError("Error while parsing document "
                     + f.getName() + ": \n" + ex.getMessage());
         }
         return parser;
 
-    }
-
-    /**
-     * Displays the list of sources (for consults) and the name of the process.
-     * @param parser the XMLParser containing all relevant data
-     * @param results the window displaying all results.
-     */
-    private void displaySingleSources(XMLParser parser, ResultsWindow results) {
-        results.setNameField(parser.name);
-        String sources = "";
-        for (Object[] o : parser.sourcesList) {
-            sources = sources.concat(String.format("%s (%dx)\n",
-                    o[0], (Integer) o[1]));
-        }
-        //results.setSourcesField(sources);
-    }
-
-    /**
-     * From the individual list of sources, combine all of the sources and
-     * calculate the total of processes that used each source.
-     * @param parsers list of XMLParsers containing all the relevant information
-     * @param results the window in which to display the results
-     */
-    private void displaycombinedSources(List<XMLParser> parsers,
-            ResultsWindow results) {
-
-        results.setNameField(String.format("Combined graph of %d processes",
-                parsers.size()));
-        String sources = "";
-        List<String> slist = new LinkedList<String>();
-        List<Integer> scount = new LinkedList<Integer>();
-
-        for (XMLParser p : parsers) {
-            for (Object[] o : p.sourcesList) {
-                String s = (String) o[0];
-                int index = slist.indexOf(s);
-                if (index != -1) {
-                    scount.set(index, scount.get(index) + 1);
-                } else {
-                    slist.add(s);
-                    scount.add(1);
-                }
-            }
-        }
-
-        for (int i = 0; i < slist.size(); i++) {
-            sources = sources.concat(String.format("%s (%d process(es))\n",
-                    slist.get(i), scount.get(i)));
-        }
-
-        //results.setSourcesField(sources);
     }
 
     /**
@@ -420,7 +370,7 @@ public class MainApp extends SingleFrameApplication {
             for (Integer[] times : p.typos.times) {
                 addToProcess(typos, times, pos + 3);
             }
-            
+
             XYSeries revisions = new XYSeries("revisions " + p.name);
             // All revisions
             for (Tag t : p.revisions) {
@@ -460,7 +410,7 @@ public class MainApp extends SingleFrameApplication {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames);
+        r.drawGraph(chart, annotList, processNames, 7);
 
     }
 
@@ -475,18 +425,38 @@ public class MainApp extends SingleFrameApplication {
         if (parsers.isEmpty()) {
             return;
         }
+
         int size = parsers.size() + 2;
         double step = 1.0 / size;
         String nameField = parsers.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
+
+        boolean workplace = false;
+        for (XMLParser p : parsers) {
+            for (Tag t : p.consults2) {
+                if (!t.times.isEmpty()) {
+                    workplace = true;
+                }
+            }
+        }
+
         int numtypes = parsers.get(0).consults.size();
+        if (workplace) {
+            numtypes += parsers.get(0).consults2.size();
+        }
 
         int ypos = numtypes;
         List<Object[]> annotList = new LinkedList<Object[]>();
         for (Tag t : parsers.get(0).consults) {
             annotList.add((new Object[]{t.name, ypos}));
             ypos--;
+        }
+        if (workplace) {
+            for (Tag t : parsers.get(0).consults2) {
+                annotList.add((new Object[]{t.name, ypos}));
+                ypos--;
+            }
         }
 
         List<String> processNames = new LinkedList<String>();
@@ -507,6 +477,16 @@ public class MainApp extends SingleFrameApplication {
                 data.addSeries(consults);
                 i--;
             }
+            if (workplace) {
+                for (Tag t : p.consults2) {
+                    XYSeries consults = new XYSeries(t.subtype + " " + p.name);
+                    for (Integer[] times : t.times) {
+                        addToProcess(consults, times, i + pos);
+                    }
+                    data.addSeries(consults);
+                    i--;
+                }
+            }
 
             pos -= step;
         }
@@ -515,7 +495,7 @@ public class MainApp extends SingleFrameApplication {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames);
+        r.drawGraph(chart, annotList, processNames, numtypes + 1);
 
     }
 
@@ -570,7 +550,7 @@ public class MainApp extends SingleFrameApplication {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames);
+        r.drawGraph(chart, annotList, processNames, numtypes + 1);
 
     }
 
@@ -619,19 +599,19 @@ public class MainApp extends SingleFrameApplication {
                         || (t.subtype.equalsIgnoreCase("revision"))) {
                     if (t.type.equalsIgnoreCase("inserts")) {
                         for (Integer[] times : t.times) {
-                            addToProcess(ins, times, 3 + pos);
+                            addToProcess(ins, times, 2 + pos);
                         }
                     } else if (t.type.equalsIgnoreCase("deletes")) {
                         for (Integer[] times : t.times) {
-                            addToProcess(del, times, 2 + pos);
+                            addToProcess(del, times, 1 + pos);
                         }
                     } else if (t.type.equalsIgnoreCase("pastes")) {
                         for (Integer[] times : t.times) {
-                            addToProcess(pas, times, 1 + pos);
+                            addToProcess(pas, times, 0 + pos);
                         }
                     } else if (t.type.equalsIgnoreCase("moves to")) {
                         for (Integer[] times : t.times) {
-                            addToProcess(pas, times, 1 + pos);
+                            addToProcess(pas, times, 0 + pos);
                         }
                     }
                 }
@@ -650,7 +630,7 @@ public class MainApp extends SingleFrameApplication {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames);
+        r.drawGraph(chart, annotList, processNames, numtypes);
 
     }
 
@@ -670,6 +650,15 @@ public class MainApp extends SingleFrameApplication {
         String nameField = parsers.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
+
+        boolean workplace = false;
+        for (XMLParser p : parsers) {
+            for (Tag t : p.consults2) {
+                if (!t.times.isEmpty()) {
+                    workplace = true;
+                }
+            }
+        }
 
         int ypos = 1;
         List<Object[]> annotList = new LinkedList<Object[]>();
@@ -718,25 +707,27 @@ public class MainApp extends SingleFrameApplication {
         }
         if (view.getIndConsults()) {
 
+            if (workplace) {
+                annotList.add((new Object[]{"Concordance", ypos}));
+                ypos++;
+                annotList.add((new Object[]{"Workflow parallel text", ypos}));
+                ypos++;
+                annotList.add((new Object[]{"Workflow glossary", ypos}));
+                ypos++;
+                annotList.add((new Object[]{"Workflow style guide", ypos}));
+                ypos++;
+                annotList.add((new Object[]{"Workflow context", ypos}));
+                ypos++;
+                annotList.add((new Object[]{"Termbanks", ypos}));
+                ypos++;
+            }
             annotList.add((new Object[]{"Other Resources", ypos}));
-            ypos++;
-            annotList.add((new Object[]{"Concordance", ypos}));
-            ypos++;
-            annotList.add((new Object[]{"Workflow parallel text", ypos}));
-            ypos++;
-            annotList.add((new Object[]{"Workflow glossary", ypos}));
-            ypos++;
-            annotList.add((new Object[]{"Workflow style guide", ypos}));
-            ypos++;
-            annotList.add((new Object[]{"Workflow context", ypos}));
-            ypos++;
-            annotList.add((new Object[]{"Termbanks", ypos}));
             ypos++;
             annotList.add((new Object[]{"Portals", ypos}));
             ypos++;
-            annotList.add((new Object[]{"Dictionaries", ypos}));
+            annotList.add((new Object[]{"Online Dictionaries", ypos}));
             ypos++;
-            annotList.add((new Object[]{"Encyclopedias", ypos}));
+            annotList.add((new Object[]{"Online Encyclopedias", ypos}));
             ypos++;
             annotList.add((new Object[]{"Search engines", ypos}));
             ypos++;
@@ -877,6 +868,16 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getIndConsults()) {
                 int temp = i;
+                if (workplace) {
+                    for (Tag t : p.consults2) {
+                        XYSeries consults = new XYSeries(t.subtype + " " + p.name);
+                        for (Integer[] times : t.times) {
+                            addToProcess(consults, times, ((2 * temp) + p.consults2.size() - 1 - i) + pos);
+                        }
+                        data.addSeries(consults);
+                        i++;
+                    }
+                }
                 for (Tag t : p.consults) {
                     XYSeries consults = new XYSeries(t.subtype + " " + p.name);
                     for (Integer[] times : t.times) {
@@ -928,7 +929,7 @@ public class MainApp extends SingleFrameApplication {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames);
+        r.drawGraph(chart, annotList, processNames, ypos);
 
     }
 

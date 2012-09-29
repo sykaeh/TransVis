@@ -28,7 +28,7 @@ import org.jfree.ui.TextAnchor;
 public class ResultsWindow extends javax.swing.JFrame {
 
     private List<Color> colorlist = new LinkedList<Color>();
-    
+
     /** Creates new form ResultsWindow */
     public ResultsWindow() {
         initComponents();
@@ -51,7 +51,7 @@ public class ResultsWindow extends javax.swing.JFrame {
     public void setNameField(String name) {
         processNameField.setText(name);
     }
-    
+
     public void setInfo(String info) {
         importantInfo.setText(info);
     }
@@ -61,21 +61,21 @@ public class ResultsWindow extends javax.swing.JFrame {
      * @param chart the chart to be displayed.
      * @param list the labels to be added
      */
-    public void drawGraph(JFreeChart chart, List<Object[]> list, 
-            List<String> processes) {
+    public void drawGraph(JFreeChart chart, List<Object[]> list,
+            List<String> processes, double ymax) {
 
         //chart.removeLegend();
-        
+
         XYPlot plot = chart.getXYPlot();
         plot.setBackgroundPaint(Color.white);
         plot.setDomainGridlinePaint(Color.lightGray);
         plot.setRangeGridlinePaint(Color.lightGray);
         ValueAxis yax = plot.getRangeAxis();
-        yax.setRange(0, yax.getUpperBound() + 0.5);
+        yax.setRange(0, ymax - 0.5);
         yax.setVisible(false);
-        
+
         ValueAxis xax = plot.getDomainAxis();
-        xax.setRange(0, xax.getUpperBound());
+        xax.setRange(0, xax.getUpperBound() + 1);
 
         XYTextAnnotation annot;
         for (Object[] o : list) {
@@ -89,28 +89,28 @@ public class ResultsWindow extends javax.swing.JFrame {
         }
 
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        
+
         float lineWidth = 2.5f;
         BasicStroke stroke = new BasicStroke(lineWidth);
 
-        
+
         LegendItemCollection chartLegend = new LegendItemCollection();
         Shape shape = new Rectangle(10, 2);
-        
+
         Color c;
-        for (int n=0; n < processes.size(); n++) {
+        for (int n = 0; n < processes.size(); n++) {
             if (n < 9) {
                 c = colorlist.get(n);
             } else {
                 c = getRandomColor();
             }
-            for (int i=0; i < list.size(); i++) {
-                int seriesnum = n*list.size() + i;
+            for (int i = 0; i < list.size(); i++) {
+                int seriesnum = n * list.size() + i;
                 renderer.setSeriesShapesVisible(seriesnum, false);
 
                 renderer.setSeriesPaint(seriesnum, c);
                 renderer.setSeriesStroke(seriesnum, stroke);
-                
+
             }
             chartLegend.add(new LegendItem(processes.get(n), null, null, null, shape, c));
         }
@@ -123,27 +123,25 @@ public class ResultsWindow extends javax.swing.JFrame {
         ChartPanel panel = new ChartPanel(chart);
         panel.setPreferredSize(new java.awt.Dimension(900, 630));
         panel.setVisible(true);
-                
+
         jInternalFrame1.setContentPane(panel);
         jInternalFrame1.pack();
         jInternalFrame1.setVisible(true);
     }
 
-   
-   private Color getRandomColor() {
-       
-       Random numGen = new Random();
-       Color new_color = new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
-       int n = 0;
-       while (colorlist.contains(new_color) && n < 25) {
-           new_color = new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
-           n++;
-       }
-       colorlist.add(new_color);
-       return new_color;
-   }
-    
-    
+    private Color getRandomColor() {
+
+        Random numGen = new Random();
+        Color new_color = new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
+        int n = 0;
+        while (colorlist.contains(new_color) && n < 25) {
+            new_color = new Color(numGen.nextInt(256), numGen.nextInt(256), numGen.nextInt(256));
+            n++;
+        }
+        colorlist.add(new_color);
+        return new_color;
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -217,8 +215,6 @@ public class ResultsWindow extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel importantInfo;
     private javax.swing.JInternalFrame jInternalFrame1;
