@@ -55,11 +55,10 @@ public class XMLParser {
     List<Tag> consults = new LinkedList<Tag>();
     List<Tag> consults2 = new LinkedList<Tag>();
     List<Tag> revisions = new LinkedList<Tag>();
-    Tag writes;
-    Tag accepts;
+    List<Tag> productions = new LinkedList<Tag>(); // writes_short, writes_long, writes_typo, accepts
+    List<Tag> pauses = new LinkedList<Tag>(); // IL pauses and "normal" pauses
     Tag typos;
     Tag sourcetext;
-    List<Tag> pauses = new LinkedList<Tag>(); // IL pauses and "normal" pauses
 
     /**
      * Public constructor for a XMLParser.
@@ -72,8 +71,8 @@ public class XMLParser {
             throws ParserConfigurationException, SAXException, IOException {
 
         initializeTagList();
-        revisiontypes = new String[]{"deletes", "inserts", "cuts", "pastes",
-            "moves from", "moves to", "undoes", "autocorrects"};
+        revisiontypes = new String[]{"deletes", "inserts", "pastes",
+            "moves to", "undoes", "autocorrects"};
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -123,19 +122,18 @@ public class XMLParser {
         revisions.add(new Tag("deletes", "deletes", "revision2"));
         revisions.add(new Tag("inserts", "inserts", "revision"));
         revisions.add(new Tag("inserts", "inserts", "revision2"));
-        revisions.add(new Tag("cuts", "cuts", "revision"));
-        revisions.add(new Tag("cuts", "cuts", "revision2"));
         revisions.add(new Tag("pastes", "pastes", "revision"));
         revisions.add(new Tag("pastes", "pastes", "revision2"));
-        revisions.add(new Tag("moves from", "moves from", "revision"));
-        revisions.add(new Tag("moves from", "moves from", "revision2"));
         revisions.add(new Tag("moves to", "moves to", "revision"));
         revisions.add(new Tag("moves to", "moves to", "revision2"));
         revisions.add(new Tag("undoes", "undoes", "revision"));
         revisions.add(new Tag("undoes", "undoes", "revision2"));
 
-        writes = new Tag("Writes", "writes", "");
-        accepts = new Tag("Accepts", "accepts", "match");
+        productions.add(new Tag("Accepts", "accepts", "match")); // 3
+        productions.add(new Tag("Writes (with typo)", "writes", "with typo")); // 2
+        productions.add(new Tag("Writes (with time)", "writes", "with time"));  // 1
+        productions.add(new Tag("Writes (no time)", "writes", "no time")); // 0
+
         typos = new Tag("Typos", "*", "Typo");
         sourcetext = new Tag("ST", "*", "ST");
 
@@ -312,6 +310,7 @@ public class XMLParser {
                     boolean writes2 = possible_write != null && possible_write.hasAttribute("type") && possible_write.getAttribute("type").equalsIgnoreCase("writes");
                     if (typo && writes2) {
                         handle_two_step_write(e, possible_write);
+                        handleIncident(possible_typo);
                         i++;
                         i++;
 
@@ -385,10 +384,8 @@ public class XMLParser {
         Integer[] times = {start, end};
         int length = end - start;
 
-        writes.times.add(times);
-        if (length > 0) {
-            writes.lengths.add(length);
-        }
+        productions.get(2).times.add(times);
+        productions.get(2).lengths.add(length);
 
     }
 
@@ -526,16 +523,22 @@ public class XMLParser {
 
     private void handleWrite(Element e, Integer[] times, int length) {
 
-        if (e.getAttribute("type").equalsIgnoreCase("writes")) {
-            writes.times.add(times);
-            if (length > 0) {
-                writes.lengths.add(length);
-            }
+        if (e.getAttribute("type").equalsIgnoreCase("accepts")
+                && e.hasAttribute("subtype")
+                && e.getAttribute("subtype").equalsIgnoreCase("match")) {
+            productions.get(3).times.add(times);
+            productions.get(3).lengths.add(length);
+        }
 
-        } else {
-            accepts.times.add(times);
+
+        if (e.getAttribute("type").equalsIgnoreCase("writes")) {
             if (length > 0) {
-                accepts.lengths.add(length);
+                productions.get(1).times.add(times);
+                productions.get(1).lengths.add(length);
+
+            } else {
+                productions.get(0).times.add(times);
+                productions.get(0).lengths.add(length);
             }
         }
 

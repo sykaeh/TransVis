@@ -88,66 +88,6 @@ public class ExcelDocument {
             label = new Label(4, i, p.timespan);
             sheet.addCell(label);
 
-            // Writes Lengths
-            p.writes.getStats();
-            if (p.writes.getTotalNum() > 0) {
-
-                num = new Number(9, i, p.startDrafting - p.startProcess);
-                sheet.addCell(num);
-                if (p.writes.getTotalTime() == 0) {
-                    label = new Label(10, i, "< 5");
-                    sheet.addCell(label);
-                } else if (p.writes.getTotalTime() < 0) {
-                    label = new Label(10, i, "n/a");
-                    sheet.addCell(label);
-                } else {
-                    num = new Number(10, i, p.writes.getTotalTime());
-                    sheet.addCell(num);
-                }
-                if (p.writes.getMinLength() == 0) {
-                    label = new Label(11, i, "< 5");
-                    sheet.addCell(label);
-                                    } else if (p.writes.getMinLength() < 0) {
-                    label = new Label(11, i, "n/a");
-                    sheet.addCell(label);
-                } else {
-                    num = new Number(11, i, p.writes.getMinLength());
-                    sheet.addCell(num);
-                }
-                if (p.writes.getMaxLength() == 0) {
-                    label = new Label(12, i, "< 5");
-                    sheet.addCell(label);
-                } else if (p.writes.getMaxLength() < 0) {
-                    label = new Label(12, i, "n/a");
-                    sheet.addCell(label);
-                } else {
-                    num = new Number(12, i, p.writes.getMaxLength());
-                    sheet.addCell(num);
-                }
-                if (p.writes.getAvgLength() == 0) {
-                    label = new Label(13, i, "< 5");
-                    sheet.addCell(label);
-                } else if (p.writes.getAvgLength() < 0) {
-                    label = new Label(13, i, "n/a");
-                    sheet.addCell(label);
-                } else {
-                    num = new Number(13, i, p.writes.getAvgLength());
-                    sheet.addCell(num);
-                }
-            } else {
-                label = new Label(9, i, "n/a");
-                sheet.addCell(label);
-                label = new Label(10, i, "n/a");
-                sheet.addCell(label);
-                label = new Label(11, i, "n/a");
-                sheet.addCell(label);
-                label = new Label(12, i, "n/a");
-                sheet.addCell(label);
-                label = new Label(13, i, "n/a");
-                sheet.addCell(label);
-            }
-
-
             // Pauses
             addPauses(sheet, p, i);
 
@@ -159,43 +99,42 @@ public class ExcelDocument {
             num = new Number(34, i, p.typos.getTotalNum());
             sheet.addCell(num);
 
-
             // Revisions
             addRevisions(sheet, p, i);
 
             // Writes & Accepts
-            p.writes.getStats();
-            p.accepts.getStats();
-            num = new Number(51, i, p.writes.getTotalNum() + p.accepts.getTotalNum());
-            sheet.addCell(num);
-
-            num = new Number(52, i, p.writes.getTotalNum());
-            sheet.addCell(num);
-            num = new Number(53, i, p.accepts.getTotalNum());
-            sheet.addCell(num);
+            addProductions(sheet, p, i);
 
             // Sourcetext
             p.sourcetext.getStats();
-            num = new Number(54, i, p.sourcetext.getTotalNum());
+            num = new Number(51, i, p.sourcetext.getTotalNum());
             sheet.addCell(num);
 
             // Interrupts
-            if (pro) {
+            if (false) {
                 addInterrupts(sheet, p, i);
             }
 
             // End information
+            num = new Number(52, i, p.lengthProcess);
+            sheet.addCell(num);
+            
             String complete;
             if (p.complete) {
                 complete = "yes";
             } else {
                 complete = "no";
             }
-            label = new Label(62, i, complete);
+            label = new Label(53, i, complete);
             sheet.addCell(label);
-            num = new Number(63, i, p.startRevision - p.startProcess);
-            sheet.addCell(num);
-            label = new Label(64, i, p.direction);
+            if (p.startRevision == p.endProcess) {
+                label = new Label(54, i, "n.a.");
+                sheet.addCell(label);
+            } else {
+                num = new Number(54, i, p.startRevision - p.startProcess);
+                sheet.addCell(num);
+            }
+            label = new Label(55, i, p.direction);
             sheet.addCell(label);
             String concurrent;
             if (p.concurrentVisibility) {
@@ -204,11 +143,106 @@ public class ExcelDocument {
                 concurrent = "no";
             }
 
-            label = new Label(65, i, concurrent);
+            label = new Label(56, i, concurrent);
             sheet.addCell(label);
 
             i++;
         }
+
+    }
+
+    private void addProductions(WritableSheet sheet, XMLParser p, int i) throws WriteException {
+
+        Number num = new Number(0, 0, 0);
+        Label label;
+
+        for (Tag t : p.productions) {
+            t.getStats();
+        }
+
+        // all writing 51
+        num = new Number(47, i, p.productions.get(0).getTotalNum()
+                + p.productions.get(1).getTotalNum() + p.productions.get(2).getTotalNum());
+        sheet.addCell(num);
+
+        num = new Number(48, i, p.productions.get(0).getTotalNum());
+        sheet.addCell(num);
+        num = new Number(49, i, p.productions.get(1).getTotalNum() + p.productions.get(2).getTotalNum());
+        sheet.addCell(num);
+        num = new Number(50, i, p.productions.get(2).getTotalNum());
+        sheet.addCell(num);
+
+
+        int totalnum1 = p.productions.get(1).getTotalNum();
+        int totalnum2 = p.productions.get(2).getTotalNum();
+        int totaltime1, totaltime2;
+        int minlength1, minlength2;
+        int maxlength1, maxlength2;
+        if (totalnum1 > 0) {
+            totaltime1 = p.productions.get(1).getTotalTime();
+            minlength1 = p.productions.get(1).getMinLength();
+            maxlength1 = p.productions.get(1).getMaxLength();
+        } else {
+            totaltime1 = 0;
+            minlength1 = 99999;
+            maxlength1 = 0;
+        }
+
+        if (totalnum2 > 0) {
+            totaltime2 = p.productions.get(2).getTotalTime();
+            minlength2 = p.productions.get(2).getMinLength();
+            maxlength2 = p.productions.get(2).getMaxLength();
+        } else {
+            totaltime2 = 0;
+            minlength2 = 99999;
+            maxlength2 = 0;
+        }
+
+        int totaltime = totaltime1 + totaltime2;
+        int maxlength = Math.max(maxlength1, maxlength2);
+        int minlength = Math.min(minlength1, minlength2);
+
+        if (totalnum1 > 0 || totalnum2 > 0 || p.productions.get(0).getTotalNum() > 0) {
+            if (p.startDrafting == p.endProcess) {
+               label = new Label(9, i, "n/a");
+            sheet.addCell(label); 
+            } else {
+            num = new Number(9, i, p.startDrafting - p.startProcess);
+            sheet.addCell(num);
+            }
+        } else {
+            label = new Label(9, i, "n/a");
+            sheet.addCell(label);
+        }
+
+
+        if (p.productions.get(0).getTotalNum() > 0 || minlength < 5) {
+            label = new Label(11, i, "< 5");
+            sheet.addCell(label);
+        } else {
+            num = new Number(11, i, minlength);
+        }
+
+        if (totalnum1 > 0 || totalnum2 > 0) {
+            num = new Number(10, i, totaltime);
+            sheet.addCell(num);
+            num = new Number(12, i, maxlength);
+            sheet.addCell(num);
+            double avglength = (double) totaltime / (totalnum1 + totalnum2);
+            num = new Number(13, i, avglength);
+            sheet.addCell(num);
+        } else {
+
+            label = new Label(10, i, "n/a");
+            sheet.addCell(label);
+            label = new Label(11, i, "n/a");
+            sheet.addCell(label);
+            label = new Label(12, i, "n/a");
+            sheet.addCell(label);
+            label = new Label(13, i, "n/a");
+            sheet.addCell(label);
+        }
+
 
     }
 
@@ -241,26 +275,18 @@ public class ExcelDocument {
                 num1 = new Number(39, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("inserts") && t.subtype.equalsIgnoreCase("revision2")) {
                 num1 = new Number(40, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("cuts") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(41, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("cuts") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(42, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("pastes") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(43, i, t.getTotalNum());
+                num1 = new Number(41, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("pastes") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(44, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("moves from") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(45, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("moves from") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(46, i, t.getTotalNum());
+                num1 = new Number(42, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("moves to") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(47, i, t.getTotalNum());
+                num1 = new Number(43, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("moves to") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(48, i, t.getTotalNum());
+                num1 = new Number(44, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("undoes") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(49, i, t.getTotalNum());
+                num1 = new Number(45, i, t.getTotalNum());
             } else if (t.type.equalsIgnoreCase("undoes") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(50, i, t.getTotalNum());
+                num1 = new Number(46, i, t.getTotalNum());
             }
             sheet.addCell(num1);
         }

@@ -387,11 +387,10 @@ public class MainApp extends SingleFrameApplication {
 
             XYSeries writing = new XYSeries("writing " + p.name);
             // All TT writing
-            for (Integer[] times : p.writes.times) {
-                addToProcess(writing, times, pos + 1);
-            }
-            for (Integer[] times : p.accepts.times) {
-                addToProcess(writing, times, pos + 1);
+            for (Tag t : p.productions) {
+                for (Integer[] times : t.times) {
+                    addToProcess(writing, times, pos + 1);
+                }
             }
             data.addSeries(writing);
 
@@ -779,12 +778,12 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getWriting()) {
                 XYSeries writing = new XYSeries("writing " + p.name);
-                for (Integer[] times : p.writes.times) {
-                    addToProcess(writing, times, pos + i);
+                for (Tag t : p.productions) {
+                    for (Integer[] times : t.times) {
+                        addToProcess(writing, times, pos + 1);
+                    }
                 }
-                for (Integer[] times : p.accepts.times) {
-                    addToProcess(writing, times, pos + i);
-                }
+
                 data.addSeries(writing);
                 i++;
             }
