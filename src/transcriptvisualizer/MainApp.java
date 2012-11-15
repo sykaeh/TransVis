@@ -88,10 +88,10 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
             if (view.getIndividualGraphs() && view.fileList.size() > 1) {
-                for (XMLParser p : parsers) {
-                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                for (Transcript p : parsers) {
+                    List<Transcript> plist = new LinkedList<Transcript>();
                     plist.add(p);
                     ResultsWindow r = new ResultsWindow();
                     displayMainGraph(plist, r);
@@ -110,7 +110,7 @@ public class MainApp extends SingleFrameApplication {
      * Iterate through the list of files and parse each file.
      * @return a List of XMLParsers
      */
-    private List<XMLParser> parseFiles() {
+    private List<Transcript> parseFiles() {
 
         int start = view.getStart();
         int end = view.getEnd();
@@ -131,9 +131,9 @@ public class MainApp extends SingleFrameApplication {
             type = 4;
         }
 
-        List<XMLParser> parsers = new LinkedList<XMLParser>();
+        List<Transcript> parsers = new LinkedList<Transcript>();
         for (File f : view.fileList) {
-            XMLParser p = analyzeFile(f, type, start, end);
+            Transcript p = analyzeFile(f, type, start, end);
             if (p != null) {
                 parsers.add(p);
             }
@@ -150,10 +150,10 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
             if (view.getIndividualGraphs() && view.fileList.size() > 1) {
-                for (XMLParser p : parsers) {
-                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                for (Transcript p : parsers) {
+                    List<Transcript> plist = new LinkedList<Transcript>();
                     plist.add(p);
                     ResultsWindow r = new ResultsWindow();
                     displayConsultsGraph(plist, r);
@@ -176,10 +176,10 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
             if (view.getIndividualGraphs() && view.fileList.size() > 1) {
-                for (XMLParser p : parsers) {
-                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                for (Transcript p : parsers) {
+                    List<Transcript> plist = new LinkedList<Transcript>();
                     plist.add(p);
                     ResultsWindow r = new ResultsWindow();
                     displayRevisionGraph(plist, r);
@@ -203,10 +203,10 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
             if (view.getIndividualGraphs() && view.fileList.size() > 1) {
-                for (XMLParser p : parsers) {
-                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                for (Transcript p : parsers) {
+                    List<Transcript> plist = new LinkedList<Transcript>();
                     plist.add(p);
                     ResultsWindow r = new ResultsWindow();
                     displayPausesGraph(plist, r);
@@ -230,10 +230,10 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
             if (view.getIndividualGraphs() && view.fileList.size() > 1) {
-                for (XMLParser p : parsers) {
-                    List<XMLParser> plist = new LinkedList<XMLParser>();
+                for (Transcript p : parsers) {
+                    List<Transcript> plist = new LinkedList<Transcript>();
                     plist.add(p);
                     ResultsWindow r = new ResultsWindow();
                     displayCustomGraph(plist, r);
@@ -257,7 +257,7 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
         }
     }
 
@@ -272,10 +272,10 @@ public class MainApp extends SingleFrameApplication {
             saveStatsFile = view.showSaveFileChooser();
         }
         if (saveStatsFile != null) {
-            List<XMLParser> parsers = parseFiles();
+            List<Transcript> parsers = parseFiles();
             try {
                 ExcelDocument e = new ExcelDocument(parsers, saveStatsFile);
-                String errormsg = e.makeExcelFile();
+                String errormsg = e.makeExcelFile(true, false);
                 if (!errormsg.isEmpty()) {
                     view.reportError(errormsg);
                 }
@@ -289,13 +289,13 @@ public class MainApp extends SingleFrameApplication {
      * Generates a single graph with the corresponding statistical data
      * in a separate window.
      * @param f the file containing the transcript
-     * @return the XMLParser generated
+     * @return the Transcript generated
      */
-    private XMLParser analyzeFile(File f, int type, int start, int end) {
+    private Transcript analyzeFile(File f, int type, int start, int end) {
 
-        XMLParser parser = null;
+        Transcript parser = null;
         try {
-            parser = new XMLParser(f);
+            parser = new Transcript(f);
             String error = parser.check(type, start, end);
             if (!error.isEmpty()) {
                 view.reportError("Error while parsing document "
@@ -319,7 +319,7 @@ public class MainApp extends SingleFrameApplication {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r the result window where the graph should be displayed
      */
-    private void displayMainGraph(List<XMLParser> parsers, ResultsWindow r) {
+    private void displayMainGraph(List<Transcript> parsers, ResultsWindow r) {
 
         if (parsers.isEmpty()) {
             return;
@@ -342,14 +342,14 @@ public class MainApp extends SingleFrameApplication {
 
         double pos = 1 - step;
 
-        for (XMLParser p : parsers) {
+        for (Transcript p : parsers) {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
 
             XYSeries pauses = new XYSeries("pauses " + p.name);
             // the pauses
-            for (Tag t : p.pauses) {
+            for (IncidentList t : p.pauses) {
                 for (Integer[] times : t.times) {
                     addToProcess(pauses, times, pos + 5);
                 }
@@ -358,7 +358,7 @@ public class MainApp extends SingleFrameApplication {
 
             XYSeries consults = new XYSeries("consults " + p.name);
             // All consultations
-            for (Tag t : p.consults) {
+            for (IncidentList t : p.consults) {
                 for (Integer[] times : t.times) {
                     addToProcess(consults, times, pos + 4);
                 }
@@ -373,7 +373,7 @@ public class MainApp extends SingleFrameApplication {
 
             XYSeries revisions = new XYSeries("revisions " + p.name);
             // All revisions
-            for (Tag t : p.revisions) {
+            for (IncidentList t : p.revisions) {
                 for (Integer[] times : t.times) {
                     if (t.subtype.equalsIgnoreCase("revision") || t.subtype.equalsIgnoreCase("revision2")) {
                         addToProcess(revisions, times, pos + 2);
@@ -387,7 +387,7 @@ public class MainApp extends SingleFrameApplication {
 
             XYSeries writing = new XYSeries("writing " + p.name);
             // All TT writing
-            for (Tag t : p.productions) {
+            for (IncidentList t : p.productions) {
                 for (Integer[] times : t.times) {
                     addToProcess(writing, times, pos + 1);
                 }
@@ -419,7 +419,7 @@ public class MainApp extends SingleFrameApplication {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r the result window where the graph should be displayed
      */
-    private void displayConsultsGraph(List<XMLParser> parsers, ResultsWindow r) {
+    private void displayConsultsGraph(List<Transcript> parsers, ResultsWindow r) {
 
         if (parsers.isEmpty()) {
             return;
@@ -432,8 +432,8 @@ public class MainApp extends SingleFrameApplication {
         XYSeriesCollection data = new XYSeriesCollection();
 
         boolean workplace = false;
-        for (XMLParser p : parsers) {
-            for (Tag t : p.consults2) {
+        for (Transcript p : parsers) {
+            for (IncidentList t : p.consults2) {
                 if (!t.times.isEmpty()) {
                     workplace = true;
                 }
@@ -447,12 +447,12 @@ public class MainApp extends SingleFrameApplication {
 
         int ypos = numtypes;
         List<Object[]> annotList = new LinkedList<Object[]>();
-        for (Tag t : parsers.get(0).consults) {
+        for (IncidentList t : parsers.get(0).consults) {
             annotList.add((new Object[]{t.name, ypos}));
             ypos--;
         }
         if (workplace) {
-            for (Tag t : parsers.get(0).consults2) {
+            for (IncidentList t : parsers.get(0).consults2) {
                 annotList.add((new Object[]{t.name, ypos}));
                 ypos--;
             }
@@ -462,13 +462,13 @@ public class MainApp extends SingleFrameApplication {
 
         double pos = 1 - step;
 
-        for (XMLParser p : parsers) {
+        for (Transcript p : parsers) {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
             int i = numtypes - 1;
             // All consultations
-            for (Tag t : p.consults) {
+            for (IncidentList t : p.consults) {
                 XYSeries consults = new XYSeries(t.subtype + " " + p.name);
                 for (Integer[] times : t.times) {
                     addToProcess(consults, times, i + pos);
@@ -477,7 +477,7 @@ public class MainApp extends SingleFrameApplication {
                 i--;
             }
             if (workplace) {
-                for (Tag t : p.consults2) {
+                for (IncidentList t : p.consults2) {
                     XYSeries consults = new XYSeries(t.subtype + " " + p.name);
                     for (Integer[] times : t.times) {
                         addToProcess(consults, times, i + pos);
@@ -504,7 +504,7 @@ public class MainApp extends SingleFrameApplication {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r the result window where the graph should be displayed
      */
-    private void displayPausesGraph(List<XMLParser> parsers, ResultsWindow r) {
+    private void displayPausesGraph(List<Transcript> parsers, ResultsWindow r) {
 
         if (parsers.isEmpty()) {
             return;
@@ -518,7 +518,7 @@ public class MainApp extends SingleFrameApplication {
 
         int ypos = numtypes;
         List<Object[]> annotList = new LinkedList<Object[]>();
-        for (Tag t : parsers.get(0).pauses) {
+        for (IncidentList t : parsers.get(0).pauses) {
             annotList.add((new Object[]{t.name, ypos}));
             ypos--;
         }
@@ -527,13 +527,13 @@ public class MainApp extends SingleFrameApplication {
 
         double pos = 1 - step;
 
-        for (XMLParser p : parsers) {
+        for (Transcript p : parsers) {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
             int i = numtypes - 1;
             // All pauses
-            for (Tag t : p.pauses) {
+            for (IncidentList t : p.pauses) {
                 XYSeries pauses = new XYSeries(t.subtype + " " + p.name);
                 for (Integer[] times : t.times) {
                     addToProcess(pauses, times, i + pos);
@@ -559,7 +559,7 @@ public class MainApp extends SingleFrameApplication {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r the result window where the graph should be displayed
      */
-    private void displayRevisionGraph(List<XMLParser> parsers, ResultsWindow r) {
+    private void displayRevisionGraph(List<Transcript> parsers, ResultsWindow r) {
 
         if (parsers.isEmpty()) {
             return;
@@ -584,7 +584,7 @@ public class MainApp extends SingleFrameApplication {
         XYSeries del;
         XYSeries pas;
         XYSeries cut;
-        for (XMLParser p : parsers) {
+        for (Transcript p : parsers) {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
@@ -593,7 +593,7 @@ public class MainApp extends SingleFrameApplication {
             del = new XYSeries("deletions " + p.name);
             pas = new XYSeries("pastes " + p.name);
 
-            for (Tag t : p.revisions) {
+            for (IncidentList t : p.revisions) {
                 if ((view.getCombinedRevisions() && t.subtype.equalsIgnoreCase("revision2"))
                         || (t.subtype.equalsIgnoreCase("revision"))) {
                     if (t.type.equalsIgnoreCase("inserts")) {
@@ -639,7 +639,7 @@ public class MainApp extends SingleFrameApplication {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r the result window where the graph should be displayed
      */
-    private void displayCustomGraph(List<XMLParser> parsers, ResultsWindow r) {
+    private void displayCustomGraph(List<Transcript> parsers, ResultsWindow r) {
 
         if (parsers.isEmpty()) {
             return;
@@ -651,8 +651,8 @@ public class MainApp extends SingleFrameApplication {
         XYSeriesCollection data = new XYSeriesCollection();
 
         boolean workplace = false;
-        for (XMLParser p : parsers) {
-            for (Tag t : p.consults2) {
+        for (Transcript p : parsers) {
+            for (IncidentList t : p.consults2) {
                 if (!t.times.isEmpty()) {
                     workplace = true;
                 }
@@ -761,7 +761,7 @@ public class MainApp extends SingleFrameApplication {
 
         double pos = 1 - step;
 
-        for (XMLParser p : parsers) {
+        for (Transcript p : parsers) {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
@@ -778,7 +778,7 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getWriting()) {
                 XYSeries writing = new XYSeries("writing " + p.name);
-                for (Tag t : p.productions) {
+                for (IncidentList t : p.productions) {
                     for (Integer[] times : t.times) {
                         addToProcess(writing, times, pos + 1);
                     }
@@ -790,7 +790,7 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getIndInterrupts()) {
                 int temp = i;
-                for (Tag t : p.interrupts) {
+                for (IncidentList t : p.interrupts) {
                     XYSeries interrupts = new XYSeries(t.subtype + " " + p.name);
                     for (Integer[] times : t.times) {
                         addToProcess(interrupts, times, ((2 * temp) + p.interrupts.size() - 1 - i) + pos);
@@ -802,7 +802,7 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getInterrupts()) {
                 XYSeries interrupt = new XYSeries("interrupts " + p.name);
-                for (Tag t : p.interrupts) {
+                for (IncidentList t : p.interrupts) {
                     for (Integer[] times : t.times) {
                         addToProcess(interrupt, times, pos + i);
                     }
@@ -816,7 +816,7 @@ public class MainApp extends SingleFrameApplication {
                 XYSeries del = new XYSeries("deletions " + p.name);
                 XYSeries pas = new XYSeries("pastes " + p.name);
 
-                for (Tag t : p.revisions) {
+                for (IncidentList t : p.revisions) {
                     if ((view.getCombinedRevisions() && t.subtype.equalsIgnoreCase("revision2"))
                             || (t.subtype.equalsIgnoreCase("revision"))) {
                         if (t.type.equalsIgnoreCase("inserts")) {
@@ -847,7 +847,7 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getRevisions()) {
                 XYSeries revisions = new XYSeries("revisions " + p.name);
-                for (Tag t : p.revisions) {
+                for (IncidentList t : p.revisions) {
                     for (Integer[] times : t.times) {
                         addToProcess(revisions, times, pos + i);
                     }
@@ -868,7 +868,7 @@ public class MainApp extends SingleFrameApplication {
             if (view.getIndConsults()) {
                 int temp = i;
                 if (workplace) {
-                    for (Tag t : p.consults2) {
+                    for (IncidentList t : p.consults2) {
                         XYSeries consults = new XYSeries(t.subtype + " " + p.name);
                         for (Integer[] times : t.times) {
                             addToProcess(consults, times, ((2 * temp) + p.consults2.size() - 1 - i) + pos);
@@ -877,7 +877,7 @@ public class MainApp extends SingleFrameApplication {
                         i++;
                     }
                 }
-                for (Tag t : p.consults) {
+                for (IncidentList t : p.consults) {
                     XYSeries consults = new XYSeries(t.subtype + " " + p.name);
                     for (Integer[] times : t.times) {
                         addToProcess(consults, times, ((2 * temp) + p.consults.size() - 1 - i) + pos);
@@ -888,7 +888,7 @@ public class MainApp extends SingleFrameApplication {
             }
             if (view.getConsults()) {
                 XYSeries consults = new XYSeries("consults " + p.name);
-                for (Tag t : p.consults) {
+                for (IncidentList t : p.consults) {
                     for (Integer[] times : t.times) {
                         addToProcess(consults, times, pos + i);
                     }
@@ -899,7 +899,7 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getIndPauses()) {
                 int temp = i;
-                for (Tag t : p.pauses) {
+                for (IncidentList t : p.pauses) {
                     XYSeries pauses = new XYSeries(t.subtype + " " + p.name);
                     for (Integer[] times : t.times) {
                         addToProcess(pauses, times, ((2 * temp) + p.pauses.size() - 1 - i) + pos);
@@ -911,7 +911,7 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getPauses()) {
                 XYSeries pauses = new XYSeries("pauses " + p.name);
-                for (Tag t : p.pauses) {
+                for (IncidentList t : p.pauses) {
                     for (Integer[] times : t.times) {
                         addToProcess(pauses, times, pos + i);
                     }

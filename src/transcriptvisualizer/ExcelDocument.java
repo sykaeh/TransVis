@@ -16,19 +16,19 @@ import jxl.write.Number;
  */
 public class ExcelDocument {
 
-    private List<XMLParser> parserList;
+    private List<Transcript> parserList;
     private File ofile;
     private boolean pro;
     private final static Logger LOGGER = Logger.getLogger("TranVis");
 
-    ExcelDocument(List<XMLParser> parsers, File outputfile) {
+    ExcelDocument(List<Transcript> parsers, File outputfile) {
 
         parserList = parsers;
         ofile = outputfile;
         pro = true;
     }
 
-    public String makeExcelFile() {
+    public String makeExcelFile(boolean stats, boolean data) {
 
         try {
             // Create an appending file handler
@@ -38,14 +38,23 @@ public class ExcelDocument {
         }
 
         try {
-            LOGGER.log(Level.INFO, "Getting template.xls");
-            Workbook originalworkbook = Workbook.getWorkbook(new File("template.xls"));
+            Workbook originalworkbook;
+            if (stats) {
+                LOGGER.log(Level.INFO, "Getting template.xls");
+                originalworkbook = Workbook.getWorkbook(new File("template.xls"));
+            } else {
+                LOGGER.log(Level.INFO, "Getting template_allTags.xls");
+                originalworkbook = Workbook.getWorkbook(new File("template_allTags.xls"));
+            }
             LOGGER.log(Level.INFO, "Creating new workbook");
             WritableWorkbook workbook = Workbook.createWorkbook(ofile, originalworkbook);
             WritableSheet sheet = workbook.getSheet(0);
 
-            fillSheet(sheet);
-
+            if (stats) {
+                fillStats(sheet);
+            } else {
+                fillData(sheet);
+            }
 
             LOGGER.log(Level.INFO, "Writing");
             workbook.write();
@@ -58,8 +67,12 @@ public class ExcelDocument {
 
         }
     }
-
-    private void fillSheet(WritableSheet sheet) throws WriteException {
+    
+    private void fillData(WritableSheet sheet) {
+        
+    }
+    
+    private void fillStats(WritableSheet sheet) throws WriteException {
 
         Label label;
         Number num;
@@ -67,7 +80,7 @@ public class ExcelDocument {
 
         int i = 4;
 
-        for (XMLParser p : parserList) {
+        for (Transcript p : parserList) {
 
 
             // Basic information
@@ -151,12 +164,12 @@ public class ExcelDocument {
 
     }
 
-    private void addProductions(WritableSheet sheet, XMLParser p, int i) throws WriteException {
+    private void addProductions(WritableSheet sheet, Transcript p, int i) throws WriteException {
 
         Number num = new Number(0, 0, 0);
         Label label;
 
-        for (Tag t : p.productions) {
+        for (IncidentList t : p.productions) {
             t.getStats();
         }
 
@@ -253,13 +266,13 @@ public class ExcelDocument {
      * @param i
      * @param j
      */
-    private void addRevisions(WritableSheet sheet, XMLParser p, int i) throws WriteException {
+    private void addRevisions(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num1 = new Number(0, 0, 0);
 
         int numrev = 0;
         int numrev2 = 0;
 
-        for (Tag t : p.revisions) {
+        for (IncidentList t : p.revisions) {
             t.getStats();
             if (t.subtype.equalsIgnoreCase("revision")) {
                 numrev += t.getTotalNum();
@@ -305,12 +318,12 @@ public class ExcelDocument {
      * @param j
      * @throws WriteException
      */
-    private void addInterrupts(WritableSheet sheet, XMLParser p, int i) throws WriteException {
+    private void addInterrupts(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num1 = new Number(0, 0, 0);
 
         int total = 0;
 
-        for (Tag t : p.interrupts) {
+        for (IncidentList t : p.interrupts) {
             t.getStats();
 
             if (t.subtype.equalsIgnoreCase("privatemail")) {
@@ -343,12 +356,12 @@ public class ExcelDocument {
      * @param j
      * @throws WriteException
      */
-    private void addPauses(WritableSheet sheet, XMLParser p, int i) throws WriteException {
+    private void addPauses(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num1 = new Number(0, 0, 0);
 
         int total = 0;
 
-        for (Tag t : p.pauses) {
+        for (IncidentList t : p.pauses) {
             t.getStats();
             if (t.type.equalsIgnoreCase("pause")) {
                 num1 = new Number(15, i, t.getTotalNum());
@@ -381,7 +394,7 @@ public class ExcelDocument {
      * @param j
      * @throws WriteException
      */
-    private void addConsults(WritableSheet sheet, XMLParser p, int i) throws WriteException {
+    private void addConsults(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num1 = new Number(0, 0, 0);
 
         int totaltime = 0;
@@ -390,7 +403,7 @@ public class ExcelDocument {
         int longest = 0;
 
 
-        for (Tag t : p.consults) {
+        for (IncidentList t : p.consults) {
             t.getStats();
 
             totalnum += t.getTotalNum();
@@ -419,7 +432,7 @@ public class ExcelDocument {
             sheet.addCell(num1);
         }
 
-        for (Tag t : p.consults2) {
+        for (IncidentList t : p.consults2) {
             t.getStats();
 
             totalnum += t.getTotalNum();

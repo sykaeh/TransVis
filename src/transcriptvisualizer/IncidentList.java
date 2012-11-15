@@ -4,14 +4,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Tag class for the TranVis tool.
+ * IncidentList class for the TranVis tool.
  * @author Sybil Ehrensberger
  * @version 0.2
  */
-public class Tag {
+public class IncidentList {
 
     public List<Integer[]> times;
     public List<Integer> lengths;
+    
     public String type;
     public String name;
     public String subtype;
@@ -23,6 +24,10 @@ public class Tag {
     private int firstTime;
     private int lastTime;
     public int count;
+    
+    public List<Incident> elements;
+    public IncidentType maintype;
+    public IncidentType ssubtype;
 
     /**
      * Public constructor
@@ -30,7 +35,7 @@ public class Tag {
      * @param subt the subtype of the tag
      * @param sources list of sources (only for the 'consults' tag)
      */
-    public Tag(String n, String t, String subt, String[] sources) {
+    public IncidentList(String n, String t, String subt, String[] sources) {
 
         type = t;
         name = n;
@@ -46,7 +51,7 @@ public class Tag {
      * @param t type of tag
      * @param subt subtype of tag
      */
-    public Tag(String n, String t, String subt) {
+    public IncidentList(String n, String t, String subt) {
 
         type = t;
         name = n;
@@ -58,7 +63,7 @@ public class Tag {
     }
 
     /**
-     * Calculate all of the relevant statistics pertaining to this Tag and
+     * Calculate all of the relevant statistics pertaining to this IncidentList and
      * save them in the appropriate fields.
      */
     public void getStats() {

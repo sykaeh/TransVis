@@ -18,56 +18,74 @@ import org.xml.sax.SAXException;
  *
  * @author Sybil Ehrensberger
  */
-public class XMLParser {
+public class Transcript {
 
     /* The name of the file to be analyzed. */
     public String name;
+    
+    public String participant;
+    public String group;
+    public String competence;
+    public String version;
+    public String sourcetextname;
+    public String experiment;
+    
+    /* direction in recording tag */
+    public String direction;
+    public int startTransProcess;
+    public int endTransProcess;
+    /* transProcessComplete in recording tag */
+    public boolean complete;
+    
+    /* concurrentVisibilitySTTT in recording tag */
+    public boolean concurrentVisibility;
+    
+    /* first write tag  (in real time) */
+    public int startDrafting;
+    /* startRevision in recording tag (in real time) */
+    public int startRevision;
+
+    // OLD STUFF
+    
     /* The total length of the process. */
     public int lengthProcess;
     /* The total length of the time span we're looking at. */
     public int lengthAdjustment;
 
-    /* List of all of the sources for the consults. */
-    public List<Object[]> sourcesList = new LinkedList<Object[]>();
-    private Document doc;
-    private Element rootElement;
     /* Adjustment time in real time*/
     public int startAdjustment;
     /* last time to show in real time */
     public int endAdjustment;
     /* startTransProcess in recording tag (in real time) */
     public int startProcess;
-    /* first write tag  (in real time) */
-    public int startDrafting;
-    /* startRevision in recording tag (in real time) */
-    public int startRevision;
+
     /* endTransProcess in recording tag (in real time) */
     public int endProcess;
     public String timespan;
-    /* transProcessComplete in recording tag */
-    public boolean complete;
-    /* concurrentVisibilitySTTT in recording tag */
-    public boolean concurrentVisibility;
-    /* direction in recording tag */
-    public String direction;
+    
+
+
+    private Document doc;
+    private Element rootElement;
+    
     private String[] revisiontypes;
-    List<Tag> interrupts = new LinkedList<Tag>();
-    List<Tag> consults = new LinkedList<Tag>();
-    List<Tag> consults2 = new LinkedList<Tag>();
-    List<Tag> revisions = new LinkedList<Tag>();
-    List<Tag> productions = new LinkedList<Tag>(); // writes_short, writes_long, writes_typo, accepts
-    List<Tag> pauses = new LinkedList<Tag>(); // IL pauses and "normal" pauses
-    Tag typos;
-    Tag sourcetext;
+    List<IncidentList> interrupts = new LinkedList<IncidentList>();
+    List<IncidentList> consults = new LinkedList<IncidentList>();
+    List<IncidentList> consults2 = new LinkedList<IncidentList>();
+    List<IncidentList> revisions = new LinkedList<IncidentList>();
+    List<IncidentList> productions = new LinkedList<IncidentList>(); // writes_short, writes_long, writes_typo, accepts
+    List<IncidentList> pauses = new LinkedList<IncidentList>(); // IL pauses and "normal" pauses
+    IncidentList typos;
+    IncidentList sourcetext;
 
     /**
-     * Public constructor for a XMLParser.
+     * Public constructor for a Transcript.
      * @param fxmlFile the file to be parsed.
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
      */
-    public XMLParser(File fxmlFile)
+    public Transcript(File fxmlFile)
             throws ParserConfigurationException, SAXException, IOException {
 
         initializeTagList();
@@ -81,6 +99,10 @@ public class XMLParser {
 
     }
 
+    private void parseFileName() {
+        
+    }
+    
     /**
      * Initializes all of the tags.
      */
@@ -98,53 +120,53 @@ public class XMLParser {
             "franceterme"};
 
         String t = "interrupts";
-        interrupts.add(new Tag("Private mail", t, "privatemail"));
-        interrupts.add(new Tag("Job mail", t, "jobmail"));
-        interrupts.add(new Tag("Internet", t, "internet"));
-        interrupts.add(new Tag("Task", t, "task"));
-        interrupts.add(new Tag("Workflow", t, "workflow"));
-        interrupts.add(new Tag("Break", t, "break"));
+        interrupts.add(new IncidentList("Private mail", t, "privatemail"));
+        interrupts.add(new IncidentList("Job mail", t, "jobmail"));
+        interrupts.add(new IncidentList("Internet", t, "internet"));
+        interrupts.add(new IncidentList("Task", t, "task"));
+        interrupts.add(new IncidentList("Workflow", t, "workflow"));
+        interrupts.add(new IncidentList("Break", t, "break"));
 
         String c = "consults";
-        consults.add(new Tag("Search engines", c, "Search engines", searcheng));
-        consults.add(new Tag("Online encyclopedias", c, "Online encyclopedias", encyclopedias));
-        consults.add(new Tag("Online Dictionaries", c, "Online Dictionaries", dictionaries));
-        consults.add(new Tag("Portals", c, "Portals", portals));
-        consults2.add(new Tag("Termbanks", c, "Termbanks", termbanks));
-        consults2.add(new Tag("Workflow context", c, "Workflow context", new String[]{"workflowcontext"}));
-        consults2.add(new Tag("Workflow style guide", c, "Workflow style guide", new String[]{"workflowstyleguide"}));
-        consults2.add(new Tag("Workflow glossary", c, "Workflow glossary", new String[]{"workflowglossary"}));
-        consults2.add(new Tag("Workflow parallel text", c, "Workflow parallel text", new String[]{"workflowparalleltext"}));
-        consults2.add(new Tag("Concordance", c, "Concordance", new String[]{"concordance"}));
-        consults.add(new Tag("Other Resources", c, "Other Resources", new String[]{}));
+        consults.add(new IncidentList("Search engines", c, "Search engines", searcheng));
+        consults.add(new IncidentList("Online encyclopedias", c, "Online encyclopedias", encyclopedias));
+        consults.add(new IncidentList("Online Dictionaries", c, "Online Dictionaries", dictionaries));
+        consults.add(new IncidentList("Portals", c, "Portals", portals));
+        consults2.add(new IncidentList("Termbanks", c, "Termbanks", termbanks));
+        consults2.add(new IncidentList("Workflow context", c, "Workflow context", new String[]{"workflowcontext"}));
+        consults2.add(new IncidentList("Workflow style guide", c, "Workflow style guide", new String[]{"workflowstyleguide"}));
+        consults2.add(new IncidentList("Workflow glossary", c, "Workflow glossary", new String[]{"workflowglossary"}));
+        consults2.add(new IncidentList("Workflow parallel text", c, "Workflow parallel text", new String[]{"workflowparalleltext"}));
+        consults2.add(new IncidentList("Concordance", c, "Concordance", new String[]{"concordance"}));
+        consults.add(new IncidentList("Other Resources", c, "Other Resources", new String[]{}));
 
-        revisions.add(new Tag("deletes", "deletes", "revision"));
-        revisions.add(new Tag("deletes", "deletes", "revision2"));
-        revisions.add(new Tag("inserts", "inserts", "revision"));
-        revisions.add(new Tag("inserts", "inserts", "revision2"));
-        revisions.add(new Tag("pastes", "pastes", "revision"));
-        revisions.add(new Tag("pastes", "pastes", "revision2"));
-        revisions.add(new Tag("moves to", "moves to", "revision"));
-        revisions.add(new Tag("moves to", "moves to", "revision2"));
-        revisions.add(new Tag("undoes", "undoes", "revision"));
-        revisions.add(new Tag("undoes", "undoes", "revision2"));
+        revisions.add(new IncidentList("deletes", "deletes", "revision"));
+        revisions.add(new IncidentList("deletes", "deletes", "revision2"));
+        revisions.add(new IncidentList("inserts", "inserts", "revision"));
+        revisions.add(new IncidentList("inserts", "inserts", "revision2"));
+        revisions.add(new IncidentList("pastes", "pastes", "revision"));
+        revisions.add(new IncidentList("pastes", "pastes", "revision2"));
+        revisions.add(new IncidentList("moves to", "moves to", "revision"));
+        revisions.add(new IncidentList("moves to", "moves to", "revision2"));
+        revisions.add(new IncidentList("undoes", "undoes", "revision"));
+        revisions.add(new IncidentList("undoes", "undoes", "revision2"));
 
-        productions.add(new Tag("Accepts", "accepts", "match")); // 3
-        productions.add(new Tag("Writes (with typo)", "writes", "with typo")); // 2
-        productions.add(new Tag("Writes (with time)", "writes", "with time"));  // 1
-        productions.add(new Tag("Writes (no time)", "writes", "no time")); // 0
+        productions.add(new IncidentList("Accepts", "accepts", "match")); // 3
+        productions.add(new IncidentList("Writes (with typo)", "writes", "with typo")); // 2
+        productions.add(new IncidentList("Writes (with time)", "writes", "with time"));  // 1
+        productions.add(new IncidentList("Writes (no time)", "writes", "no time")); // 0
 
-        typos = new Tag("Typos", "*", "Typo");
-        sourcetext = new Tag("ST", "*", "ST");
+        typos = new IncidentList("Typos", "*", "Typo");
+        sourcetext = new IncidentList("ST", "*", "ST");
 
         String p = "ILpause";
-        pauses.add(new Tag("No screen activity", "pause", "Simple"));
-        pauses.add(new Tag("Looks at resource", p, "Consults"));
-        pauses.add(new Tag("Looks at task", p, "ReadsTask"));
-        pauses.add(new Tag("Looks at ST", p, "ReadsST"));
-        pauses.add(new Tag("Looks at TT", p, "ReadsTT"));
-        pauses.add(new Tag("Looks at ST+TT", p, "ReadsST+TT"));
-        pauses.add(new Tag("Focus unclear", p, "Unclear"));
+        pauses.add(new IncidentList("No screen activity", "pause", "Simple"));
+        pauses.add(new IncidentList("Looks at resource", p, "Consults"));
+        pauses.add(new IncidentList("Looks at task", p, "ReadsTask"));
+        pauses.add(new IncidentList("Looks at ST", p, "ReadsST"));
+        pauses.add(new IncidentList("Looks at TT", p, "ReadsTT"));
+        pauses.add(new IncidentList("Looks at ST+TT", p, "ReadsST+TT"));
+        pauses.add(new IncidentList("Focus unclear", p, "Unclear"));
 
     }
 
@@ -287,7 +309,7 @@ public class XMLParser {
      * @param timestring a String representing a time (HH:MM:SS)
      * @return an int representing the time in seconds
      */
-    private int convertToReal(String timestring) {
+    public int convertToReal(String timestring) {
         int time = convertToSeconds(timestring);
         return time - startAdjustment;
     }
@@ -408,7 +430,7 @@ public class XMLParser {
 
         boolean classified = false;
 
-        for (Tag t : consults) {
+        for (IncidentList t : consults) {
             for (String item : t.src) {
                 if (source.contains(item)) {
                     classified = true;
@@ -421,7 +443,7 @@ public class XMLParser {
             }
         }
 
-        for (Tag t : consults2) {
+        for (IncidentList t : consults2) {
             for (String item : t.src) {
                 if (source.contains(item)) {
                     classified = true;
@@ -435,7 +457,7 @@ public class XMLParser {
         }
 
         if (!classified) {
-            Tag o = consults.get(consults.size() - 1); // get the Other Resources Tag
+            IncidentList o = consults.get(consults.size() - 1); // get the Other Resources IncidentList
             o.times.add(times);
             if (l > 0) {
                 o.lengths.add(l);
@@ -467,7 +489,7 @@ public class XMLParser {
             }
         } else {
 
-            for (Tag t : revisions) {
+            for (IncidentList t : revisions) {
                 if (t.type.equalsIgnoreCase(type) && t.subtype.equalsIgnoreCase(subtype)) {
                     t.times.add(times);
                     if (length > 0) {
@@ -498,7 +520,7 @@ public class XMLParser {
         String attr = e.getAttribute("type");
 
         if (attr.equalsIgnoreCase("pause")) {
-            for (Tag t : pauses) {
+            for (IncidentList t : pauses) {
                 if (t.type.equalsIgnoreCase("pause")) {
                     t.times.add(times);
                     if (l > 0) {
@@ -510,7 +532,7 @@ public class XMLParser {
 
         if (attr.equalsIgnoreCase("ILpause") && e.hasAttribute("subtype")) {
             String type = e.getAttribute("subtype");
-            for (Tag t : pauses) {
+            for (IncidentList t : pauses) {
                 if (t.subtype.equalsIgnoreCase(type)) {
                     t.times.add(times);
                     if (l > 0) {
