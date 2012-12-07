@@ -88,8 +88,8 @@ public class ExcelDocument {
             label = new Label(0, i, p.name);
             sheet.addCell(label);
 
-            int starttime = p.startAdjustment - p.startProcess;
-            int endtime = p.endAdjustment - p.startProcess;
+            float starttime = p.startAdjustment - p.startProcess;
+            float endtime = p.endAdjustment - p.startProcess;
 
             num = new Number(1, i, starttime);
             sheet.addCell(num);
@@ -108,8 +108,8 @@ public class ExcelDocument {
             addConsults(sheet, p, i);
 
             // Typos
-            p.typos.getStats();
-            num = new Number(34, i, p.typos.getTotalNum());
+            //p.typos.getStats();
+            //num = new Number(34, i, p.typos.getTotalNum());
             sheet.addCell(num);
 
             // Revisions
@@ -119,8 +119,8 @@ public class ExcelDocument {
             addProductions(sheet, p, i);
 
             // Sourcetext
-            p.sourcetext.getStats();
-            num = new Number(51, i, p.sourcetext.getTotalNum());
+            //p.sourcetext.getStats();
+            //num = new Number(51, i, p.sourcetext.getTotalNum());
             sheet.addCell(num);
 
             // Interrupts
@@ -166,6 +166,7 @@ public class ExcelDocument {
 
     private void addProductions(WritableSheet sheet, Transcript p, int i) throws WriteException {
 
+        /*
         Number num = new Number(0, 0, 0);
         Label label;
 
@@ -255,6 +256,8 @@ public class ExcelDocument {
             label = new Label(13, i, "n/a");
             sheet.addCell(label);
         }
+         * 
+         */
 
 
     }
@@ -272,6 +275,7 @@ public class ExcelDocument {
         int numrev = 0;
         int numrev2 = 0;
 
+        /*
         for (IncidentList t : p.revisions) {
             t.getStats();
             if (t.subtype.equalsIgnoreCase("revision")) {
@@ -308,6 +312,8 @@ public class ExcelDocument {
         sheet.addCell(num1);
         num1 = new Number(36, i, numrev);
         sheet.addCell(num1);
+         * 
+         */
     }
 
     /**
@@ -323,6 +329,7 @@ public class ExcelDocument {
 
         int total = 0;
 
+        /*
         for (IncidentList t : p.interrupts) {
             t.getStats();
 
@@ -346,6 +353,8 @@ public class ExcelDocument {
 
         num1 = new Number(55, i, total);
         sheet.addCell(num1);
+         * 
+         */
     }
 
     /**
@@ -361,6 +370,7 @@ public class ExcelDocument {
 
         int total = 0;
 
+        /*
         for (IncidentList t : p.pauses) {
             t.getStats();
             if (t.type.equalsIgnoreCase("pause")) {
@@ -384,6 +394,8 @@ public class ExcelDocument {
 
         num1 = new Number(14, i, total);
         sheet.addCell(num1);
+         * 
+         */
     }
 
     /**
@@ -397,12 +409,12 @@ public class ExcelDocument {
     private void addConsults(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num1 = new Number(0, 0, 0);
 
-        int totaltime = 0;
-        int totalnum = 0;
-        int shortest = p.lengthProcess;
-        int longest = 0;
+        float totaltime = 0;
+        float totalnum = 0;
+        float shortest = p.lengthProcess;
+        float longest = 0;
 
-
+/*
         for (IncidentList t : p.consults) {
             t.getStats();
 
@@ -488,6 +500,8 @@ public class ExcelDocument {
 
         num1 = new Number(22, i, totalnum);
         sheet.addCell(num1);
+ * 
+ */
 
     }
 }

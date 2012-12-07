@@ -7,53 +7,68 @@ package transcriptvisualizer;
 public enum IncidentType {
     
     // Main types
-    CONSULTATION,
-    INTERRUPTION,
-    PAUSE,
-    SOURCETEXT,     
-    TYPOS,
-    PRODUCTION,
-    REVISION,
-    UNDEFINED,
+    CONSULTATION ("Consultations"),
+    INTERRUPTION ("Interruptions"),
+    PAUSE ("Pauses"),
+    SOURCETEXT ("Sourcetext"),     
+    TYPOS ("Typos"),
+    PRODUCTION ("Production"),
+    REVISION ("Revisions"),
+    UNDEFINED ("Undefined"),
+    NOSUBGROUP (""),
+    
+    // Subtypes consultations
+    C_SEARCHENG ("Search engines"),
+    C_ENCYCLOPEDIA ("Online encyclopedias"),
+    C_DICTIONARY ("Online dictionaries"),
+    C_PORTALS ("Portals"),
+    C_TERMBANKS ("Termbanks"),
+    C_WFCONTEXT ("Workflow context"),
+    C_WFSTYLEGUIDE ("Workflow style guide"),
+    C_WFGLOSSARY ("Workflow glossary"),
+    C_WFPARALLELTEXT ("Workflow parallel text"),
+    C_CONCORDANCE ("Concordance"),
+    C_OTHER ("Other Resources"),
     
     // Subtypes interruption
-    PRIVATEMAIL,    // <incident type="interrupts" subtype="privatemail">
-    JOBMAIL,        // <incident type="interrupts" subtype="jobmail">
-    INTERNET,       // <incident type="interrupts" subtype="internet">
-    TASK,           // <incident type="interrupts" subtype="task">
-    WORKFLOW,       // <incident type="interrupts" subtype="workflow">
-    BREAK,          // <incident type="interrupts" subtype="break">
+    I_PRIVATEMAIL ("Private mail"), // <incident type="interrupts" subtype="privatemail">
+    I_JOBMAIL ("Job mail"),         // <incident type="interrupts" subtype="jobmail">
+    I_INTERNET ("Internet"),        // <incident type="interrupts" subtype="internet">
+    I_TASK ("Task"),                // <incident type="interrupts" subtype="task">
+    I_WORKFLOW ("Workflow"),        // <incident type="interrupts" subtype="workflow">
+    I_BREAK ("Break"),              // <incident type="interrupts" subtype="break">
     
     // Subtypes pause
-    SIMPLE,         // <incident type="pause">
-    CONSULTS,       // <incident type="ILPause" subtype="consults">
-    READSTASK,      // <incident type="ILPause" subtype="readsTask">
-    READSST,        // <incident type="ILPause" subtype="readsST">
-    READSTT,        // <incident type="ILPause" subtype="readsTT">
-    READSSTTT,      // <incident type="ILPause" subtype="readsST+TT">
-    UNCLEAR,        // <incident type="ILPause" subtype="unclear">
+    P_SIMPLE ("No screen activity"),    // <incident type="pause">
+    P_CONSULTS ("Looks at resource"),   // <incident type="ILPause" subtype="consults">
+    P_READSTASK ("Looks at task"),      // <incident type="ILPause" subtype="readsTask">
+    P_READSST ("Looks at ST"),          // <incident type="ILPause" subtype="readsST">
+    P_READSTT ("Looks at TT"),          // <incident type="ILPause" subtype="readsTT">
+    P_READSSTTT ("Looks at ST+TT"),     // <incident type="ILPause" subtype="readsST+TT">
+    P_UNCLEAR ("Focus unclear"),        // <incident type="ILPause" subtype="unclear">
     
-    // Subtypes typos
-    REVISIONTYPOS,  // <incident type="(see revision)" subtype="typos">
-    AUTOCORRECTS,   // <incident type="autocorrects" subtype="(anything)">
-    
+        
     // Subtype production
+    PR_WRITENOTIME ("Writes no time"),    // <incident type="writes" >
+    PR_WRITETYPO ("Writes with a typo"),
+    PR_WRITE ("Writes"),
+    PR_MATCH ("Match"),     // <incident type="accepts" subtype="match">
     
     // Subtypes revision
-    DELETES1,       // <incident type="deletes" subtype="revision">
-    INSERTS1,       // <incident type="inserts" subtype="revision">
-    CUTS1,          // <incident type="cuts" subtype="revision">
-    PASTES1,        // <incident type="pastes" subtype="revision">
-    UNDOES1,        // <incident type="undoes" subtype="revision">
-    MOVESFROM1,     // <incident type="moves from" subtype="revision">
-    MOVESTO1,       // <incident type="moves to" subtype="revision">
+    R_DELETES ("Deletes"),         // <incident type="deletes" subtype="(revision|revision2)">
+    R_INSERTS ("Inserts"),         // <incident type="inserts" subtype="(revision|revision2)">
+    //R_CUTS ("Cuts"),               // <incident type="cuts" subtype="(revision|revision2)">
+    R_PASTES ("Pastes"),           // <incident type="pastes" subtype="(revision|revision2)">
+    R_UNDOES ("Undoes"),           // <incident type="undoes" subtype="(revision|revision2)">
+    //R_MOVESFROM ("Moves from"),    // <incident type="moves from" subtype="(revision|revision2)">
+    R_MOVESTO ("Moves to"),        // <incident type="moves to" subtype="(revision|revision2)">
     
-    DELETES2,       // <incident type="deletes" subtype="revision2">
-    INSERTS2,       // <incident type="inserts" subtype="revision2">
-    CUTS2,          // <incident type="cuts" subtype="revision2">
-    PASTES2,        // <incident type="pastes" subtype="revision2">
-    UNDOES2,        // <incident type="undoes" subtype="revision2">
-    MOVESFROM2,     // <incident type="moves from" subtype="revision2">
-    MOVESTO2,       // <incident type="moves to" subtype="revision2">
+    R_REVISION ("Revision"),        // <incident type="(revision)" subtype="revision">
+    R_REVISION2 ("Revision 2");     // <incident type="(revision)" subtype="revision2">
+        
+    public final String descr;
+    IncidentType(String descr) {
+        this.descr = descr;
+    }
      
 }

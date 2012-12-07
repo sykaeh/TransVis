@@ -26,9 +26,25 @@ public class IncidentList {
     public int count;
     
     public List<Incident> elements;
-    public IncidentType maintype;
-    public IncidentType ssubtype;
+    public IncidentType group;
 
+    
+    public IncidentList(IncidentType main) {
+        group = main;
+        elements = new LinkedList<Incident>();
+
+    }
+    
+    public void add(Incident i) {
+        elements.add(i);
+        
+    }
+    
+    public int noElements() {
+        return elements.size();
+    }
+    
+    
     /**
      * Public constructor
      * @param t the type of the tag 

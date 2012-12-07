@@ -3,6 +3,7 @@ package transcriptvisualizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -22,52 +23,47 @@ public class Transcript {
 
     /* The name of the file to be analyzed. */
     public String name;
-    
     public String participant;
     public String group;
     public String competence;
     public String version;
     public String sourcetextname;
     public String experiment;
-    
     /* direction in recording tag */
     public String direction;
-    public int startTransProcess;
-    public int endTransProcess;
+    public float startTransProcess;
+    public float endTransProcess;
     /* transProcessComplete in recording tag */
     public boolean complete;
-    
     /* concurrentVisibilitySTTT in recording tag */
     public boolean concurrentVisibility;
-    
     /* first write tag  (in real time) */
-    public int startDrafting;
+    public float startDrafting;
     /* startRevision in recording tag (in real time) */
-    public int startRevision;
-
-    // OLD STUFF
+    public float startRevision;
     
+    // OLD STUFF
     /* The total length of the process. */
-    public int lengthProcess;
+    public float lengthProcess;
     /* The total length of the time span we're looking at. */
-    public int lengthAdjustment;
+    public float lengthAdjustment;
 
     /* Adjustment time in real time*/
-    public int startAdjustment;
+    public float startAdjustment;
     /* last time to show in real time */
-    public int endAdjustment;
+    public float endAdjustment;
     /* startTransProcess in recording tag (in real time) */
-    public int startProcess;
+    public float startProcess;
 
     /* endTransProcess in recording tag (in real time) */
-    public int endProcess;
+    public float endProcess;
     public String timespan;
-    
-
-
     private Document doc;
     private Element rootElement;
     
+    public boolean workPlace;
+    
+    /*
     private String[] revisiontypes;
     List<IncidentList> interrupts = new LinkedList<IncidentList>();
     List<IncidentList> consults = new LinkedList<IncidentList>();
@@ -77,6 +73,10 @@ public class Transcript {
     List<IncidentList> pauses = new LinkedList<IncidentList>(); // IL pauses and "normal" pauses
     IncidentList typos;
     IncidentList sourcetext;
+     * 
+     */
+
+    protected Hashtable<IncidentType, IncidentList> incidentlists;
 
     /**
      * Public constructor for a Transcript.
@@ -88,26 +88,32 @@ public class Transcript {
     public Transcript(File fxmlFile)
             throws ParserConfigurationException, SAXException, IOException {
 
-        initializeTagList();
-        revisiontypes = new String[]{"deletes", "inserts", "pastes",
-            "moves to", "undoes", "autocorrects"};
+        //initializeTagList();
+        //revisiontypes = new String[]{"deletes", "inserts", "pastes",
+        //    "moves to", "undoes", "autocorrects"};
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         doc = dBuilder.parse(fxmlFile);
         doc.getDocumentElement().normalize();
+        
+        incidentlists = new Hashtable();
+        for (IncidentType t : IncidentType.values()) {
+            incidentlists.put(t, new IncidentList(t));
+        }
+        
 
     }
 
     private void parseFileName() {
-        
     }
-    
+
     /**
      * Initializes all of the tags.
      */
     private void initializeTagList() {
 
+        /*
         String[] searcheng = new String[]{"google", "yahoo", "bing"};
         String[] encyclopedias = new String[]{"wikipedia", "britannica", "encyclopedia"};
         String[] dictionaries = new String[]{"dict.cc", "leo", "pons", "collins", "colins",
@@ -167,6 +173,8 @@ public class Transcript {
         pauses.add(new IncidentList("Looks at TT", p, "ReadsTT"));
         pauses.add(new IncidentList("Looks at ST+TT", p, "ReadsST+TT"));
         pauses.add(new IncidentList("Focus unclear", p, "Unclear"));
+         * 
+         */
 
     }
 
@@ -246,7 +254,7 @@ public class Transcript {
             Element e = (Element) incidentList.item(i);
             if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
                 if (e.hasAttribute("start")) {
-                    int time = convertToSeconds(e.getAttribute("start"));
+                    float time = convertToSeconds(e.getAttribute("start"));
                     if (time > startProcess && time < startDrafting) {
                         startDrafting = time - 1;
                     }
@@ -294,10 +302,10 @@ public class Transcript {
      * (an int).
      * 
      */
-    private int convertToSeconds(String timestring) {
+    private float convertToSeconds(String timestring) {
 
         String[] times = timestring.trim().split(":");
-        int time = Integer.parseInt(times[0]) * 360
+        float time = Integer.parseInt(times[0]) * 360
                 + Integer.parseInt(times[1]) * 60 + Integer.parseInt(times[2]);
 
         return time;
@@ -309,8 +317,8 @@ public class Transcript {
      * @param timestring a String representing a time (HH:MM:SS)
      * @return an int representing the time in seconds
      */
-    public int convertToReal(String timestring) {
-        int time = convertToSeconds(timestring);
+    public float convertToReal(String timestring) {
+        float time = convertToSeconds(timestring);
         return time - startAdjustment;
     }
 
@@ -324,6 +332,7 @@ public class Transcript {
         for (int i = 0; i < incidentList.getLength(); i++) {
             if (incidentList.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element e = (Element) incidentList.item(i);
+                
                 if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
                     Element possible_typo = (Element) incidentList.item(i + 1);
                     Element possible_write = (Element) incidentList.item(i + 2);
@@ -340,7 +349,7 @@ public class Transcript {
                         handleIncident(e);
                     }
 
-                } else {
+                } else if (e.hasAttribute("type")) {
                     handleIncident(e);
                 }
             }
@@ -348,6 +357,21 @@ public class Transcript {
     }
 
     private void handleIncident(Element e) {
+
+        Incident i = new Incident(e, this);
+        if (i.start < 0 || i.end > lengthAdjustment) {
+            return;
+        }
+        
+        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
+        mainlist.add(i);
+        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
+        sublist.add(i);
+        
+        
+
+
+        /*
         int start = 0;
         int end = 0;
 
@@ -381,36 +405,64 @@ public class Transcript {
                 handleWrite(e, times, length);
             }
         }
+         * 
+         */
     }
 
     private void handle_two_step_write(Element e, Element possible_write) {
 
-        int start = 0;
-        int end = 0;
+        Incident i = new Incident(e, this);
 
-        if (e.hasAttribute("start")) {
-            start = convertToReal(e.getAttribute("start")); // adjusted times
-        } else {
-            start = 0;
-        }
-
+        float end = 0;
         if (possible_write.hasAttribute("end")) {
             end = convertToReal(possible_write.getAttribute("end"));
         } else if (possible_write.hasAttribute("start")) { // if the write does not have an end-tag, use the start tag
             end = convertToReal(possible_write.getAttribute("start"));
         }
-        if (end == 0 || end < start) {
-            end = start;
+
+        if (i.validTimes) {
+
+            if (end == 0 || end < i.start) {
+                end = i.start;
+            }
+            i.end = end;
+            i.subgroup = IncidentType.PR_WRITETYPO;
         }
 
+        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
+        mainlist.add(i);
+        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
+        sublist.add(i);
+
+        /*
+        int start = 0;
+        
+        if (e.hasAttribute("start")) {
+        start = convertToReal(e.getAttribute("start")); // adjusted times
+        } else {
+        start = 0;
+        }
+        
+        if (possible_write.hasAttribute("end")) {
+        end = convertToReal(possible_write.getAttribute("end"));
+        } else if (possible_write.hasAttribute("start")) { // if the write does not have an end-tag, use the start tag
+        end = convertToReal(possible_write.getAttribute("start"));
+        }
+        if (end == 0 || end < start) {
+        end = start;
+        }
+        
         Integer[] times = {start, end};
         int length = end - start;
-
+        
         productions.get(2).times.add(times);
         productions.get(2).lengths.add(length);
+         * 
+         */
 
     }
 
+    /*
     private void handleConsults(Element e, Integer[] times, int l) {
 
         String source = e.getAttribute("src").toLowerCase();
@@ -565,4 +617,6 @@ public class Transcript {
         }
 
     }
+     * 
+     */
 }

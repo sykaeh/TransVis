@@ -7,6 +7,7 @@
 package transcriptvisualizer;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -349,55 +350,43 @@ public class MainApp extends SingleFrameApplication {
 
             XYSeries pauses = new XYSeries("pauses " + p.name);
             // the pauses
-            for (IncidentList t : p.pauses) {
-                for (Integer[] times : t.times) {
-                    addToProcess(pauses, times, pos + 5);
-                }
+            for (Incident e : p.incidentlists.get(IncidentType.PAUSE).elements) {
+                addToSeries(pauses, e, pos + 5);
             }
             data.addSeries(pauses);
 
             XYSeries consults = new XYSeries("consults " + p.name);
             // All consultations
-            for (IncidentList t : p.consults) {
-                for (Integer[] times : t.times) {
-                    addToProcess(consults, times, pos + 4);
-                }
+            for (Incident e : p.incidentlists.get(IncidentType.CONSULTATION).elements) {
+                addToSeries(consults, e, pos + 4);
             }
             data.addSeries(consults);
 
             XYSeries typos = new XYSeries("typos " + p.name);
             // All typos
-            for (Integer[] times : p.typos.times) {
-                addToProcess(typos, times, pos + 3);
+            for (Incident e : p.incidentlists.get(IncidentType.TYPOS).elements) {
+                addToSeries(typos, e, pos + 3);
             }
+            data.addSeries(typos);
 
             XYSeries revisions = new XYSeries("revisions " + p.name);
             // All revisions
-            for (IncidentList t : p.revisions) {
-                for (Integer[] times : t.times) {
-                    if (t.subtype.equalsIgnoreCase("revision") || t.subtype.equalsIgnoreCase("revision2")) {
-                        addToProcess(revisions, times, pos + 2);
-                    } else if (t.subtype.equalsIgnoreCase("typos")) {
-                        addToProcess(typos, times, pos + 3);
-                    }
-                }
+            for (Incident e : p.incidentlists.get(IncidentType.REVISION).elements) {
+                addToSeries(revisions, e, pos + 2);
             }
-            data.addSeries(typos);
             data.addSeries(revisions);
 
             XYSeries writing = new XYSeries("writing " + p.name);
             // All TT writing
-            for (IncidentList t : p.productions) {
-                for (Integer[] times : t.times) {
-                    addToProcess(writing, times, pos + 1);
-                }
+            for (Incident e : p.incidentlists.get(IncidentType.PRODUCTION).elements) {
+                addToSeries(writing, e, pos + 1);
             }
             data.addSeries(writing);
 
             XYSeries st = new XYSeries("ST " + p.name);
             // All ST actions
-            for (Integer[] times : p.sourcetext.times) {
-                addToProcess(st, times, pos + 0);
+            for (Incident e : p.incidentlists.get(IncidentType.SOURCETEXT).elements) {
+                addToSeries(st, e, pos + 0);
             }
             data.addSeries(st);
 
@@ -431,33 +420,17 @@ public class MainApp extends SingleFrameApplication {
 
         XYSeriesCollection data = new XYSeriesCollection();
 
+        // Checking if there are any workflow consultations
         boolean workplace = false;
         for (Transcript p : parsers) {
-            for (IncidentList t : p.consults2) {
-                if (!t.times.isEmpty()) {
-                    workplace = true;
-                }
+            if (p.workPlace) {
+                workplace = true;
             }
         }
 
-        int numtypes = parsers.get(0).consults.size();
-        if (workplace) {
-            numtypes += parsers.get(0).consults2.size();
-        }
-
-        int ypos = numtypes;
+        boolean initialized = false;
+        int numTypes = 0;
         List<Object[]> annotList = new LinkedList<Object[]>();
-        for (IncidentList t : parsers.get(0).consults) {
-            annotList.add((new Object[]{t.name, ypos}));
-            ypos--;
-        }
-        if (workplace) {
-            for (IncidentList t : parsers.get(0).consults2) {
-                annotList.add((new Object[]{t.name, ypos}));
-                ypos--;
-            }
-        }
-
         List<String> processNames = new LinkedList<String>();
 
         double pos = 1 - step;
@@ -466,35 +439,55 @@ public class MainApp extends SingleFrameApplication {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
-            int i = numtypes - 1;
+
+            List<IncidentList> categories = Arrays.asList(
+                    p.incidentlists.get(IncidentType.C_SEARCHENG),
+                    p.incidentlists.get(IncidentType.C_ENCYCLOPEDIA),
+                    p.incidentlists.get(IncidentType.C_DICTIONARY),
+                    p.incidentlists.get(IncidentType.C_PORTALS),
+                    p.incidentlists.get(IncidentType.C_TERMBANKS),
+                    p.incidentlists.get(IncidentType.C_OTHER));
+            if (workplace) {
+                List<IncidentList> categories2 = Arrays.asList(
+                        p.incidentlists.get(IncidentType.C_WFCONTEXT),
+                        p.incidentlists.get(IncidentType.C_WFSTYLEGUIDE),
+                        p.incidentlists.get(IncidentType.C_WFGLOSSARY),
+                        p.incidentlists.get(IncidentType.C_WFPARALLELTEXT),
+                        p.incidentlists.get(IncidentType.C_CONCORDANCE));
+                categories.addAll(categories2);
+
+            }
+
+            if (!initialized) {
+                numTypes = categories.size();
+            }
+
+
+            int i = numTypes - 1;
             // All consultations
-            for (IncidentList t : p.consults) {
-                XYSeries consults = new XYSeries(t.subtype + " " + p.name);
-                for (Integer[] times : t.times) {
-                    addToProcess(consults, times, i + pos);
+            for (IncidentList t : categories) {
+                if (!initialized) {
+                    annotList.add(new Object[]{t.group.descr, i + 1});
+                }
+                XYSeries consults = new XYSeries(t.group + " " + p.name);
+                for (Incident e : t.elements) {
+                    addToSeries(consults, e, i + pos);
                 }
                 data.addSeries(consults);
                 i--;
             }
-            if (workplace) {
-                for (IncidentList t : p.consults2) {
-                    XYSeries consults = new XYSeries(t.subtype + " " + p.name);
-                    for (Integer[] times : t.times) {
-                        addToProcess(consults, times, i + pos);
-                    }
-                    data.addSeries(consults);
-                    i--;
-                }
-            }
 
+            initialized = true;
             pos -= step;
         }
+
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
         r.setTitle("Consults graph");
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, numtypes + 1);
+        r.drawGraph(chart, annotList, processNames, numTypes + 1);
+
 
     }
 
@@ -509,21 +502,18 @@ public class MainApp extends SingleFrameApplication {
         if (parsers.isEmpty()) {
             return;
         }
+
         int size = parsers.size() + 2;
         double step = 1.0 / size;
         String nameField = parsers.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
-        int numtypes = parsers.get(0).pauses.size();
 
-        int ypos = numtypes;
+        boolean initialized = false;
+        int numTypes = 0;
         List<Object[]> annotList = new LinkedList<Object[]>();
-        for (IncidentList t : parsers.get(0).pauses) {
-            annotList.add((new Object[]{t.name, ypos}));
-            ypos--;
-        }
-
         List<String> processNames = new LinkedList<String>();
+
 
         double pos = 1 - step;
 
@@ -531,25 +521,45 @@ public class MainApp extends SingleFrameApplication {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
-            int i = numtypes - 1;
+
+            List<IncidentList> categories = Arrays.asList(
+                    p.incidentlists.get(IncidentType.P_SIMPLE),
+                    p.incidentlists.get(IncidentType.P_CONSULTS),
+                    p.incidentlists.get(IncidentType.P_READSTASK),
+                    p.incidentlists.get(IncidentType.P_READSST),
+                    p.incidentlists.get(IncidentType.P_READSTT),
+                    p.incidentlists.get(IncidentType.P_READSSTTT),
+                    p.incidentlists.get(IncidentType.P_UNCLEAR));
+
+            if (!initialized) {
+                numTypes = categories.size();
+            }
+
+
+            int i = numTypes - 1;
             // All pauses
-            for (IncidentList t : p.pauses) {
-                XYSeries pauses = new XYSeries(t.subtype + " " + p.name);
-                for (Integer[] times : t.times) {
-                    addToProcess(pauses, times, i + pos);
+            for (IncidentList t : categories) {
+                if (!initialized) {
+                    annotList.add(new Object[]{t.group.descr, i + 1});
+                }
+                XYSeries pauses = new XYSeries(t.group + " " + p.name);
+                for (Incident e : t.elements) {
+                    addToSeries(pauses, e, i + pos);
                 }
                 data.addSeries(pauses);
                 i--;
             }
 
+            initialized = true;
             pos -= step;
         }
+
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
         r.setTitle("Pauses graph");
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, numtypes + 1);
+        r.drawGraph(chart, annotList, processNames, numTypes + 1);
 
     }
 
@@ -564,6 +574,7 @@ public class MainApp extends SingleFrameApplication {
         if (parsers.isEmpty()) {
             return;
         }
+
         int size = parsers.size() + 2;
         double step = 1.0 / size;
         String nameField = parsers.size() + " process(es): ";
@@ -583,7 +594,9 @@ public class MainApp extends SingleFrameApplication {
         XYSeries ins;
         XYSeries del;
         XYSeries pas;
-        XYSeries cut;
+
+        boolean bothRevisions = view.getCombinedRevisions();
+
         for (Transcript p : parsers) {
 
             nameField += p.name + ", ";
@@ -593,43 +606,56 @@ public class MainApp extends SingleFrameApplication {
             del = new XYSeries("deletions " + p.name);
             pas = new XYSeries("pastes " + p.name);
 
-            for (IncidentList t : p.revisions) {
-                if ((view.getCombinedRevisions() && t.subtype.equalsIgnoreCase("revision2"))
-                        || (t.subtype.equalsIgnoreCase("revision"))) {
-                    if (t.type.equalsIgnoreCase("inserts")) {
-                        for (Integer[] times : t.times) {
-                            addToProcess(ins, times, 2 + pos);
-                        }
-                    } else if (t.type.equalsIgnoreCase("deletes")) {
-                        for (Integer[] times : t.times) {
-                            addToProcess(del, times, 1 + pos);
-                        }
-                    } else if (t.type.equalsIgnoreCase("pastes")) {
-                        for (Integer[] times : t.times) {
-                            addToProcess(pas, times, 0 + pos);
-                        }
-                    } else if (t.type.equalsIgnoreCase("moves to")) {
-                        for (Integer[] times : t.times) {
-                            addToProcess(pas, times, 0 + pos);
-                        }
-                    }
+
+            IncidentList list_inserts = p.incidentlists.get(IncidentType.R_INSERTS);
+            for (Incident e : list_inserts.elements) {
+                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                        || e.revisiontype == IncidentType.R_REVISION) {
+                    addToSeries(ins, e, 2 + pos);
                 }
             }
+
+            IncidentList list_deletes = p.incidentlists.get(IncidentType.R_DELETES);
+            for (Incident e : list_deletes.elements) {
+                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                        || e.revisiontype == IncidentType.R_REVISION) {
+                    addToSeries(del, e, 2 + pos);
+                }
+            }
+
+            IncidentList list_pastes = p.incidentlists.get(IncidentType.R_PASTES);
+            for (Incident e : list_pastes.elements) {
+                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                        || e.revisiontype == IncidentType.R_REVISION) {
+                    addToSeries(pas, e, 2 + pos);
+                }
+            }
+            IncidentList list_moves = p.incidentlists.get(IncidentType.R_MOVESTO);
+            for (Incident e : list_moves.elements) {
+                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                        || e.revisiontype == IncidentType.R_REVISION) {
+                    addToSeries(pas, e, 2 + pos);
+                }
+            }
+
             data.addSeries(ins);
             data.addSeries(del);
             data.addSeries(pas);
             pos -= step;
         }
-        if (view.getCombinedRevisions()) {
+
+        if (bothRevisions) {
             r.setTitle("Combined revision graph");
         } else {
             r.setTitle("Revision graph");
         }
+
         r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
         r.drawGraph(chart, annotList, processNames, numtypes);
+
 
     }
 
@@ -644,20 +670,21 @@ public class MainApp extends SingleFrameApplication {
         if (parsers.isEmpty()) {
             return;
         }
+
         int size = parsers.size() + 2;
         double step = 1.0 / size;
         String nameField = parsers.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
 
+        // Checking if there are any workflow consultations
         boolean workplace = false;
         for (Transcript p : parsers) {
-            for (IncidentList t : p.consults2) {
-                if (!t.times.isEmpty()) {
-                    workplace = true;
-                }
+            if (p.workPlace) {
+                workplace = true;
             }
         }
+        boolean bothRevisions = view.getCombinedRevisions();
 
         int ypos = 1;
         List<Object[]> annotList = new LinkedList<Object[]>();
@@ -769,8 +796,8 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getSTActions()) {
                 XYSeries st = new XYSeries("ST " + p.name);
-                for (Integer[] times : p.sourcetext.times) {
-                    addToProcess(st, times, pos + i);
+                for (Incident e : p.incidentlists.get(IncidentType.SOURCETEXT).elements) {
+                    addToSeries(st, e, pos + i);
                 }
                 data.addSeries(st);
                 i++;
@@ -778,34 +805,39 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getWriting()) {
                 XYSeries writing = new XYSeries("writing " + p.name);
-                for (IncidentList t : p.productions) {
-                    for (Integer[] times : t.times) {
-                        addToProcess(writing, times, pos + 1);
-                    }
+                for (Incident e : p.incidentlists.get(IncidentType.PRODUCTION).elements) {
+                    addToSeries(writing, e, pos + i);
                 }
-
                 data.addSeries(writing);
                 i++;
             }
 
             if (view.getIndInterrupts()) {
-                int temp = i;
-                for (IncidentList t : p.interrupts) {
-                    XYSeries interrupts = new XYSeries(t.subtype + " " + p.name);
-                    for (Integer[] times : t.times) {
-                        addToProcess(interrupts, times, ((2 * temp) + p.interrupts.size() - 1 - i) + pos);
+                int temp = i;                
+                List<IncidentList> categories = Arrays.asList(
+                        p.incidentlists.get(IncidentType.I_BREAK),
+                        p.incidentlists.get(IncidentType.I_WORKFLOW),
+                        p.incidentlists.get(IncidentType.I_TASK),
+                        p.incidentlists.get(IncidentType.I_INTERNET),
+                        p.incidentlists.get(IncidentType.I_JOBMAIL),
+                        p.incidentlists.get(IncidentType.I_PRIVATEMAIL));
+
+                for (IncidentList t : categories) {
+
+                    XYSeries interrupts = new XYSeries(t.group + " " + p.name);
+                    for (Incident e : t.elements) {
+                        addToSeries(interrupts, e, ((2 * temp) + categories.size() - 1 - i) + pos);
                     }
                     data.addSeries(interrupts);
                     i++;
                 }
+                
             }
 
             if (view.getInterrupts()) {
                 XYSeries interrupt = new XYSeries("interrupts " + p.name);
-                for (IncidentList t : p.interrupts) {
-                    for (Integer[] times : t.times) {
-                        addToProcess(interrupt, times, pos + i);
-                    }
+                for (Incident e : p.incidentlists.get(IncidentType.INTERRUPTION).elements) {
+                    addToSeries(interrupt, e, pos + i);
                 }
                 data.addSeries(interrupt);
                 i++;
@@ -816,28 +848,38 @@ public class MainApp extends SingleFrameApplication {
                 XYSeries del = new XYSeries("deletions " + p.name);
                 XYSeries pas = new XYSeries("pastes " + p.name);
 
-                for (IncidentList t : p.revisions) {
-                    if ((view.getCombinedRevisions() && t.subtype.equalsIgnoreCase("revision2"))
-                            || (t.subtype.equalsIgnoreCase("revision"))) {
-                        if (t.type.equalsIgnoreCase("inserts")) {
-                            for (Integer[] times : t.times) {
-                                addToProcess(ins, times, 3 + i + pos);
-                            }
-                        } else if (t.type.equalsIgnoreCase("deletes")) {
-                            for (Integer[] times : t.times) {
-                                addToProcess(del, times, 2 + i + pos);
-                            }
-                        } else if (t.type.equalsIgnoreCase("pastes")) {
-                            for (Integer[] times : t.times) {
-                                addToProcess(pas, times, 1 + i + pos);
-                            }
-                        } else if (t.type.equalsIgnoreCase("moves to")) {
-                            for (Integer[] times : t.times) {
-                                addToProcess(pas, times, 1 + i + pos);
-                            }
-                        }
+                IncidentList list_inserts = p.incidentlists.get(IncidentType.R_INSERTS);
+                for (Incident e : list_inserts.elements) {
+                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                            || e.revisiontype == IncidentType.R_REVISION) {
+                        addToSeries(ins, e, 3 + i + pos);
                     }
                 }
+
+                IncidentList list_deletes = p.incidentlists.get(IncidentType.R_DELETES);
+                for (Incident e : list_deletes.elements) {
+                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                            || e.revisiontype == IncidentType.R_REVISION) {
+                        addToSeries(del, e, 2 + i + pos);
+                    }
+                }
+
+                IncidentList list_pastes = p.incidentlists.get(IncidentType.R_PASTES);
+                for (Incident e : list_pastes.elements) {
+                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                            || e.revisiontype == IncidentType.R_REVISION) {
+                        addToSeries(pas, e, 1 + i + pos);
+                    }
+                }
+                IncidentList list_moves = p.incidentlists.get(IncidentType.R_MOVESTO);
+                for (Incident e : list_moves.elements) {
+                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
+                            || e.revisiontype == IncidentType.R_REVISION) {
+                        addToSeries(pas, e, 1 + i + pos);
+                    }
+                }
+
+
                 data.addSeries(ins);
                 data.addSeries(del);
                 data.addSeries(pas);
@@ -847,10 +889,8 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getRevisions()) {
                 XYSeries revisions = new XYSeries("revisions " + p.name);
-                for (IncidentList t : p.revisions) {
-                    for (Integer[] times : t.times) {
-                        addToProcess(revisions, times, pos + i);
-                    }
+                for (Incident e : p.incidentlists.get(IncidentType.REVISION).elements) {
+                    addToSeries(revisions, e, pos + i);
                 }
                 data.addSeries(revisions);
                 i++;
@@ -858,8 +898,8 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getTypos()) {
                 XYSeries typos = new XYSeries("typos " + p.name);
-                for (Integer[] times : p.typos.times) {
-                    addToProcess(typos, times, pos + i);
+                for (Incident e : p.incidentlists.get(IncidentType.TYPOS).elements) {
+                    addToSeries(typos, e, pos + i);
                 }
                 data.addSeries(typos);
                 i++;
@@ -867,31 +907,40 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getIndConsults()) {
                 int temp = i;
+
+                List<IncidentList> categories = Arrays.asList(
+                        p.incidentlists.get(IncidentType.C_SEARCHENG),
+                        p.incidentlists.get(IncidentType.C_ENCYCLOPEDIA),
+                        p.incidentlists.get(IncidentType.C_DICTIONARY),
+                        p.incidentlists.get(IncidentType.C_PORTALS),
+                        p.incidentlists.get(IncidentType.C_TERMBANKS),
+                        p.incidentlists.get(IncidentType.C_OTHER));
                 if (workplace) {
-                    for (IncidentList t : p.consults2) {
-                        XYSeries consults = new XYSeries(t.subtype + " " + p.name);
-                        for (Integer[] times : t.times) {
-                            addToProcess(consults, times, ((2 * temp) + p.consults2.size() - 1 - i) + pos);
-                        }
-                        data.addSeries(consults);
-                        i++;
-                    }
+                    List<IncidentList> categories2 = Arrays.asList(
+                            p.incidentlists.get(IncidentType.C_WFCONTEXT),
+                            p.incidentlists.get(IncidentType.C_WFSTYLEGUIDE),
+                            p.incidentlists.get(IncidentType.C_WFGLOSSARY),
+                            p.incidentlists.get(IncidentType.C_WFPARALLELTEXT),
+                            p.incidentlists.get(IncidentType.C_CONCORDANCE));
+                    categories.addAll(categories2);
+
                 }
-                for (IncidentList t : p.consults) {
-                    XYSeries consults = new XYSeries(t.subtype + " " + p.name);
-                    for (Integer[] times : t.times) {
-                        addToProcess(consults, times, ((2 * temp) + p.consults.size() - 1 - i) + pos);
+
+                for (IncidentList t : categories) {
+
+                    XYSeries consults = new XYSeries(t.group + " " + p.name);
+                    for (Incident e : t.elements) {
+                        addToSeries(consults, e, ((2 * temp) + categories.size() - 1 - i) + pos);
                     }
                     data.addSeries(consults);
                     i++;
                 }
+
             }
             if (view.getConsults()) {
                 XYSeries consults = new XYSeries("consults " + p.name);
-                for (IncidentList t : p.consults) {
-                    for (Integer[] times : t.times) {
-                        addToProcess(consults, times, pos + i);
-                    }
+                for (Incident e : p.incidentlists.get(IncidentType.CONSULTATION).elements) {
+                    addToSeries(consults, e, pos + i);
                 }
                 data.addSeries(consults);
                 i++;
@@ -899,22 +948,31 @@ public class MainApp extends SingleFrameApplication {
 
             if (view.getIndPauses()) {
                 int temp = i;
-                for (IncidentList t : p.pauses) {
-                    XYSeries pauses = new XYSeries(t.subtype + " " + p.name);
-                    for (Integer[] times : t.times) {
-                        addToProcess(pauses, times, ((2 * temp) + p.pauses.size() - 1 - i) + pos);
+                List<IncidentList> categories = Arrays.asList(
+                        p.incidentlists.get(IncidentType.P_SIMPLE),
+                        p.incidentlists.get(IncidentType.P_CONSULTS),
+                        p.incidentlists.get(IncidentType.P_READSTASK),
+                        p.incidentlists.get(IncidentType.P_READSST),
+                        p.incidentlists.get(IncidentType.P_READSTT),
+                        p.incidentlists.get(IncidentType.P_READSSTTT),
+                        p.incidentlists.get(IncidentType.P_UNCLEAR));
+
+                for (IncidentList t : categories) {
+
+                    XYSeries pauses = new XYSeries(t.group + " " + p.name);
+                    for (Incident e : t.elements) {
+                        addToSeries(pauses, e, ((2 * temp) + categories.size() - 1 - i) + pos);
                     }
                     data.addSeries(pauses);
                     i++;
                 }
+
             }
 
             if (view.getPauses()) {
                 XYSeries pauses = new XYSeries("pauses " + p.name);
-                for (IncidentList t : p.pauses) {
-                    for (Integer[] times : t.times) {
-                        addToProcess(pauses, times, pos + i);
-                    }
+                for (Incident e : p.incidentlists.get(IncidentType.PAUSE).elements) {
+                    addToSeries(pauses, e, pos + i);
                 }
                 data.addSeries(pauses);
                 i++;
@@ -930,18 +988,15 @@ public class MainApp extends SingleFrameApplication {
                 PlotOrientation.VERTICAL, true, false, false);
         r.drawGraph(chart, annotList, processNames, ypos);
 
+
     }
 
-    /**
-     * Add the times to the XYSeries process at the right position pos.
-     * @param process XYSeries to which the times should be added
-     * @param times start and end time of the action
-     * @param pos the position (y-coordinate) for the action
-     */
-    private void addToProcess(XYSeries process, Integer[] times, double pos) {
-        process.add((times[0].doubleValue() - 0.001), null);
-        process.add(times[0].doubleValue(), pos);
-        process.add(times[1].doubleValue(), pos);
-        process.add((times[1].doubleValue() + 0.001), null);
+    private void addToSeries(XYSeries series, Incident i, double pos) {
+        if (i.validTimes) {
+            series.add((i.start - 0.001), null);
+            series.add(i.start, pos);
+            series.add(i.end, pos);
+            series.add(i.end + 0.001, null);
+        }
     }
 }
