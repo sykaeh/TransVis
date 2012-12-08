@@ -258,7 +258,25 @@ public class MainApp extends SingleFrameApplication {
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
         } else {
+
+                
+        File saveStatsFile = view.showSaveFileChooser();
+        while (saveStatsFile != null && !saveStatsFile.getAbsolutePath().endsWith(".xls")) {
+            view.reportError("Please enter a filename with ending \".xls\"");
+            saveStatsFile = view.showSaveFileChooser();
+        }
+        if (saveStatsFile != null) {
             List<Transcript> parsers = parseFiles();
+            try {
+                ExcelDocument e = new ExcelDocument(parsers, saveStatsFile);
+                String errormsg = e.makeExcelFile(false, true);
+                if (!errormsg.isEmpty()) {
+                    view.reportError(errormsg);
+                }
+            } catch (Exception ex) {
+                view.reportError(ex.getMessage());
+            }
+        }
         }
     }
 
@@ -445,10 +463,10 @@ public class MainApp extends SingleFrameApplication {
                     p.incidentlists.get(IncidentType.C_ENCYCLOPEDIA),
                     p.incidentlists.get(IncidentType.C_DICTIONARY),
                     p.incidentlists.get(IncidentType.C_PORTALS),
-                    p.incidentlists.get(IncidentType.C_TERMBANKS),
                     p.incidentlists.get(IncidentType.C_OTHER));
             if (workplace) {
                 List<IncidentList> categories2 = Arrays.asList(
+                        p.incidentlists.get(IncidentType.C_TERMBANKS),
                         p.incidentlists.get(IncidentType.C_WFCONTEXT),
                         p.incidentlists.get(IncidentType.C_WFSTYLEGUIDE),
                         p.incidentlists.get(IncidentType.C_WFGLOSSARY),
@@ -609,32 +627,32 @@ public class MainApp extends SingleFrameApplication {
 
             IncidentList list_inserts = p.incidentlists.get(IncidentType.R_INSERTS);
             for (Incident e : list_inserts.elements) {
-                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                        || e.revisiontype == IncidentType.R_REVISION) {
+                if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                        || e.revisionType == IncidentType.R_REVISION) {
                     addToSeries(ins, e, 2 + pos);
                 }
             }
 
             IncidentList list_deletes = p.incidentlists.get(IncidentType.R_DELETES);
             for (Incident e : list_deletes.elements) {
-                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                        || e.revisiontype == IncidentType.R_REVISION) {
-                    addToSeries(del, e, 2 + pos);
+                if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                        || e.revisionType == IncidentType.R_REVISION) {
+                    addToSeries(del, e, 1 + pos);
                 }
             }
 
             IncidentList list_pastes = p.incidentlists.get(IncidentType.R_PASTES);
             for (Incident e : list_pastes.elements) {
-                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                        || e.revisiontype == IncidentType.R_REVISION) {
-                    addToSeries(pas, e, 2 + pos);
+                if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                        || e.revisionType == IncidentType.R_REVISION) {
+                    addToSeries(pas, e, 0 + pos);
                 }
             }
             IncidentList list_moves = p.incidentlists.get(IncidentType.R_MOVESTO);
             for (Incident e : list_moves.elements) {
-                if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                        || e.revisiontype == IncidentType.R_REVISION) {
-                    addToSeries(pas, e, 2 + pos);
+                if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                        || e.revisionType == IncidentType.R_REVISION) {
+                    addToSeries(pas, e, 0 + pos);
                 }
             }
 
@@ -850,31 +868,31 @@ public class MainApp extends SingleFrameApplication {
 
                 IncidentList list_inserts = p.incidentlists.get(IncidentType.R_INSERTS);
                 for (Incident e : list_inserts.elements) {
-                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                            || e.revisiontype == IncidentType.R_REVISION) {
+                    if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                            || e.revisionType == IncidentType.R_REVISION) {
                         addToSeries(ins, e, 3 + i + pos);
                     }
                 }
 
                 IncidentList list_deletes = p.incidentlists.get(IncidentType.R_DELETES);
                 for (Incident e : list_deletes.elements) {
-                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                            || e.revisiontype == IncidentType.R_REVISION) {
+                    if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                            || e.revisionType == IncidentType.R_REVISION) {
                         addToSeries(del, e, 2 + i + pos);
                     }
                 }
 
                 IncidentList list_pastes = p.incidentlists.get(IncidentType.R_PASTES);
                 for (Incident e : list_pastes.elements) {
-                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                            || e.revisiontype == IncidentType.R_REVISION) {
+                    if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                            || e.revisionType == IncidentType.R_REVISION) {
                         addToSeries(pas, e, 1 + i + pos);
                     }
                 }
                 IncidentList list_moves = p.incidentlists.get(IncidentType.R_MOVESTO);
                 for (Incident e : list_moves.elements) {
-                    if ((bothRevisions && e.revisiontype == IncidentType.R_REVISION2)
-                            || e.revisiontype == IncidentType.R_REVISION) {
+                    if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
+                            || e.revisionType == IncidentType.R_REVISION) {
                         addToSeries(pas, e, 1 + i + pos);
                     }
                 }
@@ -913,10 +931,10 @@ public class MainApp extends SingleFrameApplication {
                         p.incidentlists.get(IncidentType.C_ENCYCLOPEDIA),
                         p.incidentlists.get(IncidentType.C_DICTIONARY),
                         p.incidentlists.get(IncidentType.C_PORTALS),
-                        p.incidentlists.get(IncidentType.C_TERMBANKS),
                         p.incidentlists.get(IncidentType.C_OTHER));
                 if (workplace) {
                     List<IncidentList> categories2 = Arrays.asList(
+                            p.incidentlists.get(IncidentType.C_TERMBANKS),
                             p.incidentlists.get(IncidentType.C_WFCONTEXT),
                             p.incidentlists.get(IncidentType.C_WFSTYLEGUIDE),
                             p.incidentlists.get(IncidentType.C_WFGLOSSARY),

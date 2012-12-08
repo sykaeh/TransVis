@@ -67,16 +67,102 @@ public class ExcelDocument {
 
         }
     }
-    
-    private void fillData(WritableSheet sheet) {
-        
+
+    private void fillData(WritableSheet sheet) throws WriteException {
+
+        Label label;
+        Number num;
+
+        int i = 3;
+
+        for (Transcript t : parserList) {
+            for (Incident e : t.allIncidents.elements) {
+
+                label = new Label(0, i, t.name);
+                sheet.addCell(label);
+
+                // blue section
+                label = new Label(1, i, t.participant);
+                sheet.addCell(label);
+                label = new Label(2, i, t.group);
+                sheet.addCell(label);
+                label = new Label(3, i, t.competence);
+                sheet.addCell(label);
+                label = new Label(4, i, t.version);
+                sheet.addCell(label);
+                label = new Label(5, i, t.sourcetextname);
+                sheet.addCell(label);
+                label = new Label(6, i, t.experiment);
+                sheet.addCell(label);
+
+                // yellow section
+                label = new Label(7, i, t.direction);
+                sheet.addCell(label);
+                num = new Number(8, i, t.startProcess);
+                sheet.addCell(num);
+                num = new Number(9, i, t.endProcess);
+                sheet.addCell(num);
+                label = new Label(10, i, t.complete);
+                sheet.addCell(label);
+                if (t.startRevision == t.endProcess) {
+                    label = new Label(11, i, "n/a");
+                    sheet.addCell(label);
+                } else {
+                    num = new Number(11, i, t.startRevision);
+                    sheet.addCell(num);
+                }
+                label = new Label(12, i, t.kslavailable);
+                sheet.addCell(label);
+                label = new Label(13, i, t.etavailable);
+                sheet.addCell(label);
+                label = new Label(14, i, t.etquality);
+                sheet.addCell(label);
+                label = new Label(15, i, t.concurrentVisibility);
+                sheet.addCell(label);
+
+                // orange section
+                num = new Number(16, i, t.startDrafting);
+                sheet.addCell(num);
+
+                // green section
+                label = new Label(17, i, e.type);
+                sheet.addCell(label);
+                if (e.validTimes) {
+                    num = new Number(18, i, e.start);
+                    sheet.addCell(num);
+                    num = new Number(19, i, e.end);
+                    sheet.addCell(num);
+                } else {
+                    label = new Label(18, i, "n/a");
+                    sheet.addCell(label);
+                    label = new Label(19, i, "n/a");
+                    sheet.addCell(label);
+                }
+
+                label = new Label(20, i, e.subtype);
+                sheet.addCell(label);
+                label = new Label(21, i, e.src);
+                sheet.addCell(label);
+                label = new Label(22, i, e.item);
+                sheet.addCell(label);
+                label = new Label(23, i, e.after);
+                sheet.addCell(label);
+                label = new Label(24, i, e.before);
+                sheet.addCell(label);
+                label = new Label(25, i, e.subsubtype);
+                sheet.addCell(label);
+
+                i++;
+
+            }
+        }
+
     }
-    
+
     private void fillStats(WritableSheet sheet) throws WriteException {
 
         Label label;
         Number num;
-        Formula f;
 
         int i = 4;
 
@@ -108,8 +194,7 @@ public class ExcelDocument {
             addConsults(sheet, p, i);
 
             // Typos
-            //p.typos.getStats();
-            //num = new Number(34, i, p.typos.getTotalNum());
+            num = new Number(34, i, p.incidentlists.get(IncidentType.TYPOS).noElements());
             sheet.addCell(num);
 
             // Revisions
@@ -119,8 +204,7 @@ public class ExcelDocument {
             addProductions(sheet, p, i);
 
             // Sourcetext
-            //p.sourcetext.getStats();
-            //num = new Number(51, i, p.sourcetext.getTotalNum());
+            num = new Number(51, i, p.incidentlists.get(IncidentType.SOURCETEXT).noElements());
             sheet.addCell(num);
 
             // Interrupts
@@ -131,14 +215,8 @@ public class ExcelDocument {
             // End information
             num = new Number(52, i, p.lengthProcess);
             sheet.addCell(num);
-            
-            String complete;
-            if (p.complete) {
-                complete = "yes";
-            } else {
-                complete = "no";
-            }
-            label = new Label(53, i, complete);
+
+            label = new Label(53, i, p.complete);
             sheet.addCell(label);
             if (p.startRevision == p.endProcess) {
                 label = new Label(54, i, "n.a.");
@@ -149,14 +227,7 @@ public class ExcelDocument {
             }
             label = new Label(55, i, p.direction);
             sheet.addCell(label);
-            String concurrent;
-            if (p.concurrentVisibility) {
-                concurrent = "yes";
-            } else {
-                concurrent = "no";
-            }
-
-            label = new Label(56, i, concurrent);
+            label = new Label(56, i, p.concurrentVisibility);
             sheet.addCell(label);
 
             i++;
@@ -166,63 +237,36 @@ public class ExcelDocument {
 
     private void addProductions(WritableSheet sheet, Transcript p, int i) throws WriteException {
 
-        /*
+
         Number num = new Number(0, 0, 0);
         Label label;
 
-        for (IncidentList t : p.productions) {
-            t.getStats();
-        }
-
-        // all writing 51
-        num = new Number(47, i, p.productions.get(0).getTotalNum()
-                + p.productions.get(1).getTotalNum() + p.productions.get(2).getTotalNum());
+        num = new Number(47, i, p.incidentlists.get(IncidentType.PRODUCTION).noElements());
         sheet.addCell(num);
 
-        num = new Number(48, i, p.productions.get(0).getTotalNum());
+        num = new Number(48, i, p.incidentlists.get(IncidentType.PR_WRITESHORT).noElements());
         sheet.addCell(num);
-        num = new Number(49, i, p.productions.get(1).getTotalNum() + p.productions.get(2).getTotalNum());
+        num = new Number(49, i, p.incidentlists.get(IncidentType.PR_WRITELONG).noElements()
+                + p.incidentlists.get(IncidentType.PR_WRITETYPO).noElements());
         sheet.addCell(num);
-        num = new Number(50, i, p.productions.get(2).getTotalNum());
+        num = new Number(50, i, p.incidentlists.get(IncidentType.PR_WRITETYPO).noElements());
         sheet.addCell(num);
 
 
-        int totalnum1 = p.productions.get(1).getTotalNum();
-        int totalnum2 = p.productions.get(2).getTotalNum();
-        int totaltime1, totaltime2;
-        int minlength1, minlength2;
-        int maxlength1, maxlength2;
-        if (totalnum1 > 0) {
-            totaltime1 = p.productions.get(1).getTotalTime();
-            minlength1 = p.productions.get(1).getMinLength();
-            maxlength1 = p.productions.get(1).getMaxLength();
-        } else {
-            totaltime1 = 0;
-            minlength1 = 99999;
-            maxlength1 = 0;
-        }
+        IncidentList productions = IncidentList.addLists(
+                p.incidentlists.get(IncidentType.PR_WRITELONG),
+                p.incidentlists.get(IncidentType.PR_WRITETYPO));
 
-        if (totalnum2 > 0) {
-            totaltime2 = p.productions.get(2).getTotalTime();
-            minlength2 = p.productions.get(2).getMinLength();
-            maxlength2 = p.productions.get(2).getMaxLength();
-        } else {
-            totaltime2 = 0;
-            minlength2 = 99999;
-            maxlength2 = 0;
-        }
-
-        int totaltime = totaltime1 + totaltime2;
-        int maxlength = Math.max(maxlength1, maxlength2);
-        int minlength = Math.min(minlength1, minlength2);
-
-        if (totalnum1 > 0 || totalnum2 > 0 || p.productions.get(0).getTotalNum() > 0) {
+        productions.getStats();
+        p.incidentlists.get(IncidentType.PR_WRITESHORT).getStats();
+        
+        if (productions.noElements() > 0 || p.incidentlists.get(IncidentType.PR_WRITESHORT).noElementsTime > 0) {
             if (p.startDrafting == p.endProcess) {
-               label = new Label(9, i, "n/a");
-            sheet.addCell(label); 
+                label = new Label(9, i, "n/a");
+                sheet.addCell(label);
             } else {
-            num = new Number(9, i, p.startDrafting - p.startProcess);
-            sheet.addCell(num);
+                num = new Number(9, i, p.startDrafting - p.startProcess);
+                sheet.addCell(num);
             }
         } else {
             label = new Label(9, i, "n/a");
@@ -230,20 +274,20 @@ public class ExcelDocument {
         }
 
 
-        if (p.productions.get(0).getTotalNum() > 0 || minlength < 5) {
-            label = new Label(11, i, "< 5");
-            sheet.addCell(label);
-        } else {
-            num = new Number(11, i, minlength);
-        }
-
-        if (totalnum1 > 0 || totalnum2 > 0) {
-            num = new Number(10, i, totaltime);
+        if (productions.noElements() > 0) {
+            num = new Number(10, i, productions.getTotalTime());
             sheet.addCell(num);
-            num = new Number(12, i, maxlength);
+            if (p.incidentlists.get(IncidentType.PR_WRITESHORT).noElements() > 0
+                    || productions.getMinLength() < 5) {
+                label = new Label(11, i, "< 5");
+                sheet.addCell(label);
+            } else {
+                num = new Number(11, i, productions.getMinLength());
+                sheet.addCell(num);
+            }
+            num = new Number(12, i, productions.getMaxLength());
             sheet.addCell(num);
-            double avglength = (double) totaltime / (totalnum1 + totalnum2);
-            num = new Number(13, i, avglength);
+            num = new Number(13, i, productions.getAvgLength());
             sheet.addCell(num);
         } else {
 
@@ -256,9 +300,6 @@ public class ExcelDocument {
             label = new Label(13, i, "n/a");
             sheet.addCell(label);
         }
-         * 
-         */
-
 
     }
 
@@ -270,50 +311,34 @@ public class ExcelDocument {
      * @param j
      */
     private void addRevisions(WritableSheet sheet, Transcript p, int i) throws WriteException {
-        Number num1 = new Number(0, 0, 0);
+        Number num = new Number(0, 0, 0);
 
-        int numrev = 0;
-        int numrev2 = 0;
+        num = new Number(35, i, p.incidentlists.get(IncidentType.REVISION).noElements());
+        sheet.addCell(num);
+        num = new Number(36, i, p.incidentlists.get(IncidentType.REVISION).sublist(IncidentType.R_REVISION).noElements());
+        sheet.addCell(num);
 
-        /*
-        for (IncidentList t : p.revisions) {
-            t.getStats();
-            if (t.subtype.equalsIgnoreCase("revision")) {
-                numrev += t.getTotalNum();
-            } else if (t.subtype.equalsIgnoreCase("revision2")) {
-                numrev2 += t.getTotalNum();
-            }
+        num = new Number(37, i, p.incidentlists.get(IncidentType.R_DELETES).sublist(IncidentType.R_REVISION).noElements());
+        sheet.addCell(num);
+        num = new Number(38, i, p.incidentlists.get(IncidentType.R_DELETES).sublist(IncidentType.R_REVISION2).noElements());
+        sheet.addCell(num);
+        num = new Number(39, i, p.incidentlists.get(IncidentType.R_INSERTS).sublist(IncidentType.R_REVISION).noElements());
+        sheet.addCell(num);
+        num = new Number(40, i, p.incidentlists.get(IncidentType.R_INSERTS).sublist(IncidentType.R_REVISION2).noElements());
+        sheet.addCell(num);
+        num = new Number(41, i, p.incidentlists.get(IncidentType.R_PASTES).sublist(IncidentType.R_REVISION).noElements());
+        sheet.addCell(num);
+        num = new Number(42, i, p.incidentlists.get(IncidentType.R_PASTES).sublist(IncidentType.R_REVISION2).noElements());
+        sheet.addCell(num);
+        num = new Number(43, i, p.incidentlists.get(IncidentType.R_MOVESTO).sublist(IncidentType.R_REVISION).noElements());
+        sheet.addCell(num);
+        num = new Number(44, i, p.incidentlists.get(IncidentType.R_MOVESTO).sublist(IncidentType.R_REVISION2).noElements());
+        sheet.addCell(num);
+        num = new Number(45, i, p.incidentlists.get(IncidentType.R_UNDOES).sublist(IncidentType.R_REVISION).noElements());
+        sheet.addCell(num);
+        num = new Number(46, i, p.incidentlists.get(IncidentType.R_UNDOES).sublist(IncidentType.R_REVISION2).noElements());
+        sheet.addCell(num);
 
-            if (t.type.equalsIgnoreCase("deletes") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(37, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("deletes") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(38, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("inserts") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(39, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("inserts") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(40, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("pastes") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(41, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("pastes") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(42, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("moves to") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(43, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("moves to") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(44, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("undoes") && t.subtype.equalsIgnoreCase("revision")) {
-                num1 = new Number(45, i, t.getTotalNum());
-            } else if (t.type.equalsIgnoreCase("undoes") && t.subtype.equalsIgnoreCase("revision2")) {
-                num1 = new Number(46, i, t.getTotalNum());
-            }
-            sheet.addCell(num1);
-        }
-
-        num1 = new Number(35, i, numrev2 + numrev);
-        sheet.addCell(num1);
-        num1 = new Number(36, i, numrev);
-        sheet.addCell(num1);
-         * 
-         */
     }
 
     /**
@@ -325,36 +350,23 @@ public class ExcelDocument {
      * @throws WriteException
      */
     private void addInterrupts(WritableSheet sheet, Transcript p, int i) throws WriteException {
-        Number num1 = new Number(0, 0, 0);
+        Number num = new Number(0, 0, 0);
 
-        int total = 0;
+        num = new Number(55, i, p.incidentlists.get(IncidentType.INTERRUPTION).noElements());
+        sheet.addCell(num);
+        num = new Number(56, i, p.incidentlists.get(IncidentType.I_PRIVATEMAIL).noElements());
+        sheet.addCell(num);
+        num = new Number(57, i, p.incidentlists.get(IncidentType.I_JOBMAIL).noElements());
+        sheet.addCell(num);
+        num = new Number(58, i, p.incidentlists.get(IncidentType.I_INTERNET).noElements());
+        sheet.addCell(num);
+        num = new Number(59, i, p.incidentlists.get(IncidentType.I_TASK).noElements());
+        sheet.addCell(num);
+        num = new Number(60, i, p.incidentlists.get(IncidentType.I_WORKFLOW).noElements());
+        sheet.addCell(num);
+        num = new Number(61, i, p.incidentlists.get(IncidentType.I_BREAK).noElements());
+        sheet.addCell(num);
 
-        /*
-        for (IncidentList t : p.interrupts) {
-            t.getStats();
-
-            if (t.subtype.equalsIgnoreCase("privatemail")) {
-                num1 = new Number(56, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("jobmail")) {
-                num1 = new Number(57, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("internet")) {
-                num1 = new Number(58, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("task")) {
-                num1 = new Number(59, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("workflow")) {
-                num1 = new Number(60, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("break")) {
-                num1 = new Number(61, i, t.getTotalNum());
-            }
-            total = total + t.getTotalNum();
-
-            sheet.addCell(num1);
-        }
-
-        num1 = new Number(55, i, total);
-        sheet.addCell(num1);
-         * 
-         */
     }
 
     /**
@@ -366,36 +378,24 @@ public class ExcelDocument {
      * @throws WriteException
      */
     private void addPauses(WritableSheet sheet, Transcript p, int i) throws WriteException {
-        Number num1 = new Number(0, 0, 0);
+        Number num = new Number(0, 0, 0);
 
-        int total = 0;
-
-        /*
-        for (IncidentList t : p.pauses) {
-            t.getStats();
-            if (t.type.equalsIgnoreCase("pause")) {
-                num1 = new Number(15, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("consults")) {
-                num1 = new Number(16, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("readsTask")) {
-                num1 = new Number(17, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("readsST")) {
-                num1 = new Number(18, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("readsTT")) {
-                num1 = new Number(19, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("readsST+TT")) {
-                num1 = new Number(20, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("unclear")) {
-                num1 = new Number(21, i, t.getTotalNum());
-            }
-            total = total + t.getTotalNum();
-            sheet.addCell(num1);
-        }
-
-        num1 = new Number(14, i, total);
-        sheet.addCell(num1);
-         * 
-         */
+        num = new Number(14, i, p.incidentlists.get(IncidentType.PAUSE).noElements());
+        sheet.addCell(num);
+        num = new Number(15, i, p.incidentlists.get(IncidentType.P_SIMPLE).noElements());
+        sheet.addCell(num);
+        num = new Number(16, i, p.incidentlists.get(IncidentType.P_CONSULTS).noElements());
+        sheet.addCell(num);
+        num = new Number(17, i, p.incidentlists.get(IncidentType.P_READSTASK).noElements());
+        sheet.addCell(num);
+        num = new Number(18, i, p.incidentlists.get(IncidentType.P_READSST).noElements());
+        sheet.addCell(num);
+        num = new Number(19, i, p.incidentlists.get(IncidentType.P_READSTT).noElements());
+        sheet.addCell(num);
+        num = new Number(20, i, p.incidentlists.get(IncidentType.P_READSSTTT).noElements());
+        sheet.addCell(num);
+        num = new Number(21, i, p.incidentlists.get(IncidentType.P_UNCLEAR).noElements());
+        sheet.addCell(num);
     }
 
     /**
@@ -407,86 +407,44 @@ public class ExcelDocument {
      * @throws WriteException
      */
     private void addConsults(WritableSheet sheet, Transcript p, int i) throws WriteException {
-        Number num1 = new Number(0, 0, 0);
+        Number num = new Number(0, 0, 0);
 
-        float totaltime = 0;
-        float totalnum = 0;
-        float shortest = p.lengthProcess;
-        float longest = 0;
+        num = new Number(22, i, p.incidentlists.get(IncidentType.CONSULTATION).noElements());
+        sheet.addCell(num);
+        num = new Number(23, i, p.incidentlists.get(IncidentType.C_SEARCHENG).noElements());
+        sheet.addCell(num);
+        num = new Number(24, i, p.incidentlists.get(IncidentType.C_ENCYCLOPEDIA).noElements());
+        sheet.addCell(num);
+        num = new Number(25, i, p.incidentlists.get(IncidentType.C_DICTIONARY).noElements());
+        sheet.addCell(num);
+        num = new Number(26, i, p.incidentlists.get(IncidentType.C_PORTALS).noElements());
+        sheet.addCell(num);
+        num = new Number(33, i, p.incidentlists.get(IncidentType.C_OTHER).noElements());
+        sheet.addCell(num);
+        num = new Number(27, i, p.incidentlists.get(IncidentType.C_TERMBANKS).noElements());
+        sheet.addCell(num);
+        num = new Number(28, i, p.incidentlists.get(IncidentType.C_WFCONTEXT).noElements());
+        sheet.addCell(num);
+        num = new Number(29, i, p.incidentlists.get(IncidentType.C_WFSTYLEGUIDE).noElements());
+        sheet.addCell(num);
+        num = new Number(30, i, p.incidentlists.get(IncidentType.C_WFGLOSSARY).noElements());
+        sheet.addCell(num);
+        num = new Number(31, i, p.incidentlists.get(IncidentType.C_WFPARALLELTEXT).noElements());
+        sheet.addCell(num);
+        num = new Number(32, i, p.incidentlists.get(IncidentType.C_CONCORDANCE).noElements());
+        sheet.addCell(num);
 
-/*
-        for (IncidentList t : p.consults) {
-            t.getStats();
+        p.incidentlists.get(IncidentType.CONSULTATION).getStats();
 
-            totalnum += t.getTotalNum();
-
-            if (t.getTotalTime() != -1) {
-                totaltime += t.getTotalTime();
-            }
-            if (t.getMinLength() != -1 && t.getMinLength() < shortest) {
-                shortest = t.getMinLength();
-            }
-            if (t.getMaxLength() > longest) {
-                longest = t.getMaxLength();
-            }
-
-            if (t.subtype.equalsIgnoreCase("Search engines")) {
-                num1 = new Number(23, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Online encyclopedias")) {
-                num1 = new Number(24, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Online Dictionaries")) {
-                num1 = new Number(25, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Portals")) {
-                num1 = new Number(26, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Other Resources")) {
-                num1 = new Number(33, i, t.getTotalNum());
-            }
-            sheet.addCell(num1);
-        }
-
-        for (IncidentList t : p.consults2) {
-            t.getStats();
-
-            totalnum += t.getTotalNum();
-
-            if (t.getTotalTime() != -1) {
-                totaltime += t.getTotalTime();
-            }
-            if (t.getMinLength() != -1 && t.getMinLength() < shortest) {
-                shortest = t.getMinLength();
-            }
-            if (t.getMaxLength() > longest) {
-                longest = t.getMaxLength();
-            }
-
-            if (t.subtype.equalsIgnoreCase("Termbanks")) {
-                num1 = new Number(27, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Workflow context")) {
-                num1 = new Number(28, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Workflow style guide")) {
-                num1 = new Number(29, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Workflow glossary")) {
-                num1 = new Number(30, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Workflow parallel text")) {
-                num1 = new Number(31, i, t.getTotalNum());
-            } else if (t.subtype.equalsIgnoreCase("Concordance")) {
-                num1 = new Number(32, i, t.getTotalNum());
-            }
-            sheet.addCell(num1);
-
-        }
-
-
-        if (totalnum > 0) {
-            double average = (double) totaltime / (double) totalnum;
-            num1 = new Number(5, i, totaltime);
-            sheet.addCell(num1);
-            num1 = new Number(6, i, shortest);
-            sheet.addCell(num1);
-            num1 = new Number(7, i, longest);
-            sheet.addCell(num1);
-            num1 = new Number(8, i, average);
-            sheet.addCell(num1);
+        if (p.incidentlists.get(IncidentType.CONSULTATION).noElementsTime > 0) {
+            num = new Number(5, i, p.incidentlists.get(IncidentType.CONSULTATION).getTotalTime());
+            sheet.addCell(num);
+            num = new Number(6, i, p.incidentlists.get(IncidentType.CONSULTATION).getMinLength());
+            sheet.addCell(num);
+            num = new Number(7, i, p.incidentlists.get(IncidentType.CONSULTATION).getMaxLength());
+            sheet.addCell(num);
+            num = new Number(8, i, p.incidentlists.get(IncidentType.CONSULTATION).getAvgLength());
+            sheet.addCell(num);
         } else {
             Label label = new Label(5, i, "n/a");
             sheet.addCell(label);
@@ -498,10 +456,6 @@ public class ExcelDocument {
             sheet.addCell(label);
         }
 
-        num1 = new Number(22, i, totalnum);
-        sheet.addCell(num1);
- * 
- */
 
     }
 }

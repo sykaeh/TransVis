@@ -49,10 +49,11 @@ public enum IncidentType {
     
         
     // Subtype production
-    PR_WRITENOTIME ("Writes no time"),    // <incident type="writes" >
+    PR_WRITESHORT ("Writes no time or < 5 seconds"),    // <incident type="writes" >
     PR_WRITETYPO ("Writes with a typo"),
-    PR_WRITE ("Writes"),
-    PR_MATCH ("Match"),     // <incident type="accepts" subtype="match">
+    PR_WRITELONG ("Writes ≥ 5 seconds"),
+    
+    MATCH ("Match"),     // <incident type="accepts" subtype="match">
     
     // Subtypes revision
     R_DELETES ("Deletes"),         // <incident type="deletes" subtype="(revision|revision2)">

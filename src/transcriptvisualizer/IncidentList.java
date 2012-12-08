@@ -10,121 +10,76 @@ import java.util.List;
  */
 public class IncidentList {
 
-    public List<Integer[]> times;
-    public List<Integer> lengths;
-    
-    public String type;
-    public String name;
-    public String subtype;
-    public String[] src;
-    private int maxLength;
-    private int minLength;
+    private float maxLength;
+    private float minLength;
     private float avgLength;
-    private int totalTime;
-    private int firstTime;
-    private int lastTime;
-    public int count;
-    
+    private float totalTime;
+    public int noElementsTime;
+    private boolean validTimes;
+    private boolean calculated;
+
     public List<Incident> elements;
     public IncidentType group;
-
     
+
     public IncidentList(IncidentType main) {
         group = main;
         elements = new LinkedList<Incident>();
+        calculated = false;
 
     }
-    
+
     public void add(Incident i) {
         elements.add(i);
-        
+        if (i.validTimes) {
+            validTimes = true;
+        }
+
     }
-    
+
     public int noElements() {
         return elements.size();
     }
-    
-    
-    /**
-     * Public constructor
-     * @param t the type of the tag 
-     * @param subt the subtype of the tag
-     * @param sources list of sources (only for the 'consults' tag)
-     */
-    public IncidentList(String n, String t, String subt, String[] sources) {
 
-        type = t;
-        name = n;
-        subtype = subt;
-        src = sources;
-        times = new LinkedList<Integer[]>();
-        lengths = new LinkedList<Integer>();
-
+    public IncidentList sublist(IncidentType revType) {
+        IncidentList sublist = new IncidentList(group);
+        for (Incident i : elements) {
+            if (i.revisionType == revType) {
+                sublist.add(i);
+            }
+        }
+        
+        return sublist;
     }
-
-    /**
-     * Public constructor
-     * @param t type of tag
-     * @param subt subtype of tag
-     */
-    public IncidentList(String n, String t, String subt) {
-
-        type = t;
-        name = n;
-        subtype = subt;
-        src = new String[]{};
-        times = new LinkedList<Integer[]>();
-        lengths = new LinkedList<Integer>();
-
-    }
-
+    
     /**
      * Calculate all of the relevant statistics pertaining to this IncidentList and
      * save them in the appropriate fields.
      */
     public void getStats() {
 
+        calculated = true;
         maxLength = -1;
         totalTime = -1;
         avgLength = -1;
+        noElementsTime = 0;
 
-        if (lengths.isEmpty()) {
+        if (!validTimes) {
             minLength = -1;
         } else {
-            minLength = lengths.get(0);
+            minLength = elements.get(0).length();
             totalTime = 0;
-            for (int i = 0; i < lengths.size(); i++) {
-                int curr = lengths.get(i);
-                if (curr < minLength) {
-                    minLength = curr;
+            for (Incident i : elements) {
+                if (i.validTimes) {
+                    minLength = Math.min(minLength, i.length());
+                    maxLength = Math.max(maxLength, i.length());
+                    totalTime += i.length();
+                    noElementsTime++;
                 }
-                if (curr > maxLength) {
-                    maxLength = curr;
-                }
-                totalTime += curr;
             }
-            avgLength = totalTime / lengths.size();
+            avgLength = totalTime / noElementsTime;
         }
 
-        lastTime = 0;
-
-
-        if (!times.isEmpty()) {
-            firstTime = times.get(0)[0];
-        } else {
-            firstTime = -1;
-            return;
-        }
-
-        for (int i = 0; i < times.size(); i++) {
-            Integer[] time = times.get(i);
-            if (time[0] < firstTime) {
-                firstTime = time[0];
-            }
-            if (time[1] > lastTime) {
-                lastTime = time[1];
-            }
-        }
     }
 
     /**
@@ -132,7 +87,8 @@ public class IncidentList {
      * @return the longest time span of this tag.
      */
     public int getMaxLength() {
-        return maxLength;
+        if (!calculated) getStats();
+        return (int)maxLength;
     }
 
     /**
@@ -140,7 +96,8 @@ public class IncidentList {
      * @return the shortest time span of this tag
      */
     public int getMinLength() {
-        return minLength;
+        if (!calculated) getStats();
+        return (int)minLength;
     }
 
     /**
@@ -148,6 +105,7 @@ public class IncidentList {
      * @return the average time span
      */
     public float getAvgLength() {
+        if (!calculated) getStats();
         return avgLength;
     }
 
@@ -156,30 +114,17 @@ public class IncidentList {
      * @return the total amount of time
      */
     public int getTotalTime() {
-        return totalTime;
+        if (!calculated) getStats();
+        return (int)totalTime;
+    }
+    
+    public static IncidentList addLists(IncidentList l1, IncidentList l2) {
+        IncidentList new_list = new IncidentList(IncidentType.UNDEFINED);
+        new_list.elements.addAll(l1.elements);
+        new_list.elements.addAll(l2.elements);
+        new_list.validTimes = l1.validTimes || l2.validTimes;
+        
+        return new_list;
     }
 
-    /**
-     * Get the total amount of times this tag was found
-     * @return the total amount of times this tag was found
-     */
-    public int getTotalNum() {
-        return times.size();
-    }
-
-    /**
-     * Return the time of the first occurrence of this tag
-     * @return the time of the first tag
-     */
-    public int getFirstTime() {
-        return firstTime;
-    }
-
-    /**
-     * Return the time of the last occurrence of this tag
-     * @return the time of the last tag
-     */
-    public int getLastTime() {
-        return lastTime;
-    }
 }

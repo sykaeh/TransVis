@@ -12,14 +12,14 @@ public class Incident {
 
     public IncidentType group;
     public IncidentType subgroup;
-    public IncidentType revisiontype;
+    public IncidentType revisionType;
     public float start;
     public float end;
-    public float length;
+    
     public boolean validTimes;
     public String type;
     public String subtype;
-    public String subsubtype;
+    
     private Element tag;
     private Transcript transcript;
     
@@ -30,6 +30,7 @@ public class Incident {
     // only for IncidentType.REVISION
     public String before;
     public String after;
+    public String subsubtype;
     
 
     public Incident(Element e, Transcript t) {
@@ -91,14 +92,27 @@ public class Incident {
             after = "";
         }
         
+        if (e.hasAttribute("subsubtype")) {
+            subsubtype = e.getAttribute("subsubtype").toLowerCase().trim();
+        } else {
+            subsubtype = "";
+        }
+        
         classify();
 
     }
 
+    public float length() {
+        return end - start;
+    }
+    
+    
     private void classify() {
 
-
-
+        group = IncidentType.UNDEFINED;
+        subgroup = IncidentType.UNDEFINED;
+        revisionType = IncidentType.UNDEFINED;
+        
         if (type.equals("consults")) {
             group = IncidentType.CONSULTATION;
             classifyConsults();
@@ -120,8 +134,6 @@ public class Incident {
                 subgroup = IncidentType.I_BREAK;
             } else if (subtype.equals("jobmail")) {
                 subgroup = IncidentType.I_JOBMAIL;
-            } else {
-                subgroup = IncidentType.UNDEFINED;
             }
 
         } else if (type.equals("pause")) {
@@ -141,8 +153,6 @@ public class Incident {
                 subgroup = IncidentType.P_READSSTTT;
             } else if (subtype.equals("unclear")) {
                 subgroup = IncidentType.P_UNCLEAR;
-            } else {
-                subgroup = IncidentType.UNDEFINED;
             }
 
         } else if (subtype.equals("st")) {
@@ -155,27 +165,23 @@ public class Incident {
 
         } else if (type.equals("writes")) {
             group = IncidentType.PRODUCTION;
-            if (validTimes) {
-                subgroup = IncidentType.PR_WRITE;
+            if (validTimes && length() >= 5) {
+                subgroup = IncidentType.PR_WRITELONG;
             } else {
-                subgroup = IncidentType.PR_WRITENOTIME;
+                subgroup = IncidentType.PR_WRITESHORT;
             }
         } else if (type.equals("accepts") && subtype.equals("match")) {
-            group = IncidentType.PRODUCTION;
-            subgroup = IncidentType.PR_MATCH;
+            group = IncidentType.MATCH;
+            subgroup = IncidentType.NOSUBGROUP;
             
         } else if (subtype.equals("revision")) {
             group = IncidentType.REVISION;
-            revisiontype = IncidentType.R_REVISION;
+            revisionType = IncidentType.R_REVISION;
             classifyRevisions();
         } else if (subtype.equals("revision2")) {
             group = IncidentType.REVISION;
-            revisiontype = IncidentType.R_REVISION2;
+            revisionType = IncidentType.R_REVISION2;
             classifyRevisions();
-
-        } else {
-            group = IncidentType.UNDEFINED;
-            subgroup = IncidentType.UNDEFINED;
         }
     }
 
@@ -277,8 +283,6 @@ public class Incident {
             subgroup = IncidentType.R_MOVESTO;
         } else if (type.contains("undoes")) {
             subgroup = IncidentType.R_UNDOES;  
-        } else {
-            subgroup = IncidentType.UNDEFINED;
         }
         
     }
