@@ -350,7 +350,6 @@ public class MainApp extends SingleFrameApplication {
         XYSeriesCollection data = new XYSeriesCollection();
 
         List<Object[]> annotList = new LinkedList<Object[]>();
-        annotList.add(new Object[]{"No actions", 6}); // used to be pauses
         annotList.add(new Object[]{"Resources", 5}); // used to be consults
         annotList.add(new Object[]{"Typos", 4});
         annotList.add(new Object[]{"Revisions", 3});
@@ -365,13 +364,6 @@ public class MainApp extends SingleFrameApplication {
 
             nameField += p.name + ", ";
             processNames.add(p.name);
-
-            XYSeries pauses = new XYSeries("pauses " + p.name);
-            // the pauses
-            for (Incident e : p.incidentlists.get(IncidentType.PAUSE).elements) {
-                addToSeries(pauses, e, pos + 5);
-            }
-            data.addSeries(pauses);
 
             XYSeries consults = new XYSeries("consults " + p.name);
             // All consultations
@@ -416,7 +408,7 @@ public class MainApp extends SingleFrameApplication {
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null, "Time [in sec]", null, data,
                 PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, 7);
+        r.drawGraph(chart, annotList, processNames, 6);
 
     }
 
@@ -715,6 +707,10 @@ public class MainApp extends SingleFrameApplication {
             annotList.add((new Object[]{"TT writing", ypos}));
             ypos++;
         }
+        if (view.getMatches()) {
+            annotList.add((new Object[] {"TM input", ypos}));
+            ypos++;
+        }
         if (view.getIndInterrupts()) {
             annotList.add((new Object[]{"Break", ypos}));
             ypos++;
@@ -827,6 +823,15 @@ public class MainApp extends SingleFrameApplication {
                     addToSeries(writing, e, pos + i);
                 }
                 data.addSeries(writing);
+                i++;
+            }
+            
+            if (view.getMatches()) {
+                XYSeries matches = new XYSeries("matches " + p.name);
+                for (Incident e : p.incidentlists.get(IncidentType.MATCH).elements) {
+                    addToSeries(matches, e, pos + i);
+                }
+                data.addSeries(matches);
                 i++;
             }
 

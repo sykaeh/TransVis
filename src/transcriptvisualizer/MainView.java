@@ -254,6 +254,14 @@ public class MainView extends FrameView {
     public boolean getTypos() {
         return typosCB.isSelected();
     }
+    
+    /**
+     * Determines whether the typos should be displayed.
+     * @return true if the typos should be displayed
+     */
+    public boolean getMatches() {
+        return matchesCB.isSelected();
+    }
 
     /**
      * Determines whether the individual consults should be displayed.
@@ -329,6 +337,7 @@ public class MainView extends FrameView {
         jLabel1 = new javax.swing.JLabel();
         revisionsingleRB = new javax.swing.JRadioButton();
         revisioncombinedRB = new javax.swing.JRadioButton();
+        matchesCB = new javax.swing.JCheckBox();
         timePanel = new javax.swing.JPanel();
         endTimeField = new javax.swing.JTextField();
         startTimeField = new javax.swing.JTextField();
@@ -378,7 +387,6 @@ public class MainView extends FrameView {
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
-        pausesCB.setSelected(true);
         pausesCB.setText(resourceMap.getString("pausesCB.text")); // NOI18N
         pausesCB.setName("pausesCB"); // NOI18N
 
@@ -430,6 +438,10 @@ public class MainView extends FrameView {
         revisioncombinedRB.setText(resourceMap.getString("revisioncombinedRB.text")); // NOI18N
         revisioncombinedRB.setName("revisioncombinedRB"); // NOI18N
 
+        matchesCB.setSelected(true);
+        matchesCB.setText(resourceMap.getString("matchesCB.text")); // NOI18N
+        matchesCB.setName("matchesCB"); // NOI18N
+
         org.jdesktop.layout.GroupLayout optionsPanelLayout = new org.jdesktop.layout.GroupLayout(optionsPanel);
         optionsPanel.setLayout(optionsPanelLayout);
         optionsPanelLayout.setHorizontalGroup(
@@ -451,6 +463,7 @@ public class MainView extends FrameView {
                                 .add(revisionsingleRB))
                             .add(42, 42, 42)
                             .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(matchesCB)
                                 .add(revisioncombinedRB)
                                 .add(indconsultsCB)
                                 .add(indpausesCB)
@@ -495,7 +508,9 @@ public class MainView extends FrameView {
                         .add(26, 26, 26)
                         .add(indrevisionsCB)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(indinterruptsCB)))
+                        .add(indinterruptsCB)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(matchesCB)))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -824,6 +839,7 @@ public class MainView extends FrameView {
     private java.awt.Label label1;
     private javax.swing.JButton mainGraphButton;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JCheckBox matchesCB;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JTextArea multFilesField;
     private javax.swing.JPanel optionsPanel;

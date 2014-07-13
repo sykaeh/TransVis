@@ -326,6 +326,9 @@ public class Transcript {
     private void handle_two_step_write(Element e, Element possible_write) {
 
         Incident i = new Incident(e, this);
+        if (i.start < 0 || i.end > lengthAdjustment) {
+            return;
+        }
 
         float end = 0;
         if (possible_write.hasAttribute("end")) {
