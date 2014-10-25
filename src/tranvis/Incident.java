@@ -1,4 +1,4 @@
-package transcriptvisualizer;
+package tranvis;
 
 import java.util.Arrays;
 import java.util.List;

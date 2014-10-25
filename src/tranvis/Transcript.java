@@ -1,4 +1,4 @@
-package transcriptvisualizer;
+package tranvis;
 
 import java.io.File;
 import java.io.IOException;

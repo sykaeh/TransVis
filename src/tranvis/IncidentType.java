@@ -1,4 +1,4 @@
-package transcriptvisualizer;
+package tranvis;
 
 /**
  *

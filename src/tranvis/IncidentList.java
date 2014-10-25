@@ -1,4 +1,4 @@
-package transcriptvisualizer;
+package tranvis;
 
 import java.util.LinkedList;
 import java.util.List;

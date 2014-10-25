@@ -458,7 +458,7 @@
             <Component class="javax.swing.JButton" name="addFolderButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainView" id="showFolderChooser" methodName="showFolderChooser"/>
+                  <action class="tranvis.MainView" id="showFolderChooser" methodName="showFolderChooser"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="addFolderButton.text"/>
                 <Property name="name" type="java.lang.String" value="addFolderButton" noResource="true"/>
@@ -494,7 +494,7 @@
             <Component class="javax.swing.JButton" name="addFileButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainView" id="showAddFileChooser" methodName="showAddFileChooser"/>
+                  <action class="tranvis.MainView" id="showAddFileChooser" methodName="showAddFileChooser"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="addFileButton.text"/>
                 <Property name="name" type="java.lang.String" value="addFileButton" noResource="true"/>
@@ -515,7 +515,7 @@
             <Component class="javax.swing.JButton" name="clearButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainView" id="clearAllFiles" methodName="clearAllFiles"/>
+                  <action class="tranvis.MainView" id="clearAllFiles" methodName="clearAllFiles"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="clearButton.text"/>
                 <Property name="name" type="java.lang.String" value="clearButton" noResource="true"/>
@@ -583,7 +583,7 @@
             <Component class="javax.swing.JButton" name="mainGraphButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="displayMainGraphClicked" methodName="displayMainGraphClicked"/>
+                  <action class="tranvis.MainApp" id="displayMainGraphClicked" methodName="displayMainGraphClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="mainGraphButton.text"/>
                 <Property name="name" type="java.lang.String" value="mainGraphButton" noResource="true"/>
@@ -592,7 +592,7 @@
             <Component class="javax.swing.JButton" name="consultsGraphButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="displayConsultsGraphClicked" methodName="displayConsultsGraphClicked"/>
+                  <action class="tranvis.MainApp" id="displayConsultsGraphClicked" methodName="displayConsultsGraphClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="consultsGraphButton.text"/>
                 <Property name="name" type="java.lang.String" value="consultsGraphButton" noResource="true"/>
@@ -601,7 +601,7 @@
             <Component class="javax.swing.JButton" name="revisionsGraphButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="displayRevisionsGraphClicked" methodName="displayRevisionsGraphClicked"/>
+                  <action class="tranvis.MainApp" id="displayRevisionsGraphClicked" methodName="displayRevisionsGraphClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="revisionsGraphButton.text"/>
                 <Property name="name" type="java.lang.String" value="revisionsGraphButton" noResource="true"/>
@@ -610,7 +610,7 @@
             <Component class="javax.swing.JButton" name="pausesGraphButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="displayPausesGraphClicked" methodName="displayPausesGraphClicked"/>
+                  <action class="tranvis.MainApp" id="displayPausesGraphClicked" methodName="displayPausesGraphClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="pausesGraphButton.text"/>
                 <Property name="name" type="java.lang.String" value="pausesGraphButton" noResource="true"/>
@@ -619,7 +619,7 @@
             <Component class="javax.swing.JButton" name="customGraphButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="displayCustomGraphClicked" methodName="displayCustomGraphClicked"/>
+                  <action class="tranvis.MainApp" id="displayCustomGraphClicked" methodName="displayCustomGraphClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="customGraphButton.text"/>
                 <Property name="name" type="java.lang.String" value="customGraphButton" noResource="true"/>
@@ -628,7 +628,7 @@
             <Component class="javax.swing.JButton" name="statsButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="exportStatisticsClicked" methodName="exportStatisticsClicked"/>
+                  <action class="tranvis.MainApp" id="exportStatisticsClicked" methodName="exportStatisticsClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="statsButton.text"/>
                 <Property name="name" type="java.lang.String" value="statsButton" noResource="true"/>
@@ -637,7 +637,7 @@
             <Component class="javax.swing.JButton" name="dataButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="transcriptvisualizer.MainApp" id="exportDataClicked" methodName="exportDataClicked"/>
+                  <action class="tranvis.MainApp" id="exportDataClicked" methodName="exportDataClicked"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="dataButton.text"/>
                 <Property name="name" type="java.lang.String" value="dataButton" noResource="true"/>

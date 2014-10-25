@@ -1,4 +1,4 @@
-package transcriptvisualizer;
+package tranvis;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -156,7 +156,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         processNameField = new javax.swing.JTextArea();
         importantInfo = new javax.swing.JLabel();
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(transcriptvisualizer.MainApp.class).getContext().getResourceMap(ResultsWindow.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tranvis.MainApp.class).getContext().getResourceMap(ResultsWindow.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setSize(new java.awt.Dimension(1250, 550));
