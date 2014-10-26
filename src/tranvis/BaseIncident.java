@@ -1,0 +1,61 @@
+package tranvis;
+
+import org.xml.sax.Attributes;
+
+/**
+ * Created by ehrensbe on 25/10/14.
+ */
+public class BaseIncident {
+
+    public int start;
+    public int end;
+
+    public IncidentType group;
+    public IncidentType subgroup;
+
+    public Transcript transcript;
+
+    public String i_type;
+    public String i_subtype;
+
+    public Boolean validTimes = true;
+
+    public BaseIncident(Transcript t, Attributes atts) {
+        transcript = t;
+
+        i_type = atts.getValue("type").toLowerCase();
+        i_subtype = atts.getValue("subtype");
+        if (i_subtype != null)
+            i_subtype = i_subtype.toLowerCase();
+        deal_with_times(atts.getValue("start"), atts.getValue("end"));
+    }
+
+    public float length() {
+        return end - start;
+    }
+
+    private void deal_with_times(String s_start, String s_end) {
+
+        try {
+            start = transcript.adjustTime(Transcript.convertToSeconds(s_start));
+        } catch (NumberFormatException | NullPointerException e) {
+            validTimes = false;
+            Transcript.error("Invalid start time format (" + s_start + "): " + e.getMessage());
+        }
+
+        try {
+            end = transcript.adjustTime(Transcript.convertToSeconds(s_end));
+        } catch (NumberFormatException | NullPointerException e) {
+            Transcript.error("Invalid end time format (" + s_end + "): " + e.getMessage());
+            end = start;
+        }
+
+        if (validTimes && end < start) {
+            Transcript.error("End time (" + s_end + ") before start time (" + s_end + ")");
+            end = start;
+        }
+
+    }
+
+
+}

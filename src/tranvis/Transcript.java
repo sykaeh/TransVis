@@ -1,80 +1,60 @@
 package tranvis;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- *
  * @author Sybil Ehrensberger
  */
 public class Transcript {
 
     /* The name of the file to be analyzed. */
-    public String name;
-    
-    
+    public String name; // name as specified in the name attribute of document
+
+
     public String participant;
     public String group;
     public String competence;
     public String version;
     public String sourcetextname;
     public String experiment;
-    
-    
-    /* direction in recording tag */
-    public String direction;
-    /* startTransProcess in recording tag (in real time) */
-    public float startProcess;
-    /* endTransProcess in recording tag (in real time) */
-    public float endProcess;
-    /* transProcessComplete in recording tag */
-    public String complete;
-    /* startRevision in recording tag (in real time) */
-    public float startRevision;
-    /* KSLavailable in recording tag */
-    public String kslavailable;
-    /* ETavailable in recording tag */
-    public String etavailable;
-    /* concurrentVisibilitySTTT in recording tag */
-    public String etquality;
-    /* concurrentVisibilitySTTT in recording tag */
-    public String concurrentVisibility;
-    /* first write tag  (in real time) */
-    public float startDrafting;
-    
-    
-    // OLD STUFF
-    /* The total length of the process. */
-    public float lengthProcess;
-    /* The total length of the time span we're looking at. */
-    public float lengthAdjustment;
 
-    /* Adjustment time in real time*/
-    public float startAdjustment;
-    /* last time to show in real time */
-    public float endAdjustment;
+    public Recording recording = null;
 
-    public String timespan;
-    private Document doc;
-    private Element rootElement;
-    
+
+    /* Adjustment time [in sec] */
+    public int startAdjustment;
+
+    /* Total time of process (specified by start & end in recording tag) */
+    public int totalTime;
+
+    /* beginning of the drafting phase (first write incident) */
+    public Integer startDrafting = null;
+
+    /* beginning of the revision phase (specified in recording tag) */
+    public int startRevision;
+
+
     public boolean workPlace;
- 
 
-    protected Hashtable<IncidentType, IncidentList> incidentlists;
-    protected IncidentList allIncidents;
+
+    public String selection;
+    public int startSelection; // beginning of the selected timespan
+    public int endSelection; // end of the selected timespan
+    public int durationSelection;
+
+    List<BaseIncident> incidents;
 
     /**
      * Public constructor for a Transcript.
+     *
      * @param fxmlFile the file to be parsed.
      * @throws ParserConfigurationException
      * @throws SAXException
@@ -83,275 +63,216 @@ public class Transcript {
     public Transcript(File fxmlFile)
             throws ParserConfigurationException, SAXException, IOException {
 
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        doc = dBuilder.parse(fxmlFile);
-        doc.getDocumentElement().normalize();
-        
-        incidentlists = new Hashtable();
-        for (IncidentType t : IncidentType.values()) {
-            incidentlists.put(t, new IncidentList(t));
-        }
-        allIncidents = new IncidentList(IncidentType.UNDEFINED);
+        incidents = new LinkedList<>();
+
+        SAXParserFactory parserFactor = SAXParserFactory.newInstance();
+        SAXParser parser = parserFactor.newSAXParser();
+        TranscriptHandler handler = new TranscriptHandler(this);
+        parser.parse(fxmlFile, handler);
+
     }
 
-    private boolean parseFileName() {
-        
+
+    public void setName(String n) {
+
+        name = n;
         String[] parts = name.split("_");
-        if (parts.length != 6) return false;
-        participant = parts[0];
-        group = participant.replaceAll("([A-Z]*)(\\d)*", "$1");
-        competence = parts[1];
-        version = parts[2];
-        sourcetextname = parts[3];
-        experiment = parts[4];
-        return true;
-        
+        if (parts.length == 6) {
+            participant = parts[0];
+            group = participant.replaceAll("([A-Z]*)(\\d)*", "$1");
+            competence = parts[1];
+            version = parts[2];
+            sourcetextname = parts[3];
+            experiment = parts[4];
+        } else
+            fatal("Invalid name attribute: " + name);
     }
 
+    public void addRecording(Recording r) {
 
-    /**
-     * Check whether the document is well-formatted.
-     * @return the string containing the error messages. If there are no errors
-     * return the empty string.
-     */
-    public String check(int type, int start, int end) {
-
-        String error = "";
-        String message = "";
-        rootElement = doc.getDocumentElement();
-        if (!rootElement.getNodeName().equalsIgnoreCase("document")) {
-            error = error.concat("Missing document tag.\n");
+        if (recording != null) {
+            fatal("Multiple recording attributes");
         }
 
-        if (rootElement.hasAttribute("name")) {
-            name = rootElement.getAttribute("name");
-        } else {
-            error = error.concat("Missing name attribute in document tag.\n");
-        }
-        if (!parseFileName()) message = message.concat("Invalid name attribute in document tag. \n");
-        
-
-        NodeList nl = doc.getElementsByTagName("recording");
-
-        if (nl.getLength() != 1) {
-            error = error.concat("No recording information available or multiple recording elements.\n");
-        } else {
-            Element recording = (Element) nl.item(0);
-            if (recording.hasAttribute("startTransProcess")) {
-                startProcess = convertToSeconds(recording.getAttribute("startTransProcess").trim());
-            } else {
-                startProcess = 0;
-                error = error.concat("Missing startTransProcess attribute in recording tag.\n");
-            }
-            
-            if (recording.hasAttribute("endTransProcess")) {
-                endProcess = convertToSeconds(recording.getAttribute("endTransProcess").trim());
-            } else {
-                endProcess = 0;
-                error = error.concat("Missing endTransProcess attribute in recording tag.\n");
-            }
-
-            if (recording.hasAttribute("startRevision")) {
-                String attr = recording.getAttribute("startRevision").trim();
-                if (attr.isEmpty()) {
-                    //@TODO: Notify PERSON!!!
-                    message = message.concat("No revision phase");
-                    startRevision = endProcess;
-                } else {
-                    startRevision = convertToSeconds(attr);
-                }
-            } else {
-                startRevision = 0;
-                error = error.concat("Missing startRevision attribute in recording tag.\n");
-            }
-            if (recording.hasAttribute("transProcessComplete")) {
-                complete = recording.getAttribute("transProcessComplete").trim();
-            } else {
-                message = message.concat("Missing transProcessComplete attribute in recording tag.\n");
-            }
-            if (recording.hasAttribute("KSLavailable")) {
-                kslavailable = recording.getAttribute("KSLavailable").trim();
-            } else {
-                message = message.concat("Missing KSLavailable attribute in recording tag.\n");
-            }
-            if (recording.hasAttribute("ETavailable")) {
-                etavailable = recording.getAttribute("ETavailable").trim();
-            } else {
-                message = message.concat("Missing ETavailable attribute in recording tag.\n");
-            }
-            if (recording.hasAttribute("ETquality")) {
-                etquality = recording.getAttribute("ETquality").trim();
-            } else {
-                message = message.concat("Missing ETquality attribute in recording tag.\n");
-            }
-            
-            
-            if (recording.hasAttribute("direction")) {
-                direction = recording.getAttribute("direction").trim();
-            } else {
-                message = message.concat("Missing direction attribute in recording tag.\n");
-            }
-            
-            if (recording.hasAttribute("concurrentVisibilitySTTT")) {
-                concurrentVisibility = recording.getAttribute("concurrentVisibilitySTTT").trim();
-            } else {
-                message = message.concat("Missing concurrentVisibilitySTTT attribute in recording tag.\n");
-            }
+        try {
+            r.validate(this);
+        } catch (TranscriptError e) {
+            fatal(e.getMessage());
         }
 
-        startDrafting = endProcess;
-        // Find startDrafting (i.e. first write occurence)
-        NodeList incidentList = doc.getElementsByTagName("incident");
-        for (int i = 0; i < incidentList.getLength(); i++) {
-            Element e = (Element) incidentList.item(i);
-            if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
-                if (e.hasAttribute("start")) {
-                    float time = convertToSeconds(e.getAttribute("start"));
-                    if (time > startProcess && time < startDrafting) {
-                        startDrafting = time - 1;
-                    }
-                }
-            }
-        }
+        recording = r;
 
-        System.out.println("Start process: " + startProcess);
-        System.out.println("Start drafting: " + startDrafting);
-        System.out.println("Start revision: " + startRevision);
-        System.out.println("End process: " + endProcess);
+    }
 
-        if (type == 0) { // partial
-            timespan = "Partial Process";
-            startAdjustment = startProcess + start;
-            endAdjustment = startProcess + end;
-        } else if (type == 1) { // complete
-            timespan = "Complete Process";
-            startAdjustment = startProcess;
-            endAdjustment = endProcess;
-        } else if (type == 2) { // orientation
-            timespan = "Orientation Phase";
-            startAdjustment = startProcess;
-            endAdjustment = startDrafting;
-        } else if (type == 3) { // drafting
-            timespan = "Drafting Phase";
-            startAdjustment = startDrafting;
-            endAdjustment = startRevision;
-        } else if (type == 4) { // revision
-            timespan = "Revision Phase";
-            startAdjustment = startRevision;
-            endAdjustment = endProcess;
-        }
+    // TODO: Better error handling!
+    public static void fatal(String s) {
+        System.out.println(s);
+        System.exit(1);
+    }
 
-        if (endAdjustment > endProcess) {
-            endAdjustment = endProcess;
-        }
-        lengthProcess = endProcess - startProcess;
-        lengthAdjustment = endAdjustment - startAdjustment;
-        return error;
+    public static void error(String s) {
+        System.out.println("ERROR: " + s);
     }
 
     /**
-     * Converts a time in a given String of the format HH:MM:SS to seconds 
+     * Converts a time in a given String of the format HH:MM:SS to seconds
      * (an int).
-     * 
      */
-    private float convertToSeconds(String timestring) {
+    public static int convertToSeconds(String timestring) {
 
         String[] times = timestring.trim().split(":");
-        float time = Integer.parseInt(times[0]) * 360
+        int time = Integer.parseInt(times[0]) * 3600
                 + Integer.parseInt(times[1]) * 60 + Integer.parseInt(times[2]);
 
         return time;
     }
 
+
+    public void setSelection(int type, int start, int end) {
+
+        System.out.println("Start process: " + 0);
+        System.out.println("Start drafting: " + startDrafting);
+        System.out.println("Start revision: " + startRevision);
+        System.out.println("End process: " + totalTime);
+
+        switch (type) {
+            case 0: // partial
+                selection = "Partial Process";
+                startSelection = start;
+                endSelection = end;
+                break;
+
+            case 2: // orientation
+                selection = "Orientation Phase";
+                startSelection = 0;
+                endSelection = startDrafting;
+                break;
+            case 3: // drafting
+                selection = "Drafting Phase";
+                startSelection = startDrafting;
+                endSelection = startRevision;
+                break;
+            case 4: // revision
+                selection = "Revision Phase";
+                startSelection = startRevision;
+                endSelection = totalTime;
+                break;
+            case 1: // complete
+            default:
+                selection = "Complete Process";
+                startSelection = 0;
+                endSelection = totalTime;
+                break;
+        }
+
+        if (endSelection > totalTime) {
+            error("Selected end time is after the end of the process");
+            endSelection = totalTime;
+        }
+
+        if (startSelection < 0) {
+            error("Selected start time is negative");
+            startSelection = 0;
+        }
+        durationSelection = endSelection - startSelection;
+    }
+
+
     /**
      * Converts a time (String) of the format HH:MM:SS to seconds and adjusts
      * it to the adjustment start time.
+     *
      * @param timestring a String representing a time (HH:MM:SS)
      * @return an int representing the time in seconds
      */
-    public float convertToReal(String timestring) {
-        float time = convertToSeconds(timestring);
+    public int adjustTime(String timestring) {
+        int time = convertToSeconds(timestring);
         return time - startAdjustment;
     }
 
-    /**
-     * Parses to whole document.
-     */
-    public void parse() {
-
-        // Find all incident tags and handle them accordingly
-        NodeList incidentList = doc.getElementsByTagName("incident");
-        for (int i = 0; i < incidentList.getLength(); i++) {
-            if (incidentList.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                Element e = (Element) incidentList.item(i);
-                
-                if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
-                    Element possible_typo = (Element) incidentList.item(i + 1);
-                    Element possible_write = (Element) incidentList.item(i + 2);
-                    boolean typo = possible_typo != null && (possible_typo.hasAttribute("subtype") && possible_typo.getAttribute("subtype").equalsIgnoreCase("typo"))
-                            || (possible_typo.hasAttribute("type") && possible_typo.getAttribute("type").equalsIgnoreCase("autocorrects"));
-                    boolean writes2 = possible_write != null && possible_write.hasAttribute("type") && possible_write.getAttribute("type").equalsIgnoreCase("writes");
-                    if (typo && writes2) {
-                        handle_two_step_write(e, possible_write);
-                        handleIncident(possible_typo);
-                        i++;
-                        i++;
-
-                    } else {
-                        handleIncident(e);
-                    }
-
-                } else if (e.hasAttribute("type")) {
-                    handleIncident(e);
-                }
-            }
-        }
+    public int adjustTime(int t) {
+        return t - startAdjustment;
     }
-
-    private void handleIncident(Element e) {
-
-        Incident i = new Incident(e, this);
-        if (i.start < 0 || i.end > lengthAdjustment) {
-            return;
-        }
-        
-        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
-        mainlist.add(i);
-        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
-        sublist.add(i);
-        allIncidents.add(i);
-    }
-
-    private void handle_two_step_write(Element e, Element possible_write) {
-
-        Incident i = new Incident(e, this);
-        if (i.start < 0 || i.end > lengthAdjustment) {
-            return;
-        }
-
-        float end = 0;
-        if (possible_write.hasAttribute("end")) {
-            end = convertToReal(possible_write.getAttribute("end"));
-        } else if (possible_write.hasAttribute("start")) { // if the write does not have an end-tag, use the start tag
-            end = convertToReal(possible_write.getAttribute("start"));
-        }
-
-        if (i.validTimes) {
-
-            if (end == 0 || end < i.start) {
-                end = i.start;
-            }
-            i.end = end;
-            i.subgroup = IncidentType.PR_WRITETYPO;
-        }
-
-        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
-        mainlist.add(i);
-        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
-        sublist.add(i);
-        allIncidents.add(i);
-
-    }
+//
+//    /**
+//     * TODO: Check if parsing is being done properly...
+//     */
+//    public void parse() {
+//
+//        // Find all incident tags and handle them accordingly
+//        NodeList incidentList = doc.getElementsByTagName("incident");
+//        for (int i = 0; i < incidentList.getLength(); i++) {
+//            if (incidentList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+//                Element e = (Element) incidentList.item(i);
+//
+//                if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
+//                    Element possible_typo = (Element) incidentList.item(i + 1);
+//                    Element possible_write = (Element) incidentList.item(i + 2);
+//                    boolean typo = possible_typo != null && (possible_typo.hasAttribute("subtype") && possible_typo.getAttribute("subtype").equalsIgnoreCase("typo"))
+//                            || (possible_typo.hasAttribute("type") && possible_typo.getAttribute("type").equalsIgnoreCase("autocorrects"));
+//                    boolean writes2 = possible_write != null && possible_write.hasAttribute("type") && possible_write.getAttribute("type").equalsIgnoreCase("writes");
+//                    if (typo && writes2) {
+//                        handle_two_step_write(e, possible_write);
+//                        handleIncident(possible_typo);
+//                        i++;
+//                        i++;
+//
+//                    } else {
+//                        handleIncident(e);
+//                    }
+//
+//                } else if (e.hasAttribute("type")) {
+//                    handleIncident(e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void handleIncident(Element e) {
+//
+//        Incident i = new Incident(e, this);
+//        if (i.start < 0 || i.end > lengthAdjustment) {
+//            return;
+//        }
+//
+//        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
+//        mainlist.add(i);
+//        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
+//        sublist.add(i);
+//        allIncidents.add(i);
+//    }
+//
+//    TODO: What is this two step write?
+//    private void handle_two_step_write(Element e, Element possible_write) {
+//
+//        Incident i = new Incident(e, this);
+//        if (i.start < 0 || i.end > lengthAdjustment) {
+//            return;
+//        }
+//
+//        float end = 0;
+//        if (possible_write.hasAttribute("end")) {
+//            end = convertToReal(possible_write.getAttribute("end"));
+//        } else if (possible_write.hasAttribute("start")) { // if the write does not have an end-tag, use the start tag
+//            end = convertToReal(possible_write.getAttribute("start"));
+//        }
+//
+//        if (i.validTimes) {
+//
+//            if (end == 0 || end < i.start) {
+//                end = i.start;
+//            }
+//            i.end = end;
+//            i.subgroup = IncidentType.PR_WRITETYPO;
+//        }
+//
+//        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
+//        mainlist.add(i);
+//        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
+//        sublist.add(i);
+//        allIncidents.add(i);
+//
+//    }
 
 }
+

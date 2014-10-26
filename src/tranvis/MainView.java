@@ -4,14 +4,13 @@
 package tranvis;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
+import org.jdesktop.application.SingleFrameApplication;
+
+import javax.swing.*;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 class XMLFileFilter extends javax.swing.filechooser.FileFilter {
 
@@ -31,8 +30,9 @@ class XMLFileFilter extends javax.swing.filechooser.FileFilter {
 
 /**
  * The application's main frame.
+ *
  * @author Sybil Ehrensberger
- * @version 0.2
+ * @version 1.0
  */
 public class MainView extends FrameView {
 
@@ -43,6 +43,7 @@ public class MainView extends FrameView {
 
     /**
      * Public constructor for the main view.
+     *
      * @param app
      */
     public MainView(SingleFrameApplication app) {
@@ -116,8 +117,9 @@ public class MainView extends FrameView {
     }
 
     /**
-     * Recursively goes through the directory f and adds all xml-files 
+     * Recursively goes through the directory f and adds all xml-files
      * contained in that directory to the fileList.
+     *
      * @param f the directory to be searched.
      */
     private void addSubFiles(File f) {
@@ -140,30 +142,8 @@ public class MainView extends FrameView {
     }
 
     /**
-     * Converts the string HH:MM:SS to a an int in seconds.
-     * @param time the string containing the time.
-     * @return an int representing the time in seconds.
-     */
-    private int getTime(String time) {
-        String[] timesplit = time.split(":");
-        if (timesplit.length != 3) {
-            reportError("Invalid time format!");
-            return 0;
-        } else {
-            try {
-                int hours = Integer.parseInt(timesplit[0]);
-                int min = Integer.parseInt(timesplit[1]);
-                int sec = Integer.parseInt(timesplit[2]);
-                return hours * 360 + min * 60 + sec;
-            } catch (NumberFormatException e) {
-                reportError("Invalid number.");
-                return 0;
-            }
-        }
-    }
-
-    /**
      * Displays a warning dialog with the specified errorText.
+     *
      * @param errorText the text to be displayed.
      */
     public void reportError(String errorText) {
@@ -173,22 +153,12 @@ public class MainView extends FrameView {
 
     }
 
-    /**
-     * Returns the specified start time.
-     * @return the start time in seconds.
-     */
-    public int getStart() {
-        String start = startTimeField.getText();
-        return getTime(start);
+    public String getStart() {
+        return startTimeField.getText();
     }
 
-    /**
-     * Returns the specified end time.
-     * @return the end time in seconds.
-     */
-    public int getEnd() {
-        String end = endTimeField.getText();
-        return getTime(end);
+    public String getEnd() {
+        return endTimeField.getText();
     }
 
     public boolean getComplete() {
@@ -217,6 +187,7 @@ public class MainView extends FrameView {
 
     /**
      * Returns whether the interrupts should be displayed.
+     *
      * @return true if the interrupts should be shown.
      */
     public boolean getInterrupts() {
@@ -225,6 +196,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the pauses should be displayed.
+     *
      * @return true if the pauses should be displayed
      */
     public boolean getPauses() {
@@ -233,6 +205,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the revisions should be displayed.
+     *
      * @return true if the revisions should be displayed
      */
     public boolean getRevisions() {
@@ -241,6 +214,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the consults should be displayed.
+     *
      * @return true if the consults should be displayed
      */
     public boolean getConsults() {
@@ -249,14 +223,16 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the typos should be displayed.
+     *
      * @return true if the typos should be displayed
      */
     public boolean getTypos() {
         return typosCB.isSelected();
     }
-    
+
     /**
      * Determines whether the typos should be displayed.
+     *
      * @return true if the typos should be displayed
      */
     public boolean getMatches() {
@@ -265,6 +241,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the individual consults should be displayed.
+     *
      * @return true if the individual consults should be displayed
      */
     public boolean getIndConsults() {
@@ -273,6 +250,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the individual revisions should be displayed.
+     *
      * @return true if the individual revision should be displayed
      */
     public boolean getIndRevisions() {
@@ -281,6 +259,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the individual interrupts should be displayed.
+     *
      * @return true if the individual interrupts should be displayed
      */
     public boolean getIndInterrupts() {
@@ -289,6 +268,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the individual pauses should be displayed.
+     *
      * @return true if the individual pauses should be displayed
      */
     public boolean getIndPauses() {
@@ -297,6 +277,7 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the writing actions should be displayed.
+     *
      * @return true if the writing actions interrupts should be displayed
      */
     public boolean getWriting() {
@@ -305,13 +286,15 @@ public class MainView extends FrameView {
 
     /**
      * Determines whether the ST actions should be displayed.
+     *
      * @return true if the ST actions should be displayed
      */
     public boolean getSTActions() {
         return stCB.isSelected();
     }
 
-    /** This method is called from within the constructor to
+    /**
+     * This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
@@ -445,73 +428,73 @@ public class MainView extends FrameView {
         org.jdesktop.layout.GroupLayout optionsPanelLayout = new org.jdesktop.layout.GroupLayout(optionsPanel);
         optionsPanel.setLayout(optionsPanelLayout);
         optionsPanelLayout.setHorizontalGroup(
-            optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(optionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel1)
-                    .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(org.jdesktop.layout.GroupLayout.TRAILING, optionsPanelLayout.createSequentialGroup()
-                            .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(pausesCB)
-                                .add(stCB)
-                                .add(writingCB)
-                                .add(interruptsCB)
-                                .add(revisionCB)
-                                .add(consultsCB)
-                                .add(typosCB)
-                                .add(revisionsingleRB))
-                            .add(42, 42, 42)
-                            .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(matchesCB)
-                                .add(revisioncombinedRB)
-                                .add(indconsultsCB)
-                                .add(indpausesCB)
-                                .add(indrevisionsCB)
-                                .add(indinterruptsCB)))
+                optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(optionsPanelLayout.createSequentialGroup()
-                            .add(jLabel2)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 148, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(53, Short.MAX_VALUE))
+                                .addContainerGap()
+                                .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jLabel1)
+                                        .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .add(org.jdesktop.layout.GroupLayout.TRAILING, optionsPanelLayout.createSequentialGroup()
+                                                        .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                                .add(pausesCB)
+                                                                .add(stCB)
+                                                                .add(writingCB)
+                                                                .add(interruptsCB)
+                                                                .add(revisionCB)
+                                                                .add(consultsCB)
+                                                                .add(typosCB)
+                                                                .add(revisionsingleRB))
+                                                        .add(42, 42, 42)
+                                                        .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                                .add(matchesCB)
+                                                                .add(revisioncombinedRB)
+                                                                .add(indconsultsCB)
+                                                                .add(indpausesCB)
+                                                                .add(indrevisionsCB)
+                                                                .add(indinterruptsCB)))
+                                                .add(optionsPanelLayout.createSequentialGroup()
+                                                        .add(jLabel2)
+                                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 148, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                .addContainerGap(53, Short.MAX_VALUE))
         );
         optionsPanelLayout.setVerticalGroup(
-            optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(optionsPanelLayout.createSequentialGroup()
-                .add(8, 8, 8)
-                .add(jLabel1)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(revisionsingleRB)
-                    .add(revisioncombinedRB))
-                .add(19, 19, 19)
-                .add(jLabel2)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(optionsPanelLayout.createSequentialGroup()
-                        .add(pausesCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(consultsCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(typosCB)
-                        .add(3, 3, 3)
-                        .add(revisionCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(interruptsCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(writingCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(stCB))
-                    .add(optionsPanelLayout.createSequentialGroup()
-                        .add(indpausesCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(indconsultsCB)
-                        .add(26, 26, 26)
-                        .add(indrevisionsCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(indinterruptsCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(matchesCB)))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(optionsPanelLayout.createSequentialGroup()
+                                .add(8, 8, 8)
+                                .add(jLabel1)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(revisionsingleRB)
+                                        .add(revisioncombinedRB))
+                                .add(19, 19, 19)
+                                .add(jLabel2)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(optionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(optionsPanelLayout.createSequentialGroup()
+                                                .add(pausesCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(consultsCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(typosCB)
+                                                .add(3, 3, 3)
+                                                .add(revisionCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(interruptsCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(writingCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(stCB))
+                                        .add(optionsPanelLayout.createSequentialGroup()
+                                                .add(indpausesCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(indconsultsCB)
+                                                .add(26, 26, 26)
+                                                .add(indrevisionsCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(indinterruptsCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(matchesCB)))
+                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         timePanel.setName("timePanel"); // NOI18N
@@ -555,51 +538,51 @@ public class MainView extends FrameView {
         org.jdesktop.layout.GroupLayout timePanelLayout = new org.jdesktop.layout.GroupLayout(timePanel);
         timePanel.setLayout(timePanelLayout);
         timePanelLayout.setHorizontalGroup(
-            timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(timePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(label1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(selectedRB)
-                    .add(timePanelLayout.createSequentialGroup()
-                        .add(42, 42, 42)
-                        .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel3)
-                            .add(jLabel4))
-                        .add(34, 34, 34)
-                        .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                            .add(startTimeField)
-                            .add(endTimeField)))
-                    .add(wholeRB)
-                    .add(orientationRB)
-                    .add(draftingRB)
-                    .add(revisionRB))
-                .addContainerGap(135, Short.MAX_VALUE))
+                timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(timePanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(label1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(selectedRB)
+                                        .add(timePanelLayout.createSequentialGroup()
+                                                .add(42, 42, 42)
+                                                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                        .add(jLabel3)
+                                                        .add(jLabel4))
+                                                .add(34, 34, 34)
+                                                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                                        .add(startTimeField)
+                                                        .add(endTimeField)))
+                                        .add(wholeRB)
+                                        .add(orientationRB)
+                                        .add(draftingRB)
+                                        .add(revisionRB))
+                                .addContainerGap(135, Short.MAX_VALUE))
         );
         timePanelLayout.setVerticalGroup(
-            timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(timePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(label1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(3, 3, 3)
-                .add(wholeRB)
-                .add(5, 5, 5)
-                .add(selectedRB)
-                .add(9, 9, 9)
-                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel3)
-                    .add(startTimeField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(8, 8, 8)
-                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel4)
-                    .add(endTimeField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(orientationRB)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(draftingRB)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(revisionRB)
-                .addContainerGap(78, Short.MAX_VALUE))
+                timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(timePanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(label1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(3, 3, 3)
+                                .add(wholeRB)
+                                .add(5, 5, 5)
+                                .add(selectedRB)
+                                .add(9, 9, 9)
+                                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jLabel3)
+                                        .add(startTimeField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(8, 8, 8)
+                                .add(timePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(jLabel4)
+                                        .add(endTimeField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(orientationRB)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(draftingRB)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(revisionRB)
+                                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         filePanel.setName("filePanel"); // NOI18N
@@ -638,42 +621,42 @@ public class MainView extends FrameView {
         org.jdesktop.layout.GroupLayout filePanelLayout = new org.jdesktop.layout.GroupLayout(filePanel);
         filePanel.setLayout(filePanelLayout);
         filePanelLayout.setHorizontalGroup(
-            filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(filePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(filePanelLayout.createSequentialGroup()
-                        .add(addFolderButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(addFileButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(clearButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 321, Short.MAX_VALUE)
-                        .add(jLabel8)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(totalFilesField))
-                    .add(filePanelLayout.createSequentialGroup()
-                        .add(8, 8, 8)
-                        .add(jLabel7)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE)))
-                .addContainerGap())
+                filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(filePanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(filePanelLayout.createSequentialGroup()
+                                                .add(addFolderButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(addFileButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(clearButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 321, Short.MAX_VALUE)
+                                                .add(jLabel8)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(totalFilesField))
+                                        .add(filePanelLayout.createSequentialGroup()
+                                                .add(8, 8, 8)
+                                                .add(jLabel7)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE)))
+                                .addContainerGap())
         );
         filePanelLayout.setVerticalGroup(
-            filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, filePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(addFolderButton)
-                    .add(addFileButton)
-                    .add(totalFilesField)
-                    .add(jLabel8)
-                    .add(clearButton))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel7)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(113, 113, 113))
+                filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, filePanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(addFolderButton)
+                                        .add(addFileButton)
+                                        .add(totalFilesField)
+                                        .add(jLabel8)
+                                        .add(clearButton))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(filePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jLabel7)
+                                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(113, 113, 113))
         );
 
         buttonPanel.setName("buttonPanel"); // NOI18N
@@ -712,74 +695,74 @@ public class MainView extends FrameView {
         org.jdesktop.layout.GroupLayout buttonPanelLayout = new org.jdesktop.layout.GroupLayout(buttonPanel);
         buttonPanel.setLayout(buttonPanelLayout);
         buttonPanelLayout.setHorizontalGroup(
-            buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(buttonPanelLayout.createSequentialGroup()
-                .add(11, 11, 11)
-                .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(buttonPanelLayout.createSequentialGroup()
-                        .add(mainGraphButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(consultsGraphButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(revisionsGraphButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(pausesGraphButton))
-                    .add(buttonPanelLayout.createSequentialGroup()
-                        .add(customGraphButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(showIndCB)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(statsButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(dataButton)))
-                .addContainerGap(28, Short.MAX_VALUE))
+                buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(buttonPanelLayout.createSequentialGroup()
+                                .add(11, 11, 11)
+                                .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                        .add(buttonPanelLayout.createSequentialGroup()
+                                                .add(mainGraphButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                                .add(consultsGraphButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                                .add(revisionsGraphButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                                .add(pausesGraphButton))
+                                        .add(buttonPanelLayout.createSequentialGroup()
+                                                .add(customGraphButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(showIndCB)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .add(statsButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(dataButton)))
+                                .addContainerGap(28, Short.MAX_VALUE))
         );
         buttonPanelLayout.setVerticalGroup(
-            buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(buttonPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(mainGraphButton)
-                    .add(consultsGraphButton)
-                    .add(revisionsGraphButton)
-                    .add(pausesGraphButton))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(customGraphButton)
-                    .add(dataButton)
-                    .add(statsButton)
-                    .add(showIndCB))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(buttonPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(mainGraphButton)
+                                        .add(consultsGraphButton)
+                                        .add(revisionsGraphButton)
+                                        .add(pausesGraphButton))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(buttonPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(customGraphButton)
+                                        .add(dataButton)
+                                        .add(statsButton)
+                                        .add(showIndCB))
+                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(mainPanelLayout.createSequentialGroup()
-                .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(optionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(filePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(buttonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(57, Short.MAX_VALUE))
+                mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(mainPanelLayout.createSequentialGroup()
+                                .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(mainPanelLayout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .add(optionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                .add(18, 18, 18)
+                                                .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(filePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(mainPanelLayout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .add(buttonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap(57, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(mainPanelLayout.createSequentialGroup()
-                .add(filePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 182, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(buttonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(optionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(106, 106, 106))
+                mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(mainPanelLayout.createSequentialGroup()
+                                .add(filePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 182, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(buttonPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(optionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(timePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(106, 106, 106))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -810,6 +793,7 @@ public class MainView extends FrameView {
         setComponent(mainPanel);
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addFileButton;
     private javax.swing.JButton addFolderButton;
