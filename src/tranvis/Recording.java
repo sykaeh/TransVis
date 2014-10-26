@@ -3,7 +3,9 @@ package tranvis;
 import org.xml.sax.Attributes;
 
 /**
- * Created by ehrensbe on 25/10/14.
+ * Class representing the &lt;recording&gt; XML tag in the transcript
+ *
+ * @author Sybil Ehrensberger
  */
 public class Recording {
 
@@ -18,6 +20,11 @@ public class Recording {
     public String direction; // direction
     public String concurrentVisibility; // concurrentVisibilitySTTT
 
+    /**
+     * Public constructor
+     *
+     * @param atts  Attributes associated with the recording tag
+     */
     public Recording(Attributes atts) {
 
         startTransProcess = atts.getValue("startTransProcess").trim();
@@ -33,6 +40,13 @@ public class Recording {
 
     }
 
+    /**
+     * Validate the recording tag to make sure all necessary attributes are present and valid.
+     * Throw a TranscriptError if that is not the case. Set the start, end and start revision times.
+     *
+     * @param t the Transcript the recording belongs to
+     * @throws TranscriptError if a necessary attribute is missing or invalid
+     */
     public void validate(Transcript t) throws TranscriptError {
 
         // TODO: what is a NO-GO? With what can we deal?

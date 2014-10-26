@@ -6,13 +6,27 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by ehrensbe on 25/10/14.
+ * Class for all pause incidents.
+ *
+ * The following tags belong to this class:
+ *  - {@literal <incident type="pause"></incident>}
+ *  - {@literal <incident type="ILPause"></incident>}
  */
 public class Pause extends BaseIncident {
 
-    public final static List<IncidentType> SUBGROUPS = Arrays.asList(IncidentType.P_SIMPLE, IncidentType.P_CONSULTS,
-            IncidentType.P_READSTASK, IncidentType.P_READSST, IncidentType.P_READSTT, IncidentType.P_READSSTTT, IncidentType.P_UNCLEAR);
+    /**
+     * List of the IncidentTypes of all subgroups of the pause incidents
+     */
+    public final static List<IncidentType> SUBGROUPS = Arrays.asList(
+            IncidentType.P_SIMPLE, IncidentType.P_CONSULTS, IncidentType.P_READSTASK, IncidentType.P_READSST,
+            IncidentType.P_READSTT, IncidentType.P_READSSTTT, IncidentType.P_UNCLEAR);
 
+    /**
+     * Public constructor
+     *
+     * @param t the transcript this incident belongs to
+     * @param atts attributes for this incident tag
+     */
     public Pause(Transcript t, Attributes atts) {
         super(t, atts);
 

@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by ehrensbe on 25/10/14.
+ * Class for all revision incidents
+ *
+ * @author Sybil Ehrensberger
  */
 public class Revision extends BaseIncident {
 
@@ -20,6 +22,12 @@ public class Revision extends BaseIncident {
 
     public IncidentType revisionType;
 
+    /**
+     * Public constructor
+     *
+     * @param t the transcript this incident belongs to
+     * @param atts attributes for this incident tag
+     */
     public Revision(Transcript t, Attributes atts) {
         super(t, atts);
 

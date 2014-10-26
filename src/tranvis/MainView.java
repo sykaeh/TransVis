@@ -44,7 +44,7 @@ public class MainView extends FrameView {
     /**
      * Public constructor for the main view.
      *
-     * @param app
+     * @param app TODO: What the hell is this?
      */
     public MainView(SingleFrameApplication app) {
         super(app);

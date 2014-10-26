@@ -3,11 +3,20 @@ package tranvis;
 import org.xml.sax.Attributes;
 
 /**
- * Created by ehrensbe on 25/10/14.
+ * Base class for all incidents.
+ *
+ * @author Sybil Ehrensberger
  */
 public class BaseIncident {
 
+    /**
+     * Start time [in sec] of the incident
+     */
     public int start;
+
+    /**
+     * End time [in sec] of the incident
+     */
     public int end;
 
     public IncidentType group;
@@ -20,6 +29,12 @@ public class BaseIncident {
 
     public Boolean validTimes = true;
 
+    /**
+     * Public constructor
+     *
+     * @param t the transcript this incident belongs to
+     * @param atts attributes for this incident tag
+     */
     public BaseIncident(Transcript t, Attributes atts) {
         transcript = t;
 
@@ -30,6 +45,11 @@ public class BaseIncident {
         deal_with_times(atts.getValue("start"), atts.getValue("end"));
     }
 
+    /**
+     * Calculate the length [in sec] of the incident and return it
+     *
+     * @return the length of the incident
+     */
     public float length() {
         return end - start;
     }

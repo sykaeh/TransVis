@@ -56,12 +56,11 @@ public class Transcript {
      * Public constructor for a Transcript.
      *
      * @param fxmlFile the file to be parsed.
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
+     * @throws ParserConfigurationException problem with the parser configuration
+     * @throws SAXException problem with the xml parser
+     * @throws IOException problem with reading the file
      */
-    public Transcript(File fxmlFile)
-            throws ParserConfigurationException, SAXException, IOException {
+    public Transcript(File fxmlFile) throws ParserConfigurationException, SAXException, IOException {
 
         incidents = new LinkedList<>();
 
@@ -115,8 +114,11 @@ public class Transcript {
     }
 
     /**
-     * Converts a time in a given String of the format HH:MM:SS to seconds
+     * Converts the given timestring of the format HH:MM:SS to seconds
      * (an int).
+     *
+     * @param timestring the time (format HH:MM:SS)
+     * @return the elapsed time in seconds
      */
     public static int convertToSeconds(String timestring) {
 

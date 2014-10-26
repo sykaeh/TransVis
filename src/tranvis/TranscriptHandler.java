@@ -6,15 +6,23 @@ import org.xml.sax.helpers.DefaultHandler;
 
 
 /**
- * The Handler for SAX Events. Created by ehrensbe on 25/10/14.
+ * Class to handle the XML parsing
+ *
+ * @author Sybil Ehrensberger
+ *
  */
 class TranscriptHandler extends DefaultHandler {
 
-    String content = null;
-    BaseIncident incident = null;
-    Transcript transcript;
-    Recording recording = null;
+    private String content = null;
+    private BaseIncident incident = null;
+    private Transcript transcript;
+    private Recording recording = null;
 
+    /**
+     * Public constructor
+     *
+     * @param t the current transcript
+     */
     public TranscriptHandler(Transcript t) {
         super();
         transcript = t;
@@ -69,6 +77,7 @@ class TranscriptHandler extends DefaultHandler {
             throws SAXException {
         content = String.copyValueOf(ch, start, length).trim();
     }
+
 
     private void classifyIncident(Attributes atts) {
 

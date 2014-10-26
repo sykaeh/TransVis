@@ -1,7 +1,9 @@
 package tranvis;
 
 /**
- * @author sehrensberger
+ * Enumeration of all of the different incident types
+ *
+ * @author Sybil Ehrensberger
  */
 public enum IncidentType {
 

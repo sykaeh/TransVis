@@ -6,23 +6,35 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by ehrensbe on 25/10/14.
+ * Class for all consult incidents {@literal <incident type="consults"></incident>}
  */
 public class Consultation extends BaseIncident {
 
     public String source;
     public String item;
 
+    /**
+     *
+     */
     public final static List<IncidentType> SUBGROUP_GENERAL =
             Arrays.asList(IncidentType.C_SEARCHENG,
             IncidentType.C_ENCYCLOPEDIA, IncidentType.C_DICTIONARY,
             IncidentType.C_PORTALS, IncidentType.C_OTHER);
 
+    /**
+     *
+     */
     public final static List<IncidentType> SUBGROUP_WORKPLACE =
             Arrays.asList(IncidentType.C_TERMBANKS, IncidentType.C_WFCONTEXT,
             IncidentType.C_WFSTYLEGUIDE, IncidentType.C_WFGLOSSARY,
                     IncidentType.C_WFPARALLELTEXT, IncidentType.C_CONCORDANCE);
 
+    /**
+     * Public constructor
+     *
+     * @param t the transcript this incident belongs to
+     * @param atts attributes for this incident tag
+     */
     public Consultation(Transcript t, Attributes atts) {
         super(t, atts);
 

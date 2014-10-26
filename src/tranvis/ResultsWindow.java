@@ -21,7 +21,7 @@ import java.util.Random;
  * and the statistics) of the Translation Process Visualizer.
  *
  * @author Sybil Ehrensberger
- * @version 0.3
+ * @version 1.0
  */
 public class ResultsWindow extends javax.swing.JFrame {
 
@@ -62,11 +62,11 @@ public class ResultsWindow extends javax.swing.JFrame {
      *
      * @param chart the chart to be displayed.
      * @param list  the labels to be added
+     * @param processes TODO: no clue what this is for
+     * @param ymax  the maximum value for the y-axis
      */
     public void drawGraph(JFreeChart chart, List<Object[]> list,
                           List<String> processes, double ymax) {
-
-        //chart.removeLegend();
 
         XYPlot plot = chart.getXYPlot();
         plot.setBackgroundPaint(Color.white);

@@ -56,7 +56,7 @@ public class MainApp extends SingleFrameApplication {
     /**
      * A convenient static getter for the application instance.
      *
-     * @return the instance of TranscriptVisualizerApp
+     * @return the instance of TranscriptVisualizer
      */
     public static MainApp getApplication() {
         return Application.getInstance(MainApp.class);
@@ -65,7 +65,7 @@ public class MainApp extends SingleFrameApplication {
     /**
      * Main method launching the application.
      *
-     * @param args
+     * @param args command line arguments
      */
     public static void main(String[] args) {
         try {
@@ -110,11 +110,6 @@ public class MainApp extends SingleFrameApplication {
         }
     }
 
-    /**
-     * Iterate through the list of files and parse each file.
-     *
-     * @return a List of XMLParsers
-     */
     private List<Transcript> parseFiles() {
 
         int start = Transcript.convertToSeconds(view.getStart());

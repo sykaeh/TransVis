@@ -3,10 +3,18 @@ package tranvis;
 import org.xml.sax.Attributes;
 
 /**
- * Created by ehrensbe on 25/10/14.
+ * Class for all production incidents
+ *
+ * @author Sybil Ehrensberger
  */
 public class Production extends BaseIncident {
 
+    /**
+     * Public constructor
+     *
+     * @param t the transcript this incident belongs to
+     * @param atts attributes for this incident tag
+     */
     public Production(Transcript t, Attributes atts) {
         super(t, atts);
 

@@ -13,22 +13,38 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Class to create Excel files
+ *
  * @author Sybil Ehrensberger
  */
 public class ExcelDocument {
 
-    private List<Transcript> parserList;
+    private List<Transcript> transcriptList;
     private File ofile;
     private boolean pro;
     private final static Logger LOGGER = Logger.getLogger("TranVis");
 
-    ExcelDocument(List<Transcript> parsers, File outputfile) {
+    /**
+     * Public constructor
+     *
+     * @param transcripts list of all of the transcripts that should be used
+     * @param outputFile the File the output should be written to
+     */
+    public ExcelDocument(List<Transcript> transcripts, File outputFile) {
 
-        parserList = parsers;
-        ofile = outputfile;
+        transcriptList = transcripts;
+        ofile = outputFile;
         pro = true;
     }
 
+    /**
+     * Create an excel file with the statistics if stats is true or
+     * with the data if data is true.
+     *
+     * @param stats true if the statistics should be saved in the excel file
+     * @param data true if the data should be saved in the excel file
+     * @return the error if an error occurred
+     */
     public String makeExcelFile(boolean stats, boolean data) {
 
         try {
@@ -39,16 +55,16 @@ public class ExcelDocument {
         }
 
         try {
-            Workbook originalworkbook;
+            Workbook originalWorkbook;
             if (stats) {
                 LOGGER.log(Level.INFO, "Getting template.xls");
-                originalworkbook = Workbook.getWorkbook(new File("template.xls"));
+                originalWorkbook = Workbook.getWorkbook(new File("template.xls"));
             } else {
                 LOGGER.log(Level.INFO, "Getting template_allTags.xls");
-                originalworkbook = Workbook.getWorkbook(new File("template_allTags.xls"));
+                originalWorkbook = Workbook.getWorkbook(new File("template_allTags.xls"));
             }
             LOGGER.log(Level.INFO, "Creating new workbook");
-            WritableWorkbook workbook = Workbook.createWorkbook(ofile, originalworkbook);
+            WritableWorkbook workbook = Workbook.createWorkbook(ofile, originalWorkbook);
             WritableSheet sheet = workbook.getSheet(0);
 
             if (stats) {
@@ -76,7 +92,7 @@ public class ExcelDocument {
 
         int i = 3;
 
-        for (Transcript t : parserList) {
+        for (Transcript t : transcriptList) {
             for (BaseIncident e : t.incidents) {
 
                 label = new Label(0, i, t.name);
@@ -177,7 +193,7 @@ public class ExcelDocument {
 
         int i = 4;
 
-        for (Transcript p : parserList) {
+        for (Transcript p : transcriptList) {
 
 
             // Basic information
@@ -318,11 +334,6 @@ public class ExcelDocument {
                 .filter(inc -> ((Revision) inc).revisionType == revision).count();
     }
 
-    /**
-     * @param sheet
-     * @param p
-     * @param i
-     */
     private void addRevisions(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num = new Number(0, 0, 0);
 
@@ -363,12 +374,6 @@ public class ExcelDocument {
         return t.incidents.stream().filter(inc -> inc.subgroup == group).count();
     }
 
-    /**
-     * @param sheet
-     * @param p
-     * @param i
-     * @throws WriteException
-     */
     private void addInterrupts(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num;
 
@@ -389,12 +394,6 @@ public class ExcelDocument {
 
     }
 
-    /**
-     * @param sheet
-     * @param p
-     * @param i
-     * @throws WriteException
-     */
     private void addPauses(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num;
 
@@ -416,12 +415,6 @@ public class ExcelDocument {
         sheet.addCell(num);
     }
 
-    /**
-     * @param sheet
-     * @param p
-     * @param i
-     * @throws WriteException
-     */
     private void addConsults(WritableSheet sheet, Transcript p, int i) throws WriteException {
         Number num;
 
