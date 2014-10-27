@@ -21,7 +21,7 @@ import java.util.Random;
  * and the statistics) of the Translation Process Visualizer.
  *
  * @author Sybil Ehrensberger
- * @version 1.0
+ * @version 2.0
  */
 public class ResultsWindow extends javax.swing.JFrame {
 

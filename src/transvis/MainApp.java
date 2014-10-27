@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * The main class of the application.
  *
  * @author Sybil Ehrensberger
- * @version 1.0
+ * @version 2.0
  */
 public class MainApp extends SingleFrameApplication {
 
@@ -88,6 +88,8 @@ public class MainApp extends SingleFrameApplication {
      */
     @Action
     public void displayMainGraphClicked() {
+
+        // TODO: Look at selection choices
 
         if (view.fileList.isEmpty()) {
             view.reportError("No files selected.");
@@ -375,7 +377,7 @@ public class MainApp extends SingleFrameApplication {
             data.addSeries(getDataSeriesByGroup(t, IncidentType.CONSULTATION, pos + 4));
             data.addSeries(getDataSeriesByGroup(t, IncidentType.TYPOS, pos + 3));
             data.addSeries(getDataSeriesByGroup(t, IncidentType.REVISION, pos + 2));
-            data.addSeries(getDataSeriesByGroup(t, IncidentType.PRODUCTION, pos + 1));
+            data.addSeries(getDataSeriesByGroup(t, IncidentType.TARGETTEXT, pos + 1));
             data.addSeries(getDataSeriesByGroup(t, IncidentType.SOURCETEXT, pos + 0));
 
             pos -= step;
@@ -715,12 +717,12 @@ public class MainApp extends SingleFrameApplication {
             }
 
             if (view.getWriting()) {
-                data.addSeries(getDataSeriesByGroup(p, IncidentType.PRODUCTION, pos + i));
+                data.addSeries(getDataSeriesByGroup(p, IncidentType.TARGETTEXT, pos + i));
                 i++;
             }
 
             if (view.getMatches()) {
-                data.addSeries(getDataSeriesByGroup(p, IncidentType.MATCH, pos + i));
+                data.addSeries(getDataSeriesByGroup(p, IncidentType.T_MATCH, pos + i));
                 i++;
             }
 

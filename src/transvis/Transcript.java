@@ -263,7 +263,7 @@ public class Transcript {
 //                end = i.start;
 //            }
 //            i.end = end;
-//            i.subgroup = IncidentType.PR_WRITETYPO;
+//            i.subgroup = IncidentType.T_WRITETYPO;
 //        }
 //
 //        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);

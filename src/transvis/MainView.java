@@ -32,7 +32,7 @@ class XMLFileFilter extends javax.swing.filechooser.FileFilter {
  * The application's main frame.
  *
  * @author Sybil Ehrensberger
- * @version 1.0
+ * @version 2.0
  */
 public class MainView extends FrameView {
 

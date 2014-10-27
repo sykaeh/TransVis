@@ -32,17 +32,18 @@ public class TargetText extends BaseIncident {
 
     private void classify() {
 
-        group = IncidentType.PRODUCTION;
+        group = IncidentType.TARGETTEXT;
+
+        // TODO: Go over Target text incident classifications
 
         if (validTimes && length() >= 5) {
-            subgroup = IncidentType.PR_WRITELONG;
+            subgroup = IncidentType.T_WRITELONG;
         } else {
-            subgroup = IncidentType.PR_WRITESHORT;
+            subgroup = IncidentType.T_WRITESHORT;
         }
 
-        // TODO: Is accept a production or a separate group?
         if (i_type.equals("accepts") && i_subtype.equals("match")) {
-            subgroup = IncidentType.MATCH;
+            subgroup = IncidentType.T_MATCH;
 
         }
     }

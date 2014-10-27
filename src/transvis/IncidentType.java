@@ -11,9 +11,9 @@ public enum IncidentType {
     CONSULTATION("Consultations"),
     INTERRUPTION("Interruptions"),
     PAUSE("Pauses"),
-    SOURCETEXT("Sourcetext"),
+    SOURCETEXT("Source text"),
     TYPOS("Typos"),
-    PRODUCTION("Production"),
+    TARGETTEXT("Target text"),
     REVISION("Revisions"),
     UNDEFINED("Undefined"),
     NOSUBGROUP(""),
@@ -56,14 +56,13 @@ public enum IncidentType {
     P_READSSTTT("Looks at ST+TT"),     // <incident type="ILPause" subtype="readsST+TT">
     P_UNCLEAR("Focus unclear"),        // <incident type="ILPause" subtype="unclear">
 
+    // Subtype target text
+    T_WRITESHORT("Writes no time or < 5 seconds"),    // <incident type="writes" >
+    T_WRITETYPO("Writes with a typo"),
+    T_WRITELONG("Writes ≥ 5 seconds"),
+    T_MATCH("Match"),     // <incident type="accepts" subtype="match">
 
-    // Subtype production
-    PR_WRITESHORT("Writes no time or < 5 seconds"),    // <incident type="writes" >
-    PR_WRITETYPO("Writes with a typo"),
-    PR_WRITELONG("Writes ≥ 5 seconds"),
-
-    MATCH("Match"),     // <incident type="accepts" subtype="match">
-
+    // TODO: Check revision subtypes
     // Subtypes revision
     R_DELETES("Deletes"),         // <incident type="deletes" subtype="(revision|revision2)">
     R_INSERTS("Inserts"),         // <incident type="inserts" subtype="(revision|revision2)">

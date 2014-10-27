@@ -40,6 +40,7 @@ class TranscriptHandler extends DefaultHandler {
                 transcript.setName(attributes.getValue("name"));
                 break;
             case "incident":
+                // TODO: handle two-step-write
                 classifyIncident(attributes);
                 break;
             case "recording":
