@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -102,16 +102,28 @@ class TranscriptHandler extends DefaultHandler {
             case "interrupts":
                 incident = new Interruption(transcript, atts);
                 break;
+
             case "writes":
-                incident = new Production(transcript, atts);
+                incident = new TargetText(transcript, atts);
                 break;
             case "accepts":
                 if (incident_subtype.equalsIgnoreCase("match"))
-                    incident = new Production(transcript, atts);
+                    incident = new TargetText(transcript, atts);
+                else
+                    Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                 break;
 
             case "autocorrects":
                 incident = new Typo(transcript, atts);
+                break;
+
+            case "sic": // ignore all sics
+                break;
+
+            case "changes view":
+            case "changes language setting":
+            case "formats":
+                incident = new Setting(transcript, atts);
                 break;
 
             case "deletes":
@@ -122,8 +134,10 @@ class TranscriptHandler extends DefaultHandler {
             case "moves to":
             case "undoes":
 
-                if (incident_subtype == null)
+                if (incident_subtype == null) {
+                    Transcript.error("Unclassified incident: " + incident_type + ", no subtype");
                     return;
+                }
 
                 incident_subtype = incident_subtype.toLowerCase();
 
@@ -139,15 +153,14 @@ class TranscriptHandler extends DefaultHandler {
                         incident = new Typo(transcript, atts);
                         break;
                     default:
-                        System.out.println("ERROR:\t\tFell down to default in sub types... ");
-                        //System.out.println(incident_type + ", " + incident_subtype);
+                        Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                         break;
                 }
 
                 break;
 
             default:
-                System.out.println("ERROR:\t\tFell down to default in main types... ");
+                Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                 break;
 
         }

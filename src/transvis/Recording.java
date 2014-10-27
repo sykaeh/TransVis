@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.xml.sax.Attributes;
 
@@ -49,7 +49,7 @@ public class Recording {
      */
     public void validate(Transcript t) throws TranscriptError {
 
-        // TODO: what is a NO-GO? With what can we deal?
+        // TODO: what is a NO-GO? start, end and startrevision
         if (startTransProcess.isEmpty())
             throw new TranscriptError("recording: missing start time");
 

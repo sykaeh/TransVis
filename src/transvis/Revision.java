@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.xml.sax.Attributes;
 
@@ -17,8 +17,7 @@ public class Revision extends BaseIncident {
 
     public String before;
     public String after;
-    // TODO: subsubtype? Is it needed?
-    //public String subsubtype;
+    public String subsubtype;
 
     public IncidentType revisionType;
 
@@ -33,6 +32,7 @@ public class Revision extends BaseIncident {
 
         before = atts.getValue("before");
         after = atts.getValue("after");
+        subsubtype = atts.getValue("subsubtype");
 
         classify();
 

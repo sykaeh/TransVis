@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.xml.sax.Attributes;
 
@@ -26,6 +26,7 @@ public class BaseIncident {
 
     public String i_type;
     public String i_subtype;
+    public String phase;
 
     public Boolean validTimes = true;
 
@@ -73,6 +74,17 @@ public class BaseIncident {
         if (validTimes && end < start) {
             Transcript.error("End time (" + s_end + ") before start time (" + s_end + ")");
             end = start;
+        }
+
+    }
+
+    public boolean valid() {
+
+        if (start <= 0) {
+            group = IncidentType.WARMUP;
+            return false;
+        } else {
+            return true;
         }
 
     }

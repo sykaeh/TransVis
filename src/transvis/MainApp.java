@@ -4,7 +4,7 @@
  * Translation process Visualizer
  * 
  */
-package tranvis;
+package transvis;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;

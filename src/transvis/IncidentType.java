@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 /**
  * Enumeration of all of the different incident types
@@ -17,6 +17,14 @@ public enum IncidentType {
     REVISION("Revisions"),
     UNDEFINED("Undefined"),
     NOSUBGROUP(""),
+    WARMUP("Warm up"),
+    SETTING ("Setting"),
+
+
+    // Subtypes settings
+    S_VIEWCHANGE("Chagne view"),
+    S_LANGUAGE("Change language setting"),
+    S_FORMAT("Formatting"),
 
     // Subtypes consultations
     C_SEARCHENG("Search engines"),

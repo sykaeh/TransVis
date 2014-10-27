@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.xml.sax.SAXException;
 
@@ -24,7 +24,6 @@ public class Transcript {
     public String competence;
     public String version;
     public String sourcetextname;
-    public String experiment;
 
     public Recording recording = null;
 
@@ -76,13 +75,12 @@ public class Transcript {
 
         name = n;
         String[] parts = name.split("_");
-        if (parts.length == 6) {
+        if (parts.length >= 4) {
             participant = parts[0];
-            group = participant.replaceAll("([A-Z]*)(\\d)*", "$1");
+            group = participant.replaceAll("(.{4})(\\d)*", "$1");
             competence = parts[1];
             version = parts[2];
             sourcetextname = parts[3];
-            experiment = parts[4];
         } else
             fatal("Invalid name attribute: " + name);
     }

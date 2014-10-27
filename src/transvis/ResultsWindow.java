@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -159,7 +159,7 @@ public class ResultsWindow extends javax.swing.JFrame {
         processNameField = new javax.swing.JTextArea();
         importantInfo = new javax.swing.JLabel();
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tranvis.MainApp.class).getContext().getResourceMap(ResultsWindow.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(transvis.MainApp.class).getContext().getResourceMap(ResultsWindow.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setSize(new java.awt.Dimension(1250, 550));

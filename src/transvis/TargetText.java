@@ -1,4 +1,4 @@
-package tranvis;
+package transvis;
 
 import org.xml.sax.Attributes;
 
@@ -7,7 +7,7 @@ import org.xml.sax.Attributes;
  *
  * @author Sybil Ehrensberger
  */
-public class Production extends BaseIncident {
+public class TargetText extends BaseIncident {
 
     /**
      * Public constructor
@@ -15,7 +15,7 @@ public class Production extends BaseIncident {
      * @param t the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
-    public Production(Transcript t, Attributes atts) {
+    public TargetText(Transcript t, Attributes atts) {
         super(t, atts);
 
         classify();
@@ -25,7 +25,7 @@ public class Production extends BaseIncident {
 
     private void setDraftingPhase() {
 
-        if (start > transcript.startSelection)
+        if (start > 0)
             if (transcript.startDrafting == null || start < transcript.startDrafting)
                 transcript.startDrafting = start - 1;
     }

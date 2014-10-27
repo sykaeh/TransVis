@@ -1,7 +1,7 @@
 /*
  * TranVis.java
  */
-package tranvis;
+package transvis;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.FrameView;
@@ -366,7 +366,7 @@ public class MainView extends FrameView {
 
         optionsPanel.setName("optionsPanel"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tranvis.MainApp.class).getContext().getResourceMap(MainView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(transvis.MainApp.class).getContext().getResourceMap(MainView.class);
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
@@ -587,7 +587,7 @@ public class MainView extends FrameView {
 
         filePanel.setName("filePanel"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tranvis.MainApp.class).getContext().getActionMap(MainView.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(transvis.MainApp.class).getContext().getActionMap(MainView.class, this);
         addFolderButton.setAction(actionMap.get("showFolderChooser")); // NOI18N
         addFolderButton.setText(resourceMap.getString("addFolderButton.text")); // NOI18N
         addFolderButton.setName("addFolderButton"); // NOI18N
