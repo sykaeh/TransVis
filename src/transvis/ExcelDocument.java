@@ -58,10 +58,13 @@ public class ExcelDocument {
             Workbook originalWorkbook;
             if (stats) {
                 LOGGER.log(Level.INFO, "Getting template.xls");
-                originalWorkbook = Workbook.getWorkbook(new File("template.xls"));
+                //originalWorkbook = Workbook.getWorkbook(new File("template.xls"));
+                originalWorkbook = Workbook.getWorkbook(new File(getClass().getResource("resources/template_stats.xls").toURI()));
+
             } else {
                 LOGGER.log(Level.INFO, "Getting template_allTags.xls");
-                originalWorkbook = Workbook.getWorkbook(new File("template_allTags.xls"));
+                //originalWorkbook = Workbook.getWorkbook(new File("template_allTags.xls"));
+                originalWorkbook = Workbook.getWorkbook(new File(getClass().getResource("resources/template_data.xls").toURI()));
             }
             LOGGER.log(Level.INFO, "Creating new workbook");
             WritableWorkbook workbook = Workbook.createWorkbook(ofile, originalWorkbook);
@@ -217,11 +220,11 @@ public class ExcelDocument {
 
     private int addProductions(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
-        float[] prod_stats = getStats(t.incidents.stream().filter(inc -> inc.group == IncidentType.PRODUCTION).iterator());
+        float[] prod_stats = getStats(t.incidents.stream().filter(inc -> inc.group == IncidentType.TARGETTEXT).iterator());
 
         if (prod_stats[0] > 0) {
             sheet.addCell(new Number(c++, row, prod_stats[1]));
-            if (t.incidents.stream().filter(inc -> inc.subgroup == IncidentType.PR_WRITESHORT).count() > 0 || prod_stats[2] < 5) {
+            if (t.incidents.stream().filter(inc -> inc.subgroup == IncidentType.T_WRITESHORT).count() > 0 || prod_stats[2] < 5) {
                 sheet.addCell(new Label(c++, row, "< 5"));
             } else {
                 sheet.addCell(new Number(c++, row, prod_stats[2]));
@@ -233,14 +236,14 @@ public class ExcelDocument {
                 sheet.addCell(new Label(c++, row, "n/a"));
         }
 
-        sheet.addCell(new Number(c++, row, countByGroup(t, IncidentType.PRODUCTION)));
+        sheet.addCell(new Number(c++, row, countByGroup(t, IncidentType.TARGETTEXT)));
 
         // TODO: Double check these numbers with mom!
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.PR_WRITESHORT)));
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.PR_WRITELONG)
-                + countBySubGroup(t, IncidentType.PR_WRITETYPO)));
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.PR_WRITETYPO)));
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.MATCH)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITESHORT)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITELONG)
+                + countBySubGroup(t, IncidentType.T_WRITETYPO)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITETYPO)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_MATCH)));
 
         return c;
     }
@@ -293,31 +296,6 @@ public class ExcelDocument {
 
     private int addConsults(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
-        sheet.addCell(new Number(c++, row, countByGroup(t, IncidentType.CONSULTATION)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_SEARCHENG)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_ENCYCLOPEDIA)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_DICTIONARY)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_PORTALS)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_OTHER)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_TERMBANKS)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFCONTEXT)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFSTYLEGUIDE)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFGLOSSARY)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFPARALLELTEXT)));
-
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_CONCORDANCE)));
-
-
         float[] stats = getStats(t.incidents.stream().filter(inc -> inc.group == IncidentType.CONSULTATION).iterator());
 
         if (stats[0] > 0) {
@@ -327,6 +305,19 @@ public class ExcelDocument {
             for (int j = 0; j < 4; j++)
                 sheet.addCell(new Label(c++, row, "n/a"));
         }
+
+        sheet.addCell(new Number(c++, row, countByGroup(t, IncidentType.CONSULTATION)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_SEARCHENG)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_ENCYCLOPEDIA)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_DICTIONARY)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_PORTALS)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_OTHER)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_TERMBANKS)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFCONTEXT)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFSTYLEGUIDE)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFGLOSSARY)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_WFPARALLELTEXT)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.C_CONCORDANCE)));
 
         return c;
     }
