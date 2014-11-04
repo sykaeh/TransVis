@@ -32,22 +32,22 @@ public class Interruption extends BaseIncident {
     private void classify() {
 
         group = IncidentType.INTERRUPTION;
+        switch (i_subtype) {
+            case "privatemail":
+                subgroup = IncidentType.I_PRIVATEMAIL; break;
+            case "jobmail":
+                subgroup = IncidentType.I_JOBMAIL; break;
+            case "internet":
+                subgroup = IncidentType.I_INTERNET; break;
+            case "task":
+                subgroup = IncidentType.I_TASK; break;
+            case "workflow":
+                subgroup = IncidentType.I_WORKFLOW; break;
+            case "break":
+                subgroup = IncidentType.I_BREAK; break;
+            default:
+                break;
 
-        // TODO: Change to switch statement
-        if (i_subtype.equals("privatemail")) {
-            subgroup = IncidentType.I_PRIVATEMAIL;
-        } else if (i_subtype.equals("jobmail")) {
-            subgroup = IncidentType.I_JOBMAIL;
-        } else if (i_subtype.equals("internet")) {
-            subgroup = IncidentType.I_INTERNET;
-        } else if (i_subtype.equals("task")) {
-            subgroup = IncidentType.I_TASK;
-        } else if (i_subtype.equals("workflow")) {
-            subgroup = IncidentType.I_WORKFLOW;
-        } else if (i_subtype.equals("break")) {
-            subgroup = IncidentType.I_BREAK;
-        } else if (i_subtype.equals("jobmail")) {
-            subgroup = IncidentType.I_JOBMAIL;
         }
     }
 }

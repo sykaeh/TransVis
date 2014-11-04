@@ -42,7 +42,6 @@ public class Revision extends BaseIncident {
 
         group = IncidentType.REVISION;
 
-        // TODO: change to switch statement
         if (i_subtype.equals("revision")) {
             revisionType = IncidentType.R_REVISION;
         } else if (i_subtype.equals("revision2")) {
