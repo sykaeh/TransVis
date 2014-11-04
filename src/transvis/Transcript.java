@@ -107,6 +107,7 @@ public class Transcript {
         System.exit(1);
     }
 
+    // TODO: Better error handling!
     public static void error(String s) {
         System.out.println("ERROR: " + s);
     }
@@ -130,6 +131,7 @@ public class Transcript {
 
     public void setSelection(int type, int start, int end) {
 
+        // TODO: This does not seem to do anything when showing the graph!
         System.out.println("Start process: " + 0);
         System.out.println("Start drafting: " + startDrafting);
         System.out.println("Start revision: " + startRevision);
@@ -193,86 +195,6 @@ public class Transcript {
     public int adjustTime(int t) {
         return t - startAdjustment;
     }
-//
-//    /**
-//     * TODO: Check if parsing is being done properly...
-//     */
-//    public void parse() {
-//
-//        // Find all incident tags and handle them accordingly
-//        NodeList incidentList = doc.getElementsByTagName("incident");
-//        for (int i = 0; i < incidentList.getLength(); i++) {
-//            if (incidentList.item(i).getNodeType() == Node.ELEMENT_NODE) {
-//                Element e = (Element) incidentList.item(i);
-//
-//                if (e.hasAttribute("type") && e.getAttribute("type").equalsIgnoreCase("writes")) {
-//                    Element possible_typo = (Element) incidentList.item(i + 1);
-//                    Element possible_write = (Element) incidentList.item(i + 2);
-//                    boolean typo = possible_typo != null && (possible_typo.hasAttribute("subtype") && possible_typo.getAttribute("subtype").equalsIgnoreCase("typo"))
-//                            || (possible_typo.hasAttribute("type") && possible_typo.getAttribute("type").equalsIgnoreCase("autocorrects"));
-//                    boolean writes2 = possible_write != null && possible_write.hasAttribute("type") && possible_write.getAttribute("type").equalsIgnoreCase("writes");
-//                    if (typo && writes2) {
-//                        handle_two_step_write(e, possible_write);
-//                        handleIncident(possible_typo);
-//                        i++;
-//                        i++;
-//
-//                    } else {
-//                        handleIncident(e);
-//                    }
-//
-//                } else if (e.hasAttribute("type")) {
-//                    handleIncident(e);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void handleIncident(Element e) {
-//
-//        Incident i = new Incident(e, this);
-//        if (i.start < 0 || i.end > lengthAdjustment) {
-//            return;
-//        }
-//
-//        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
-//        mainlist.add(i);
-//        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
-//        sublist.add(i);
-//        allIncidents.add(i);
-//    }
-//
-//    TODO: What is this two step write?
-//    private void handle_two_step_write(Element e, Element possible_write) {
-//
-//        Incident i = new Incident(e, this);
-//        if (i.start < 0 || i.end > lengthAdjustment) {
-//            return;
-//        }
-//
-//        float end = 0;
-//        if (possible_write.hasAttribute("end")) {
-//            end = convertToReal(possible_write.getAttribute("end"));
-//        } else if (possible_write.hasAttribute("start")) { // if the write does not have an end-tag, use the start tag
-//            end = convertToReal(possible_write.getAttribute("start"));
-//        }
-//
-//        if (i.validTimes) {
-//
-//            if (end == 0 || end < i.start) {
-//                end = i.start;
-//            }
-//            i.end = end;
-//            i.subgroup = IncidentType.T_WRITETYPO;
-//        }
-//
-//        IncidentList mainlist = (IncidentList)incidentlists.get(i.group);
-//        mainlist.add(i);
-//        IncidentList sublist = (IncidentList)incidentlists.get(i.subgroup);
-//        sublist.add(i);
-//        allIncidents.add(i);
-//
-//    }
 
 }
 

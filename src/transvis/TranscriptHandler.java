@@ -18,6 +18,9 @@ class TranscriptHandler extends DefaultHandler {
     private Transcript transcript;
     private Recording recording = null;
 
+    private BaseIncident firstWrite = null;
+    private BaseIncident intermediateTypo = null;
+
     /**
      * Public constructor
      *
@@ -40,15 +43,44 @@ class TranscriptHandler extends DefaultHandler {
                 transcript.setName(attributes.getValue("name"));
                 break;
             case "incident":
-                // TODO: handle two-step-write
-                classifyIncident(attributes);
+                if (attributes.getValue("type").equalsIgnoreCase("writes") ||
+                        attributes.getValue("type").equalsIgnoreCase("accepts")) {
+
+                    if (firstWrite == null && intermediateTypo == null) {
+                        // no previously stored write or typo
+                        firstWrite = new SourceText(transcript, attributes);
+                    } else if (firstWrite != null && intermediateTypo == null) {
+                        // write without intermediate typo => regular write
+                        incident = firstWrite;
+                        firstWrite = new SourceText(transcript, attributes);
+
+                    } else if (firstWrite == null && intermediateTypo != null) {
+
+                        // typo without previous write
+                        intermediateTypo = null;
+                        firstWrite = new SourceText(transcript, attributes);
+
+                    } else if (firstWrite != null && intermediateTypo != null) {
+
+                        // we have a two-step write
+                        BaseIncident secondWrite = new TargetText(transcript, attributes);
+                        firstWrite.end = secondWrite.end;
+
+                        incident = firstWrite;
+
+                        intermediateTypo = null;
+                        firstWrite = null;
+
+                    }
+
+                } else // if it is not a target text production
+                    classifyIncident(attributes);
                 break;
             case "recording":
                 recording = new Recording(attributes);
                 break;
             case "u":
-
-                // TODO: handle utterances
+                // ignore utterances
                 break;
         }
     }
@@ -62,7 +94,6 @@ class TranscriptHandler extends DefaultHandler {
                 break;
 
             case "incident":
-                // TODO: handle content!
                 if (incident == null)
                     System.out.println("ERROR:\t\tIncident is null...");
                 else {
@@ -102,16 +133,6 @@ class TranscriptHandler extends DefaultHandler {
                 break;
             case "interrupts":
                 incident = new Interruption(transcript, atts);
-                break;
-
-            case "writes":
-                incident = new TargetText(transcript, atts);
-                break;
-            case "accepts":
-                if (incident_subtype.equalsIgnoreCase("match"))
-                    incident = new TargetText(transcript, atts);
-                else
-                    Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                 break;
 
             case "autocorrects":
@@ -164,6 +185,12 @@ class TranscriptHandler extends DefaultHandler {
                 Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                 break;
 
+        }
+
+        // reset two-step handles if we are not dealing with a typo
+        if (incident.group != IncidentType.TYPOS) {
+            intermediateTypo = null;
+            firstWrite = null;
         }
 
     }
