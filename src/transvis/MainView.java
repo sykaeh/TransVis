@@ -785,9 +785,9 @@ public class MainView extends FrameView {
         folderChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
         folderChooser.setName("folderChooser"); // NOI18N
 
-        saveFileChooser.setCurrentDirectory(new java.io.File("/HOME"));
+        //saveFileChooser.setCurrentDirectory(new java.io.File("/HOME"));
         saveFileChooser.setDialogTitle(resourceMap.getString("saveFileChooser.dialogTitle")); // NOI18N
-        saveFileChooser.setSelectedFile(new java.io.File("/statistics.xls"));
+        saveFileChooser.setSelectedFile(new java.io.File("statistics.xls"));
         saveFileChooser.setName("saveFileChooser"); // NOI18N
 
         setComponent(mainPanel);
