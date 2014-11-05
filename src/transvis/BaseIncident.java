@@ -67,7 +67,7 @@ public class BaseIncident {
         try {
             end = transcript.adjustTime(Transcript.convertToSeconds(s_end));
         } catch (NumberFormatException | NullPointerException e) {
-            Transcript.error("Invalid end time format (" + s_end + "): " + e.getMessage());
+            //Transcript.error("Invalid end time format (" + s_end + "): " + e.getMessage());
             end = start;
         }
 
@@ -76,12 +76,18 @@ public class BaseIncident {
             end = start;
         }
 
+
+
     }
 
     public boolean valid() {
 
-        if (start <= 0) {
+        if (start < 0) { // in the warm up phase, ignore completely
             group = IncidentType.WARMUP;
+            return false;
+        } else if (start < transcript.startSelection) {
+            return false;
+        } else if (end > transcript.endSelection) {
             return false;
         } else {
             return true;

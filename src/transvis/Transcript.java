@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Base class for each transcript and thus each individual process.
@@ -55,6 +56,8 @@ public class Transcript {
 
     /** List of all found incidents */
     List<BaseIncident> incidents;
+    /** List of all incidents within the selection */
+    List<BaseIncident> validIncidents;
 
     /**
      * Public constructor for a Transcript.
@@ -136,7 +139,6 @@ public class Transcript {
      */
     public void setSelection(int type, int start, int end) {
 
-        // TODO: This does not seem to do anything when showing the graph!
         System.out.println("Start process: " + 0);
         System.out.println("Start drafting: " + startDrafting);
         System.out.println("Start revision: " + startRevision);
@@ -182,6 +184,29 @@ public class Transcript {
             startSelection = 0;
         }
         durationSelection = endSelection - startSelection;
+
+        System.out.println("Start selection: " + startSelection);
+        System.out.println("End selection: " + endSelection);
+        System.out.println("Total time selection: " + durationSelection);
+
+        validIncidents = incidents.stream().filter(inc -> inc.valid()).collect(Collectors.toList());
+    }
+
+    /**
+     * Adjust the times of each incident to the current selection.
+     *
+     * Function to be used in the graphs so that an incident a the start of a phase (orientation, drafting, revision)
+     * will always have start time 0. This way, processes with different phase lengths can be compared accurately.
+     * Beware this function adjusts the times in place (i.e. each incident is modified).
+     *
+     */
+    public void adjustTimesToSelection() {
+
+        for (BaseIncident b: validIncidents) {
+            b.start = b.start - startSelection;
+            b.end = b.end - startSelection;
+        }
+
     }
 
 

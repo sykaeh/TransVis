@@ -17,6 +17,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -329,14 +330,14 @@ public class MainApp extends SingleFrameApplication {
     private XYSeries getDataSeriesByGroup(Transcript t, IncidentType type, double position) {
 
         XYSeries series = new XYSeries(t.name + type.descr);
-        t.incidents.stream().filter(i -> i.group == type).forEach(i -> addToSeries(series, i, position));
+        t.validIncidents.stream().filter(i -> i.group == type).forEach(i -> addToSeries(series, i, position));
         return series;
     }
 
     private XYSeries getDataSeriesBySubGroup(Transcript t, IncidentType type, double position) {
 
         XYSeries series = new XYSeries(t.name + type.descr);
-        t.incidents.stream().filter(i -> i.subgroup == type).forEach(i -> addToSeries(series, i, position));
+        t.validIncidents.stream().filter(i -> i.subgroup == type).forEach(i -> addToSeries(series, i, position));
         return series;
     }
 
@@ -373,6 +374,8 @@ public class MainApp extends SingleFrameApplication {
 
             nameField += t.name + ", ";
             processNames.add(t.name);
+
+            t.adjustTimesToSelection();
 
             data.addSeries(getDataSeriesByGroup(t, IncidentType.CONSULTATION, pos + 4));
             data.addSeries(getDataSeriesByGroup(t, IncidentType.TYPOS, pos + 3));
@@ -441,6 +444,8 @@ public class MainApp extends SingleFrameApplication {
 
             nameField += t.name + ", ";
             processNames.add(t.name);
+
+            t.adjustTimesToSelection();
 
             int i = numTypes - 1;
             for (IncidentType sub : categories) {
@@ -519,26 +524,30 @@ public class MainApp extends SingleFrameApplication {
             del = new XYSeries("deletions " + p.name);
             pas = new XYSeries("pastes " + p.name);
 
+            p.adjustTimesToSelection();
 
             // TODO: cast does not work!
-            Revision[] inserts = (Revision[]) p.incidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).toArray();
-            for (Revision e : inserts) {
+            Iterator<BaseIncident> inserts = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).iterator();
+            while (inserts.hasNext()) {
+                Revision e = (Revision) inserts.next();
                 if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
                         || e.revisionType == IncidentType.R_REVISION) {
                     addToSeries(ins, e, 2 + pos);
                 }
             }
 
-            Revision[] deletes = (Revision[]) p.incidents.stream().filter(inc -> inc.subgroup == IncidentType.R_DELETES).toArray();
-            for (Revision e : deletes) {
+            Iterator<BaseIncident> deletes = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_DELETES).iterator();
+            while (deletes.hasNext()) {
+                Revision e = (Revision) deletes.next();
                 if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
                         || e.revisionType == IncidentType.R_REVISION) {
                     addToSeries(del, e, 1 + pos);
                 }
             }
 
-            Revision[] pastes = (Revision[]) p.incidents.stream().filter(inc -> inc.subgroup == IncidentType.R_PASTES || inc.subgroup == IncidentType.R_MOVESTO).toArray();
-            for (Revision e : pastes) {
+            Iterator<BaseIncident> pastes = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_PASTES || inc.subgroup == IncidentType.R_MOVESTO).iterator();
+            while (pastes.hasNext()) {
+                Revision e = (Revision) pastes.next();
                 if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
                         || e.revisionType == IncidentType.R_REVISION) {
                     addToSeries(pas, e, 0 + pos);
@@ -707,6 +716,7 @@ public class MainApp extends SingleFrameApplication {
 
         for (Transcript p : parsers) {
 
+            p.adjustTimesToSelection();
             nameField += p.name + ", ";
             processNames.add(p.name);
             int i = 0;
@@ -747,27 +757,30 @@ public class MainApp extends SingleFrameApplication {
                 XYSeries pas = new XYSeries("pastes " + p.name);
 
 
-                Revision[] inserts = (Revision[]) p.incidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).toArray();
-                for (Revision e : inserts) {
+                Iterator<BaseIncident> inserts = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).iterator();
+                while (inserts.hasNext()) {
+                    Revision e = (Revision) inserts.next();
                     if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
                             || e.revisionType == IncidentType.R_REVISION) {
-                        addToSeries(ins, e, 3 + i + pos);
+                        addToSeries(ins, e, 2 + pos);
                     }
                 }
 
-                Revision[] deletes = (Revision[]) p.incidents.stream().filter(inc -> inc.subgroup == IncidentType.R_DELETES).toArray();
-                for (Revision e : deletes) {
+                Iterator<BaseIncident> deletes = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_DELETES).iterator();
+                while (deletes.hasNext()) {
+                    Revision e = (Revision) deletes.next();
                     if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
                             || e.revisionType == IncidentType.R_REVISION) {
-                        addToSeries(del, e, 2 + i + pos);
+                        addToSeries(del, e, 1 + pos);
                     }
                 }
 
-                Revision[] pastes = (Revision[]) p.incidents.stream().filter(inc -> inc.subgroup == IncidentType.R_PASTES || inc.subgroup == IncidentType.R_MOVESTO).toArray();
-                for (Revision e : pastes) {
+                Iterator<BaseIncident> pastes = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_PASTES || inc.subgroup == IncidentType.R_MOVESTO).iterator();
+                while (pastes.hasNext()) {
+                    Revision e = (Revision) pastes.next();
                     if ((bothRevisions && e.revisionType == IncidentType.R_REVISION2)
                             || e.revisionType == IncidentType.R_REVISION) {
-                        addToSeries(pas, e, 1 + i + pos);
+                        addToSeries(pas, e, 0 + pos);
                     }
                 }
 

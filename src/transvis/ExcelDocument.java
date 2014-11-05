@@ -206,25 +206,25 @@ public class ExcelDocument {
     }
 
     private long countByGroup(Transcript t, IncidentType group) {
-        return t.incidents.stream().filter(inc -> inc.group == group).count();
+        return t.validIncidents.stream().filter(inc -> inc.group == group).count();
     }
 
     private long countBySubGroup(Transcript t, IncidentType group) {
-        return t.incidents.stream().filter(inc -> inc.subgroup == group).count();
+        return t.validIncidents.stream().filter(inc -> inc.subgroup == group).count();
     }
 
-    private long countRevisions(List<BaseIncident> incidents, IncidentType subgroup, IncidentType revision) {
-        return incidents.stream().filter(inc -> inc.subgroup == subgroup)
+    private long countRevisions(Transcript t, IncidentType subgroup, IncidentType revision) {
+        return t.validIncidents.stream().filter(inc -> inc.subgroup == subgroup)
                 .filter(inc -> ((Revision) inc).revisionType == revision).count();
     }
 
     private int addProductions(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
-        float[] prod_stats = getStats(t.incidents.stream().filter(inc -> inc.group == IncidentType.TARGETTEXT).iterator());
+        float[] prod_stats = getStats(t.validIncidents.stream().filter(inc -> inc.group == IncidentType.TARGETTEXT).iterator());
 
         if (prod_stats[0] > 0) {
             sheet.addCell(new Number(c++, row, prod_stats[1]));
-            if (t.incidents.stream().filter(inc -> inc.subgroup == IncidentType.T_WRITESHORT).count() > 0 || prod_stats[2] < 5) {
+            if (t.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.T_WRITESHORT).count() > 0 || prod_stats[2] < 5) {
                 sheet.addCell(new Label(c++, row, "< 5"));
             } else {
                 sheet.addCell(new Number(c++, row, prod_stats[2]));
@@ -251,18 +251,18 @@ public class ExcelDocument {
     private int addRevisions(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
         sheet.addCell(new Number(c++, row, countByGroup(t, IncidentType.REVISION)));
-        sheet.addCell(new Number(c++, row, t.incidents.stream().filter(inc -> inc.group == IncidentType.REVISION)
+        sheet.addCell(new Number(c++, row, t.validIncidents.stream().filter(inc -> inc.group == IncidentType.REVISION)
                 .filter(inc -> ((Revision) inc).revisionType == IncidentType.R_REVISION).count()));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_DELETES, IncidentType.R_REVISION)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_DELETES, IncidentType.R_REVISION2)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_INSERTS, IncidentType.R_REVISION)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_INSERTS, IncidentType.R_REVISION2)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_PASTES, IncidentType.R_REVISION)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_PASTES, IncidentType.R_REVISION2)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_MOVESTO, IncidentType.R_REVISION)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_MOVESTO, IncidentType.R_REVISION2)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_UNDOES, IncidentType.R_REVISION)));
-        sheet.addCell(new Number(c++, row, countRevisions(t.incidents, IncidentType.R_UNDOES, IncidentType.R_REVISION2)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_DELETES, IncidentType.R_REVISION)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_DELETES, IncidentType.R_REVISION2)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_INSERTS, IncidentType.R_REVISION)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_INSERTS, IncidentType.R_REVISION2)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_PASTES, IncidentType.R_REVISION)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_PASTES, IncidentType.R_REVISION2)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_MOVESTO, IncidentType.R_REVISION)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_MOVESTO, IncidentType.R_REVISION2)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_UNDOES, IncidentType.R_REVISION)));
+        sheet.addCell(new Number(c++, row, countRevisions(t, IncidentType.R_UNDOES, IncidentType.R_REVISION2)));
 
         return c;
     }
@@ -296,7 +296,7 @@ public class ExcelDocument {
 
     private int addConsults(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
-        float[] stats = getStats(t.incidents.stream().filter(inc -> inc.group == IncidentType.CONSULTATION).iterator());
+        float[] stats = getStats(t.validIncidents.stream().filter(inc -> inc.group == IncidentType.CONSULTATION).iterator());
 
         if (stats[0] > 0) {
             for (int j = 1; j <= 4; j++)
