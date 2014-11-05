@@ -21,6 +21,8 @@ class TranscriptHandler extends DefaultHandler {
     private BaseIncident firstWrite = null;
     private BaseIncident intermediateTypo = null;
 
+    private String current_phase = "OP";
+
     /**
      * Public constructor
      *
@@ -37,31 +39,36 @@ class TranscriptHandler extends DefaultHandler {
                              String qName, Attributes attributes)
             throws SAXException {
 
-        System.out.println("qname: " + qName);
         switch (qName) {
             case "document":
                 transcript.setName(attributes.getValue("name"));
                 break;
             case "incident":
+
+                // TODO: Check two-step write with unit tests!
                 if (attributes.getValue("type").equalsIgnoreCase("writes") ||
                         attributes.getValue("type").equalsIgnoreCase("accepts")) {
 
                     if (firstWrite == null && intermediateTypo == null) {
                         // no previously stored write or typo
-                        firstWrite = new SourceText(transcript, attributes);
+                        System.out.println("first write I");
+                        firstWrite = new TargetText(transcript, attributes);
                     } else if (firstWrite != null && intermediateTypo == null) {
                         // write without intermediate typo => regular write
                         incident = firstWrite;
-                        firstWrite = new SourceText(transcript, attributes);
+                        System.out.println("assigning write to incident");
+                        firstWrite = new TargetText(transcript, attributes);
 
                     } else if (firstWrite == null && intermediateTypo != null) {
 
+                        System.out.println("first write III");
                         // typo without previous write
                         intermediateTypo = null;
-                        firstWrite = new SourceText(transcript, attributes);
+                        firstWrite = new TargetText(transcript, attributes);
 
                     } else if (firstWrite != null && intermediateTypo != null) {
 
+                        System.out.println("true two-step write");
                         // we have a two-step write
                         BaseIncident secondWrite = new TargetText(transcript, attributes);
                         firstWrite.end = secondWrite.end;
@@ -97,7 +104,10 @@ class TranscriptHandler extends DefaultHandler {
                 if (incident == null)
                     System.out.println("ERROR:\t\tIncident is null...");
                 else {
+                    System.out.println(incident.group);
+                    assignPhase(incident);
                     transcript.incidents.add(incident);
+
                     incident = null;
                 }
                 break;
@@ -110,6 +120,29 @@ class TranscriptHandler extends DefaultHandler {
         content = String.copyValueOf(ch, start, length).trim();
     }
 
+
+    private void assignPhase(BaseIncident b) {
+
+        if (transcript.startDrafting == null) {
+            current_phase = "OP";
+            b.phase = current_phase;
+            return;
+        }
+
+        if (b.validTimes) {
+
+            if (b.start < transcript.startDrafting) {
+                current_phase = "OP";
+            } else if (b.start > transcript.startDrafting && b.start < transcript.startRevision) {
+                current_phase = "DP";
+            } else {
+                current_phase = "RP";
+            }
+
+        }
+
+        b.phase = current_phase;
+    }
 
     private void classifyIncident(Attributes atts) {
 
@@ -188,8 +221,12 @@ class TranscriptHandler extends DefaultHandler {
         }
 
         // reset two-step handles if we are not dealing with a typo
-        if (incident.group != IncidentType.TYPOS) {
+        if (incident == null || incident.group != IncidentType.TYPOS) {
             intermediateTypo = null;
+            if (firstWrite != null) {
+                assignPhase(firstWrite);
+                transcript.incidents.add(firstWrite);
+            }
             firstWrite = null;
         }
 
