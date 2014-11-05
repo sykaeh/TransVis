@@ -116,11 +116,48 @@ public class ExcelDocument {
 
         for (Transcript t : transcriptList) {
 
+            int current_time = 0;
+            boolean dp = false;
+            boolean rp = false;
             // TODO: add start drafting incident
             // TODO: add start revision incident
             // TODO: add end process incident
 
-            for (BaseIncident e : t.incidents) {
+            // TODO: add start & end selection incidents
+            fillGenericData(sheet, i, t);
+            sheet.addCell(new Label(13, i, "Start Selection"));
+            sheet.addCell(new Number(14, i, t.startSelection));
+            i++;
+
+            Iterator<BaseIncident> iterator = t.validIncidents.iterator();
+            while (iterator.hasNext()) {
+
+                BaseIncident e = iterator.next();
+
+                if (e.validTimes)
+                    current_time = e.start;
+
+                if (!dp && current_time >= t.startDrafting) {
+
+                    fillGenericData(sheet, i, t);
+                    sheet.addCell(new Label(13, i, "Start Drafting Phase"));
+                    sheet.addCell(new Number(14, i, t.startDrafting));
+
+                    i++;
+
+                    dp = true;
+                }
+
+                if (!rp && current_time >= t.startRevision) {
+
+                    fillGenericData(sheet, i, t);
+                    sheet.addCell(new Label(13, i, "Start Revision Phase"));
+                    sheet.addCell(new Number(14, i, t.startRevision));
+
+                    i++;
+
+                    rp = true;
+                }
 
                 fillGenericData(sheet, i, t);
 
@@ -155,6 +192,17 @@ public class ExcelDocument {
                 i++;
 
             }
+
+            fillGenericData(sheet, i, t);
+            sheet.addCell(new Label(13, i, "End Selection"));
+            sheet.addCell(new Number(14, i, t.endSelection));
+            i++;
+
+            fillGenericData(sheet, i, t);
+            sheet.addCell(new Label(13, i, "End Process"));
+            sheet.addCell(new Number(14, i, t.totalTime));
+            i++;
+
         }
 
     }
