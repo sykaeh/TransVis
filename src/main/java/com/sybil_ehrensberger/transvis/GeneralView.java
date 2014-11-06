@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,7 +46,6 @@ public class GeneralView {
     private JTextField textField3;
     private JTextField dataXlsTextField;
     private JTextField statsXlsTextField;
-    private JTextPane textPane1;
     private JPanel main_panel;
     private JLabel num_files;
     private JList file_list;
@@ -58,6 +58,7 @@ public class GeneralView {
     private JButton chooseButton;
     private JCheckBox createDataCheckBox;
     private JCheckBox createStatsCheckBox;
+    private JTextPane messages;
 
     public static GeneralView main_gv;
 
@@ -68,9 +69,15 @@ public class GeneralView {
         chooseFolderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileHandler.showFolderChooser(main_panel);
-                num_files.setText(String.format("%d", fileHandler.fileList.size()));
-                populateFileList(fileHandler.fileList);
+                try {
+                    fileHandler.showFolderChooser(main_panel);
+                    num_files.setText(String.format("%d", fileHandler.fileList.size()));
+                    populateFileList(fileHandler.fileList);
+                } catch (TranscriptError transcriptError) {
+                    GeneralView.fatalError(transcriptError.getMessage());
+                    transcriptError.printStackTrace();
+                }
+
             }
         });
 
@@ -96,28 +103,50 @@ public class GeneralView {
         displayGraphButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Graph graph = new Graph(parseFiles(fileHandler.fileList), main_gv);
-                GraphType[] types = { GraphType.CUSTOM };
-                graph.generateGraphsClicked(types, showIndividualSubgraphsCheckBox.isSelected());
+
+                try {
+                    Graph graph = new Graph(parseFiles(fileHandler.fileList), main_gv);
+                    graph.generateGraphsClicked(Arrays.asList(GraphType.CUSTOM), showIndividualSubgraphsCheckBox.isSelected());
+                } catch (TranscriptError transcriptError) {
+                    GeneralView.fatalError(transcriptError.getMessage());
+                    transcriptError.printStackTrace();
+                } catch (Exception ex) {
+                    GeneralView.fatalError("Unexpected error: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+
             }
         });
 
         displayGraphsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Graph graph = new Graph(parseFiles(fileHandler.fileList), main_gv);
-                List<GraphType> types = new ArrayList<GraphType>();
+                Graph graph;
 
-                if (mainGraphCheckBox.isSelected())
-                    types.add(GraphType.MAIN);
-                if (consultsGraphCheckBox.isSelected())
-                    types.add(GraphType.CONSULTS);
-                if (revisionsGraphCheckBox.isSelected())
-                    types.add(GraphType.REVISIONS);
-                if (pausesCheckBox.isSelected())
-                    types.add(GraphType.PAUSES);
+                try {
+                    graph = new Graph(parseFiles(fileHandler.fileList), main_gv);
+                    List<GraphType> types = new ArrayList<>();
 
-                graph.generateGraphsClicked((GraphType[])types.toArray(), showIndividualSubgraphsCheckBox.isSelected());
+                    if (mainGraphCheckBox.isSelected())
+                        types.add(GraphType.MAIN);
+                    if (consultsGraphCheckBox.isSelected())
+                        types.add(GraphType.CONSULTS);
+                    if (revisionsGraphCheckBox.isSelected())
+                        types.add(GraphType.REVISIONS);
+                    if (pausesCheckBox.isSelected())
+                        types.add(GraphType.PAUSES);
+
+                    graph.generateGraphsClicked(types, showIndividualSubgraphsCheckBox.isSelected());
+
+                } catch (TranscriptError transcriptError) {
+                    GeneralView.fatalError(transcriptError.getMessage());
+                    transcriptError.printStackTrace();
+
+                } catch (Exception ex) {
+                    GeneralView.fatalError("Unexpected error: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+
             }
         });
 
@@ -147,17 +176,20 @@ public class GeneralView {
                 System.out.println(generate_data + " Data file: " + dataFile.getAbsolutePath());
                 System.out.println(generate_stats + " Stats file: " + statsFile.getAbsolutePath());
 
-                List<Transcript> transcripts = parseFiles(fileHandler.fileList);
+                List<Transcript> transcripts = null;
                 try {
+                    transcripts = parseFiles(fileHandler.fileList);
                     ExcelDocument excelDoc = new ExcelDocument(transcripts);
                     if (generate_stats)
                         excelDoc.makeStatsFile(statsFile);
                     if (generate_data)
                         excelDoc.makeDataFile(dataFile);
 
+                } catch (TranscriptError transcriptError) {
+                    GeneralView.fatalError(transcriptError.getMessage());
+
                 } catch (Exception ex) {
-                    // TODO: report error
-                    // view.reportError(ex.getMessage());
+                    GeneralView.fatalError("Unexpected error: " + ex.getMessage());
                 }
 
             }
@@ -165,10 +197,7 @@ public class GeneralView {
     }
 
     private void populateFileList(List<File> files) {
-
-        System.out.println("populating file list");
         file_list.setListData(files.stream().map(f -> f.getName()).toArray());
-
     }
 
     public static void main(String[] args) {
@@ -180,9 +209,13 @@ public class GeneralView {
         frame.setVisible(true);
     }
 
-    private List<Transcript> parseFiles(List<File> files) {
+    private List<Transcript> parseFiles(List<File> files) throws TranscriptError {
 
         // TODO: Alert if list empty!
+        if (files.isEmpty()) {
+            throw new TranscriptError("No transcripts selected. Please choose at least one transcript.");
+        }
+
         int start = Transcript.convertToSeconds(getStart());
         int end = Transcript.convertToSeconds(getEnd());
 
@@ -206,12 +239,20 @@ public class GeneralView {
                 t.setSelection(type, start, end);
                 transcripts.add(t);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                // TODO: Report Error
-                //view.reportError("Error while parsing document " + f.getName() + ": \n" + ex.getMessage());
+                throw new TranscriptError("Unknown error while parsing document " + f.getName() + ": \n" + ex.getMessage());
             }
         }
         return transcripts;
+    }
+
+    public static void fatalError(String msg) {
+        FatalErrorDialog dialog = new FatalErrorDialog(msg);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    public static void note(String msg) {
+        main_gv.messages.setText(msg + "\n" + main_gv.messages.getText());
     }
 
 
@@ -354,4 +395,5 @@ public class GeneralView {
     public boolean getSTActions() {
         return STActionsCheckBox.isSelected();
     }
+
 }

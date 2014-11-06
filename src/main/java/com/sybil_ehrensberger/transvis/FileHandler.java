@@ -61,7 +61,7 @@ public class FileHandler {
      * Method invoked when the "Add folder" button is clicked.
      * @param parent
      */
-    public void showFolderChooser(JPanel parent) {
+    public void showFolderChooser(JPanel parent) throws TranscriptError {
 
         JFileChooser folderChooser = new JFileChooser();
         folderChooser.setDialogTitle("Choose directory with transcripts");
@@ -73,8 +73,7 @@ public class FileHandler {
             if (f.isDirectory()) {
                 addSubFiles(f);
             } else {
-                // TODO: Deal with Error!
-                //reportError("Chosen folder is not a folder.");
+                throw new TranscriptError("Chosen item is not a folder!");
             }
 
         } else {

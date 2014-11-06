@@ -112,11 +112,9 @@ public class ExcelDocument {
             int current_time = 0;
             boolean dp = false;
             boolean rp = false;
-            // TODO: add start drafting incident
-            // TODO: add start revision incident
-            // TODO: add end process incident
+            // TODO: Check whether start drafting, revision, end Process, start & end Selection
+            // are ok, the way they are
 
-            // TODO: add start & end selection incidents
             fillGenericData(sheet, i, t);
             sheet.addCell(new Label(13, i, "Start Selection"));
             sheet.addCell(new Number(14, i, t.startSelection));
@@ -155,7 +153,7 @@ public class ExcelDocument {
                 fillGenericData(sheet, i, t);
 
                 // green section
-                sheet.addCell(new Label(12, i, e.phase)); // TODO: Assign phase at initialization!
+                sheet.addCell(new Label(12, i, e.phase));
                 sheet.addCell(new Label(13, i, e.i_type));
                 sheet.addCell(new Label(16, i, e.i_subtype));
 

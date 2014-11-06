@@ -49,22 +49,21 @@ public class Recording {
      */
     public void validate(Transcript t) throws TranscriptError {
 
-        // TODO: what is a NO-GO? start, end and startrevision
         if (startTransProcess.isEmpty())
-            throw new TranscriptError("recording: missing start time");
+            throw new TranscriptError(t.name + ": recording tag: missing start time");
 
         t.startAdjustment = Transcript.convertToSeconds(startTransProcess);
 
         if (endTransProcess.isEmpty())
-            throw new TranscriptError("recording: missing end time");
+            throw new TranscriptError(t.name + ": recording tag: missing end time");
 
         int end = Transcript.convertToSeconds(endTransProcess);
         if (end < t.startAdjustment)
-            throw new TranscriptError("recording: end time before start time");
+            throw new TranscriptError(t.name + ": recording tag: end time before start time");
         t.totalTime = end - t.startAdjustment;
 
         if (startRevision.isEmpty())
-            throw new TranscriptError("recording: missing startRevision");
+            throw new TranscriptError(t.name + ": recording tag: missing startRevision");
 
         t.startRevision = t.adjustTime(startRevision);
 

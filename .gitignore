@@ -4,6 +4,9 @@
 
 # ignore IntelliJ IDEA files
 .idea
+*.iml
+*.ipr
+*.iws
 
 # ignore log files
 *.log
@@ -11,3 +14,6 @@
 
 # ignore all production files
 out
+
+target
+download

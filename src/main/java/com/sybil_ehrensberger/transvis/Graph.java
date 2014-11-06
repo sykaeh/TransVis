@@ -35,7 +35,7 @@ public class Graph {
         transcripts = transcript_list;
     }
 
-    public void generateGraphsClicked(GraphType[] graphTypes, boolean individuals) {
+    public void generateGraphsClicked(List<GraphType> graphTypes, boolean individuals) {
 
         for (GraphType g : graphTypes) {
 
@@ -256,7 +256,6 @@ public class Graph {
 
             p.adjustTimesToSelection();
 
-            // TODO: cast does not work!
             Iterator<BaseIncident> inserts = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).iterator();
             while (inserts.hasNext()) {
                 Revision e = (Revision) inserts.next();

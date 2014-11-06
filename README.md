@@ -1,6 +1,6 @@
-# TranVis - a translation process visualizer tool
+# TransVis - a translation process visualizer tool
 
-TranVis is a program I developed to analyze transcripts of translation processes. The program takes XML documents and 
+TransVis is a program I developed to analyze transcripts of translation processes. The program takes XML documents and 
 processes all of the so-called "incidents", i.e. pauses, consultations, deletions, insertions, writes, and visualizes 
 them in several graphs so that they can be further analyzed. The program also calculates some descriptive statistics 
 such as number of pauses or number of consultations and presents them in an Excel document. The program is written 
@@ -10,7 +10,7 @@ Applied Science (ZHAW).
 
 ## Getting started
 
-TranVis is a self-contained application using the Java JDK 1.8. Download the latest packaged jar file from
+TransVis is a self-contained application using the Java JDK 1.8. Download the latest packaged jar file from
 downloads/
 
 ## External libraries used

@@ -61,7 +61,7 @@ public class BaseIncident {
             start = transcript.adjustTime(Transcript.convertToSeconds(s_start));
         } catch (NumberFormatException | NullPointerException e) {
             validTimes = false;
-            Transcript.error("Invalid start time format (" + s_start + "): " + e.getMessage());
+            transcript.error("Invalid start time format (" + s_start + "): " + e.getMessage());
         }
 
         try {
@@ -72,7 +72,7 @@ public class BaseIncident {
         }
 
         if (validTimes && end < start) {
-            Transcript.error("End time (" + s_end + ") before start time (" + s_end + ")");
+            transcript.error("End time (" + s_end + ") before start time (" + s_end + ")");
             end = start;
         }
 

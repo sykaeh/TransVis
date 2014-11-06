@@ -41,7 +41,12 @@ class TranscriptHandler extends DefaultHandler {
 
         switch (qName) {
             case "document":
-                transcript.setName(attributes.getValue("name"));
+                try {
+                    transcript.setName(attributes.getValue("name"));
+                } catch (TranscriptError transcriptError) {
+                    GeneralView.fatalError(transcriptError.getMessage());
+                    transcriptError.printStackTrace();
+                }
                 break;
             case "incident":
 
@@ -97,7 +102,12 @@ class TranscriptHandler extends DefaultHandler {
                            String qName) throws SAXException {
         switch (qName) {
             case "recording":
-                transcript.addRecording(recording);
+                try {
+                    transcript.addRecording(recording);
+                } catch (TranscriptError transcriptError) {
+                    GeneralView.fatalError(transcriptError.getMessage());
+                    transcriptError.printStackTrace();
+                }
                 break;
 
             case "incident":
@@ -190,7 +200,7 @@ class TranscriptHandler extends DefaultHandler {
             case "undoes":
 
                 if (incident_subtype == null) {
-                    Transcript.error("Unclassified incident: " + incident_type + ", no subtype");
+                    transcript.error("Unclassified incident: " + incident_type + ", no subtype");
                     return;
                 }
 
@@ -208,14 +218,14 @@ class TranscriptHandler extends DefaultHandler {
                         incident = new Typo(transcript, atts);
                         break;
                     default:
-                        Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
+                        transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                         break;
                 }
 
                 break;
 
             default:
-                Transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
+                transcript.error("Unclassified incident: " + incident_type + ", " + incident_subtype);
                 break;
 
         }

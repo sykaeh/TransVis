@@ -83,7 +83,7 @@ public class Transcript {
      *
      * @param n the name attribute from the XML file
      */
-    public void setName(String n) {
+    public void setName(String n) throws TranscriptError {
 
         name = n;
         String[] parts = name.split("_");
@@ -94,7 +94,7 @@ public class Transcript {
             version = parts[2];
             sourcetextname = parts[3];
         } else
-            fatal("Invalid name attribute: " + name);
+            throw new TranscriptError(name + ": Invalid name attribute. ");
     }
 
     /**
@@ -102,30 +102,22 @@ public class Transcript {
      *
      * @param r the recording information to be added
      */
-    public void addRecording(Recording r) {
+    public void addRecording(Recording r) throws TranscriptError {
 
         if (recording != null) {
-            fatal("Multiple recording attributes");
+            throw new TranscriptError(name + ": Multiple recording attributes found.");
         }
 
-        try {
-            r.validate(this);
-        } catch (TranscriptError e) {
-            fatal(e.getMessage());
-        }
+        r.validate(this);
 
         recording = r;
 
     }
 
     // TODO: Better error handling!
-    public static void fatal(String s) {
-        System.out.println(s);
-        System.exit(1);
-    }
+    public void error(String s) {
 
-    // TODO: Better error handling!
-    public static void error(String s) {
+        GeneralView.note(name + ": " + s);
         System.out.println("ERROR: " + s);
     }
 
