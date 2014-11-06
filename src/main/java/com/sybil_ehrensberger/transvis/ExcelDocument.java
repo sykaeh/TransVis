@@ -84,7 +84,7 @@ public class ExcelDocument {
     private void fillGenericData(WritableSheet sheet, int row, Transcript t) throws WriteException {
 
         // Filename
-        sheet.addCell(new Label(0, row, t.name));
+        sheet.addCell(new Label(0, row, t.getName()));
 
         // blue section
         sheet.addCell(new Label(1, row, t.participant));

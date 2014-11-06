@@ -29,9 +29,9 @@ public class Graph {
 
     private List<Transcript> transcripts;
 
-    public Graph(List<Transcript> transcript_list, GeneralView gv) {
+    public Graph(List<Transcript> transcript_list) {
 
-        view = gv;
+        view = Main.main_gv;
         transcripts = transcript_list;
     }
 
@@ -58,14 +58,14 @@ public class Graph {
 
     private XYSeries getDataSeriesByGroup(Transcript t, IncidentType type, double position) {
 
-        XYSeries series = new XYSeries(t.name + type.descr);
+        XYSeries series = new XYSeries(t.getName() + type.descr);
         t.validIncidents.stream().filter(i -> i.group == type).forEach(i -> addToSeries(series, i, position));
         return series;
     }
 
     private XYSeries getDataSeriesBySubGroup(Transcript t, IncidentType type, double position) {
 
-        XYSeries series = new XYSeries(t.name + type.descr);
+        XYSeries series = new XYSeries(t.getName() + type.descr);
         t.validIncidents.stream().filter(i -> i.subgroup == type).forEach(i -> addToSeries(series, i, position));
         return series;
     }
@@ -138,8 +138,8 @@ public class Graph {
 
         for (Transcript t : transcripts) {
 
-            nameField += t.name + ", ";
-            processNames.add(t.name);
+            nameField += t.getName() + ", ";
+            processNames.add(t.getName());
 
             t.adjustTimesToSelection();
 
@@ -188,8 +188,8 @@ public class Graph {
 
         for (Transcript t : transcripts) {
 
-            nameField += t.name + ", ";
-            processNames.add(t.name);
+            nameField += t.getName() + ", ";
+            processNames.add(t.getName());
 
             t.adjustTimesToSelection();
 
@@ -248,11 +248,11 @@ public class Graph {
 
         for (Transcript p : parsers) {
 
-            nameField += p.name + ", ";
-            processNames.add(p.name);
-            ins = new XYSeries("insertions " + p.name);
-            del = new XYSeries("deletions " + p.name);
-            pas = new XYSeries("pastes " + p.name);
+            nameField += p.getName() + ", ";
+            processNames.add(p.getName());
+            ins = new XYSeries("insertions " + p.getName());
+            del = new XYSeries("deletions " + p.getName());
+            pas = new XYSeries("pastes " + p.getName());
 
             p.adjustTimesToSelection();
 
@@ -442,8 +442,8 @@ public class Graph {
         for (Transcript p : parsers) {
 
             p.adjustTimesToSelection();
-            nameField += p.name + ", ";
-            processNames.add(p.name);
+            nameField += p.getName() + ", ";
+            processNames.add(p.getName());
             int i = 0;
 
             if (view.getSTActions()) {
@@ -477,9 +477,9 @@ public class Graph {
 
             if (view.getIndRevisions()) {
 
-                XYSeries ins = new XYSeries("insertions " + p.name);
-                XYSeries del = new XYSeries("deletions " + p.name);
-                XYSeries pas = new XYSeries("pastes " + p.name);
+                XYSeries ins = new XYSeries("insertions " + p.getName());
+                XYSeries del = new XYSeries("deletions " + p.getName());
+                XYSeries pas = new XYSeries("pastes " + p.getName());
 
 
                 Iterator<BaseIncident> inserts = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).iterator();

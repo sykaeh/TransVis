@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
  */
 public class Transcript {
 
-    /** The name of the file to be analyzed (also specified in the name attribute) */
-    public String name;
+    private String name;
     /** Participant ID */
     public String participant;
     /** Group the participant belongs to */
@@ -76,17 +75,27 @@ public class Transcript {
         TranscriptHandler handler = new TranscriptHandler(this);
         parser.parse(fxmlFile, handler);
 
+        if (name == null || name.isEmpty())
+            throw new TranscriptParseError("Missing name attribute!");
+
+        if (recording == null)
+            throw new TranscriptParseError("Missing recording attribute!");
+
     }
+
+    public Transcript() {}
 
     /**
      * Parse the name attribute of the document in to individual parts and throw a fatal error if is malformed.
      *
      * @param n the name attribute from the XML file
      */
-    public void setName(String n) throws TranscriptError {
+    public void setName(String n) throws TranscriptParseError {
 
-        name = n;
-        String[] parts = name.split("_");
+        if (n == null)
+            throw new TranscriptParseError(n + ": Invalid name attribute");
+
+        String[] parts = n.split("_");
         if (parts.length >= 4) {
             participant = parts[0];
             group = participant.replaceAll("(.{4})(\\d)*", "$1");
@@ -94,7 +103,13 @@ public class Transcript {
             version = parts[2];
             sourcetextname = parts[3];
         } else
-            throw new TranscriptError(name + ": Invalid name attribute. ");
+            throw new TranscriptParseError(n + ": Invalid name attribute. ");
+        name = n;
+    }
+
+    /** The name of the file to be analyzed (also specified in the name attribute) */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -102,10 +117,10 @@ public class Transcript {
      *
      * @param r the recording information to be added
      */
-    public void addRecording(Recording r) throws TranscriptError {
+    public void addRecording(Recording r) throws TranscriptParseError {
 
         if (recording != null) {
-            throw new TranscriptError(name + ": Multiple recording attributes found.");
+            throw new TranscriptParseError(name + ": Multiple recording attributes found.");
         }
 
         r.validate(this);
@@ -117,7 +132,7 @@ public class Transcript {
     // TODO: Better error handling!
     public void error(String s) {
 
-        GeneralView.note(name + ": " + s);
+        Main.note(getName() + ": " + s);
         System.out.println("ERROR: " + s);
     }
 

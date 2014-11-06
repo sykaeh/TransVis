@@ -46,7 +46,7 @@ public class GeneralView {
     private JTextField textField3;
     private JTextField dataXlsTextField;
     private JTextField statsXlsTextField;
-    private JPanel main_panel;
+    public JPanel main_panel;
     private JLabel num_files;
     private JList file_list;
     private JTextField startTimeField;
@@ -58,9 +58,7 @@ public class GeneralView {
     private JButton chooseButton;
     private JCheckBox createDataCheckBox;
     private JCheckBox createStatsCheckBox;
-    private JTextPane messages;
-
-    public static GeneralView main_gv;
+    public JTextPane messages;
 
     public GeneralView() {
 
@@ -74,7 +72,7 @@ public class GeneralView {
                     num_files.setText(String.format("%d", fileHandler.fileList.size()));
                     populateFileList(fileHandler.fileList);
                 } catch (TranscriptError transcriptError) {
-                    GeneralView.fatalError(transcriptError.getMessage());
+                    Main.fatalError(transcriptError.getMessage());
                     transcriptError.printStackTrace();
                 }
 
@@ -105,13 +103,13 @@ public class GeneralView {
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                    Graph graph = new Graph(parseFiles(fileHandler.fileList), main_gv);
+                    Graph graph = new Graph(parseFiles(fileHandler.fileList));
                     graph.generateGraphsClicked(Arrays.asList(GraphType.CUSTOM), showIndividualSubgraphsCheckBox.isSelected());
                 } catch (TranscriptError transcriptError) {
-                    GeneralView.fatalError(transcriptError.getMessage());
+                    Main.fatalError(transcriptError.getMessage());
                     transcriptError.printStackTrace();
                 } catch (Exception ex) {
-                    GeneralView.fatalError("Unexpected error: " + ex.getMessage());
+                    Main.fatalError("Unexpected error: " + ex.getMessage());
                     ex.printStackTrace();
                 }
 
@@ -124,7 +122,7 @@ public class GeneralView {
                 Graph graph;
 
                 try {
-                    graph = new Graph(parseFiles(fileHandler.fileList), main_gv);
+                    graph = new Graph(parseFiles(fileHandler.fileList));
                     List<GraphType> types = new ArrayList<>();
 
                     if (mainGraphCheckBox.isSelected())
@@ -139,11 +137,11 @@ public class GeneralView {
                     graph.generateGraphsClicked(types, showIndividualSubgraphsCheckBox.isSelected());
 
                 } catch (TranscriptError transcriptError) {
-                    GeneralView.fatalError(transcriptError.getMessage());
+                    Main.fatalError(transcriptError.getMessage());
                     transcriptError.printStackTrace();
 
                 } catch (Exception ex) {
-                    GeneralView.fatalError("Unexpected error: " + ex.getMessage());
+                    Main.fatalError("Unexpected error: " + ex.getMessage());
                     ex.printStackTrace();
                 }
 
@@ -186,10 +184,10 @@ public class GeneralView {
                         excelDoc.makeDataFile(dataFile);
 
                 } catch (TranscriptError transcriptError) {
-                    GeneralView.fatalError(transcriptError.getMessage());
+                    Main.fatalError(transcriptError.getMessage());
 
                 } catch (Exception ex) {
-                    GeneralView.fatalError("Unexpected error: " + ex.getMessage());
+                    Main.fatalError("Unexpected error: " + ex.getMessage());
                 }
 
             }
@@ -200,16 +198,9 @@ public class GeneralView {
         file_list.setListData(files.stream().map(f -> f.getName()).toArray());
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("GeneralView");
-        main_gv = new GeneralView();
-        frame.setContentPane(main_gv.main_panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
     private List<Transcript> parseFiles(List<File> files) throws TranscriptError {
+
+        // TODO: Move to initial selection of files?
 
         // TODO: Alert if list empty!
         if (files.isEmpty()) {
@@ -244,17 +235,6 @@ public class GeneralView {
         }
         return transcripts;
     }
-
-    public static void fatalError(String msg) {
-        FatalErrorDialog dialog = new FatalErrorDialog(msg);
-        dialog.pack();
-        dialog.setVisible(true);
-    }
-
-    public static void note(String msg) {
-        main_gv.messages.setText(msg + "\n" + main_gv.messages.getText());
-    }
-
 
     public String getStart() {
 

@@ -41,12 +41,7 @@ class TranscriptHandler extends DefaultHandler {
 
         switch (qName) {
             case "document":
-                try {
-                    transcript.setName(attributes.getValue("name"));
-                } catch (TranscriptError transcriptError) {
-                    GeneralView.fatalError(transcriptError.getMessage());
-                    transcriptError.printStackTrace();
-                }
+                transcript.setName(attributes.getValue("name"));
                 break;
             case "incident":
 
@@ -102,12 +97,7 @@ class TranscriptHandler extends DefaultHandler {
                            String qName) throws SAXException {
         switch (qName) {
             case "recording":
-                try {
-                    transcript.addRecording(recording);
-                } catch (TranscriptError transcriptError) {
-                    GeneralView.fatalError(transcriptError.getMessage());
-                    transcriptError.printStackTrace();
-                }
+                transcript.addRecording(recording);
                 break;
 
             case "incident":

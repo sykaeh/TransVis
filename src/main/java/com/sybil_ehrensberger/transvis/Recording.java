@@ -45,25 +45,25 @@ public class Recording {
      * Throw a TranscriptError if that is not the case. Set the start, end and start revision times.
      *
      * @param t the Transcript the recording belongs to
-     * @throws TranscriptError if a necessary attribute is missing or invalid
+     * @throws TranscriptParseError if a necessary attribute is missing or invalid
      */
-    public void validate(Transcript t) throws TranscriptError {
+    public void validate(Transcript t) throws TranscriptParseError {
 
         if (startTransProcess.isEmpty())
-            throw new TranscriptError(t.name + ": recording tag: missing start time");
+            throw new TranscriptParseError(t.getName() + ": recording tag: missing start time");
 
         t.startAdjustment = Transcript.convertToSeconds(startTransProcess);
 
         if (endTransProcess.isEmpty())
-            throw new TranscriptError(t.name + ": recording tag: missing end time");
+            throw new TranscriptParseError(t.getName() + ": recording tag: missing end time");
 
         int end = Transcript.convertToSeconds(endTransProcess);
         if (end < t.startAdjustment)
-            throw new TranscriptError(t.name + ": recording tag: end time before start time");
+            throw new TranscriptParseError(t.getName() + ": recording tag: end time before start time");
         t.totalTime = end - t.startAdjustment;
 
         if (startRevision.isEmpty())
-            throw new TranscriptError(t.name + ": recording tag: missing startRevision");
+            throw new TranscriptParseError(t.getName() + ": recording tag: missing startRevision");
 
         t.startRevision = t.adjustTime(startRevision);
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document name="Test001_Level_DIR_doubleRecording_Transcript">
+    <header>
+        <study></study>
+        <stimuli></stimuli>
+        <participant></participant>
+        <recording startTransProcess="00:01:30" endTransProcess="00:22:00" transProcessComplete="yes"
+                   startRevision="00:15:02" KSLavailable="yes" ETavailable="yes" ETquality="51%"
+                   direction="DIR" concurrentVisibilitySTTT="yes"/>
+        <recording startTransProcess="00:05:30" endTransProcess="00:32:00" transProcessComplete="yes"
+                   startRevision="00:10:02" KSLavailable="yes" ETavailable="yes" ETquality="51%"
+                   direction="DIR" concurrentVisibilitySTTT="yes"/>
+    </header>
+
+</document>
