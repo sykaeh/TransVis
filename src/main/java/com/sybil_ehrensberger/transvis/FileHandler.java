@@ -40,6 +40,8 @@ public class FileHandler {
 
     /**
      * Method invoked when the "Add file" button is clicked.
+     *
+     * @param parent    the parent panel for the dialog window
      */
     public void showAddFileChooser(JPanel parent) {
 
@@ -59,7 +61,9 @@ public class FileHandler {
 
     /**
      * Method invoked when the "Add folder" button is clicked.
-     * @param parent
+     *
+     * @param parent    the parent panel for the dialog window
+     * @throws TranscriptError if the chosen file is not a folder
      */
     public void showFolderChooser(JPanel parent) throws TranscriptError {
 

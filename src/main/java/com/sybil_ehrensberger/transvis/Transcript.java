@@ -34,7 +34,7 @@ public class Transcript {
 
     /** Adjustment time [in sec] */
     public int startAdjustment;
-    /** Total time of process (specified by start & end in recording tag) */
+    /** Total time of process (specified by start and end in recording tag) */
     public int totalTime;
     /** Beginning of the drafting phase (first write incident) */
     public Integer startDrafting = null;
@@ -89,6 +89,7 @@ public class Transcript {
      * Parse the name attribute of the document in to individual parts and throw a fatal error if is malformed.
      *
      * @param n the name attribute from the XML file
+     * @throws TranscriptParseError if the transcript is invalid
      */
     public void setName(String n) throws TranscriptParseError {
 
@@ -107,7 +108,11 @@ public class Transcript {
         name = n;
     }
 
-    /** The name of the file to be analyzed (also specified in the name attribute) */
+    /**
+     * The name of the file to be analyzed (also specified in the name attribute)
+     *
+     * @return the name of the file to be analyzed
+     */
     public String getName() {
         return name;
     }
@@ -116,6 +121,7 @@ public class Transcript {
      * Add the recording information to the transcript and validate it. If it is not valid, throw a fatal error.
      *
      * @param r the recording information to be added
+     * @throws TranscriptParseError if the transcript is invalid
      */
     public void addRecording(Recording r) throws TranscriptParseError {
 
