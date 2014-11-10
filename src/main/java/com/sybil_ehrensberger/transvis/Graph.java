@@ -1,9 +1,3 @@
-/*
- * TranVis.java
- * 
- * Translation process Visualizer
- * 
- */
 package com.sybil_ehrensberger.transvis;
 
 import org.jfree.chart.ChartFactory;
@@ -29,29 +23,36 @@ public class Graph {
 
     private List<Transcript> transcripts;
 
+    /**
+     * Public constructor for a graph with the given transcripts
+     *
+     * @param transcript_list list of transcripts to be displayed in a graph
+     */
     public Graph(List<Transcript> transcript_list) {
 
         view = Main.main_gv;
         transcripts = transcript_list;
     }
 
+    /**
+     * Function triggered when clicking on "Display graphs"
+     *
+     * @param graphTypes    list of types of graphs to be displayed
+     * @param individuals   whether a graph for each individual process should be generated as well
+     */
     public void generateGraphsClicked(List<GraphType> graphTypes, boolean individuals) {
 
         for (GraphType g : graphTypes) {
 
             if (individuals && transcripts.size() > 1) {
                 for (Transcript t : transcripts) {
-                    ResultsWindow r = new ResultsWindow();
+                    ResultView r = new ResultView(g, t.selection);
                     displayGraph(g, new LinkedList<>(Arrays.asList(t)), r);
-                    r.setInfo(g.name() + ": " + t.selection);
-                    r.setVisible(true);
                 }
             }
 
-            ResultsWindow results = new ResultsWindow();
+            ResultView results = new ResultView(g, transcripts.get(0).selection);
             displayGraph(g, transcripts, results);
-            results.setInfo(g.name() + ": " + transcripts.get(0).selection);
-            results.setVisible(true);
         }
     }
 
@@ -70,7 +71,7 @@ public class Graph {
         return series;
     }
 
-    private void displayGraph(GraphType g, List<Transcript> transcripts, ResultsWindow r) {
+    private void displayGraph(GraphType g, List<Transcript> transcripts, ResultView r) {
 
         if (transcripts.isEmpty()) {
             return;
@@ -118,11 +119,10 @@ public class Graph {
      * @param transcripts list of XMLParsers, each representing a separate file
      * @param r           the result window where the graph should be displayed
      */
-    private void displayMainGraph(List<Transcript> transcripts, ResultsWindow r) {
+    private void displayMainGraph(List<Transcript> transcripts, ResultView r) {
 
         int size = transcripts.size() + 2;
         double step = 1.0 / size;
-        String nameField = transcripts.size() + " process(es): ";
         XYSeriesCollection data = new XYSeriesCollection();
 
         List<Object[]> annotList = new LinkedList<Object[]>();
@@ -138,7 +138,6 @@ public class Graph {
 
         for (Transcript t : transcripts) {
 
-            nameField += t.getName() + ", ";
             processNames.add(t.getName());
 
             t.adjustTimesToSelection();
@@ -152,12 +151,7 @@ public class Graph {
             pos -= step;
         }
 
-        r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle("Main graph");
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                null, "Time [in sec]", null, data,
-                PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, 6);
+        r.drawGraph(data, annotList, processNames, 6);
 
     }
 
@@ -170,12 +164,11 @@ public class Graph {
      * @param categories a list of all of the different categories
      * @param graph_name the name of the graph
      */
-    private void displayByCategories(List<Transcript> transcripts, ResultsWindow r,
+    private void displayByCategories(List<Transcript> transcripts, ResultView r,
                                      List<IncidentType> categories, String graph_name) {
 
         int size = transcripts.size() + 2;
         double step = 1.0 / size;
-        String nameField = transcripts.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
 
@@ -188,7 +181,6 @@ public class Graph {
 
         for (Transcript t : transcripts) {
 
-            nameField += t.getName() + ", ";
             processNames.add(t.getName());
 
             t.adjustTimesToSelection();
@@ -206,12 +198,7 @@ public class Graph {
             pos -= step;
         }
 
-        r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle(graph_name);
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                null, "Time [in sec]", null, data,
-                PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, numTypes + 1);
+        r.drawGraph(data, annotList, processNames, numTypes + 1);
     }
 
 
@@ -222,11 +209,10 @@ public class Graph {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r       the result window where the graph should be displayed
      */
-    private void displayRevisionGraph(List<Transcript> parsers, ResultsWindow r) {
+    private void displayRevisionGraph(List<Transcript> parsers, ResultView r) {
 
         int size = parsers.size() + 2;
         double step = 1.0 / size;
-        String nameField = parsers.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
         int numtypes = 4;
@@ -248,7 +234,6 @@ public class Graph {
 
         for (Transcript p : parsers) {
 
-            nameField += p.getName() + ", ";
             processNames.add(p.getName());
             ins = new XYSeries("insertions " + p.getName());
             del = new XYSeries("deletions " + p.getName());
@@ -289,17 +274,7 @@ public class Graph {
             pos -= step;
         }
 
-        if (bothRevisions) {
-            r.setTitle("Combined revision graph");
-        } else {
-            r.setTitle("Revision graph");
-        }
-
-        r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                null, "Time [in sec]", null, data,
-                PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, numtypes);
+        r.drawGraph(data, annotList, processNames, numtypes);
 
 
     }
@@ -311,11 +286,10 @@ public class Graph {
      * @param parsers list of XMLParsers, each representing a separate file
      * @param r       the result window where the graph should be displayed
      */
-    private void displayCustomGraph(List<Transcript> parsers, ResultsWindow r) {
+    private void displayCustomGraph(List<Transcript> parsers, ResultView r) {
 
         int size = parsers.size() + 2;
         double step = 1.0 / size;
-        String nameField = parsers.size() + " process(es): ";
 
         XYSeriesCollection data = new XYSeriesCollection();
 
@@ -442,7 +416,6 @@ public class Graph {
         for (Transcript p : parsers) {
 
             p.adjustTimesToSelection();
-            nameField += p.getName() + ", ";
             processNames.add(p.getName());
             int i = 0;
 
@@ -559,12 +532,7 @@ public class Graph {
             pos -= step;
         }
 
-        r.setNameField(nameField.substring(0, nameField.lastIndexOf(",")));
-        r.setTitle("Custom graph");
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                null, "Time [in sec]", null, data,
-                PlotOrientation.VERTICAL, true, false, false);
-        r.drawGraph(chart, annotList, processNames, ypos);
+        r.drawGraph(data, annotList, processNames, ypos);
 
 
     }
