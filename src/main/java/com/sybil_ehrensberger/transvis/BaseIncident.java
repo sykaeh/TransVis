@@ -12,12 +12,12 @@ public class BaseIncident {
     /**
      * Start time [in sec] of the incident
      */
-    public int start;
+    public double start;
 
     /**
      * End time [in sec] of the incident
      */
-    public int end;
+    public double end;
 
     public IncidentType group;
     public IncidentType subgroup;
@@ -33,7 +33,7 @@ public class BaseIncident {
     /**
      * Public constructor
      *
-     * @param t the transcript this incident belongs to
+     * @param t    the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
     public BaseIncident(Transcript t, Attributes atts) {
@@ -51,7 +51,7 @@ public class BaseIncident {
      *
      * @return the length of the incident
      */
-    public float length() {
+    public double length() {
         return end - start;
     }
 
@@ -61,7 +61,10 @@ public class BaseIncident {
             start = transcript.adjustTime(Transcript.convertToSeconds(s_start));
         } catch (NumberFormatException | NullPointerException e) {
             validTimes = false;
-            transcript.error("Invalid start time format (" + s_start + "): " + e.getMessage());
+            if (s_start == null)
+                transcript.error("Missing start time for " + i_type);
+            else
+                transcript.error("Invalid start time format for " + i_type + " (" + s_start + "): " + e.getMessage());
         }
 
         try {
@@ -77,9 +80,13 @@ public class BaseIncident {
         }
 
 
-
     }
 
+    /**
+     * Check whether the incident is within the chosen selection. Return true if it is, else false.
+     *
+     * @return True if the incident it within the chosen selection
+     */
     public boolean valid() {
 
         if (start < 0) { // in the warm up phase, ignore completely
@@ -93,6 +100,17 @@ public class BaseIncident {
             return true;
         }
 
+    }
+
+    /**
+     * Assign the last_time as start and end times if there is no start and end time.
+     *
+     * @param last_time the timestring to set start and end to
+     */
+    public void guessTimes(String last_time) {
+
+        start = transcript.adjustTime(last_time) + 0.1;
+        end = start;
     }
 
 

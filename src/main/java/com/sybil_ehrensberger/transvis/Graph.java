@@ -1,8 +1,5 @@
 package com.sybil_ehrensberger.transvis;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -13,32 +10,39 @@ import java.util.List;
 
 
 /**
- *
  * @author Sybil Ehrensberger
  * @version 2.0
  */
 public class Graph {
 
+    String axis_label;
     private GeneralView view;
-
     private List<Transcript> transcripts;
+    private boolean adjust_times;
 
     /**
      * Public constructor for a graph with the given transcripts
      *
-     * @param transcript_list list of transcripts to be displayed in a graph
+     * @param transcript_list   list of transcripts to be displayed in a graph
+     * @param adjust_times      flag whether the times should be adjusted for the selected phase or not
      */
-    public Graph(List<Transcript> transcript_list) {
+    public Graph(List<Transcript> transcript_list, boolean adjust_times) {
 
         view = Main.main_gv;
         transcripts = transcript_list;
+        this.adjust_times = adjust_times;
+        if (adjust_times)
+            axis_label = "Time in selected phase";
+        else
+            axis_label = "Actual time in process";
+
     }
 
     /**
      * Function triggered when clicking on "Display graphs"
      *
-     * @param graphTypes    list of types of graphs to be displayed
-     * @param individuals   whether a graph for each individual process should be generated as well
+     * @param graphTypes  list of types of graphs to be displayed
+     * @param individuals whether a graph for each individual process should be generated as well
      */
     public void generateGraphsClicked(List<GraphType> graphTypes, boolean individuals) {
 
@@ -46,12 +50,12 @@ public class Graph {
 
             if (individuals && transcripts.size() > 1) {
                 for (Transcript t : transcripts) {
-                    ResultView r = new ResultView(g, t.selection);
+                    ResultView r = new ResultView(g, t.selection, axis_label);
                     displayGraph(g, new LinkedList<>(Arrays.asList(t)), r);
                 }
             }
 
-            ResultView results = new ResultView(g, transcripts.get(0).selection);
+            ResultView results = new ResultView(g, transcripts.get(0).selection, axis_label);
             displayGraph(g, transcripts, results);
         }
     }
@@ -140,7 +144,7 @@ public class Graph {
 
             processNames.add(t.getName());
 
-            t.adjustTimesToSelection();
+            t.adjustTimesToSelection(adjust_times);
 
             data.addSeries(getDataSeriesByGroup(t, IncidentType.CONSULTATION, pos + 4));
             data.addSeries(getDataSeriesByGroup(t, IncidentType.TYPOS, pos + 3));
@@ -160,9 +164,9 @@ public class Graph {
      * window r so that the chosen graph can be displayed.
      *
      * @param transcripts list of XMLParsers, each representing a separate file
-     * @param r       the result window where the graph should be displayed
-     * @param categories a list of all of the different categories
-     * @param graph_name the name of the graph
+     * @param r           the result window where the graph should be displayed
+     * @param categories  a list of all of the different categories
+     * @param graph_name  the name of the graph
      */
     private void displayByCategories(List<Transcript> transcripts, ResultView r,
                                      List<IncidentType> categories, String graph_name) {
@@ -183,7 +187,7 @@ public class Graph {
 
             processNames.add(t.getName());
 
-            t.adjustTimesToSelection();
+            t.adjustTimesToSelection(adjust_times);
 
             int i = numTypes - 1;
             for (IncidentType sub : categories) {
@@ -239,7 +243,7 @@ public class Graph {
             del = new XYSeries("deletions " + p.getName());
             pas = new XYSeries("pastes " + p.getName());
 
-            p.adjustTimesToSelection();
+            p.adjustTimesToSelection(adjust_times);
 
             Iterator<BaseIncident> inserts = p.validIncidents.stream().filter(inc -> inc.subgroup == IncidentType.R_INSERTS).iterator();
             while (inserts.hasNext()) {
@@ -415,7 +419,7 @@ public class Graph {
 
         for (Transcript p : parsers) {
 
-            p.adjustTimesToSelection();
+            p.adjustTimesToSelection(adjust_times);
             processNames.add(p.getName());
             int i = 0;
 

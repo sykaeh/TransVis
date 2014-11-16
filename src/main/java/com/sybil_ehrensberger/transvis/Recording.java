@@ -9,21 +9,20 @@ import org.xml.sax.Attributes;
  */
 public class Recording {
 
-    private String startTransProcess;
-    private String endTransProcess;
-    private String startRevision; /* startRevision in recording tag (in real time) */
-
     public String transProcessComplete; // transProcessComplete
     public String kslavailable; // KSLavailable
     public String etavailable; // ETavailable
     public String etquality; // ETquality
     public String direction; // direction
     public String concurrentVisibility; // concurrentVisibilitySTTT
+    private String startTransProcess;
+    private String endTransProcess;
+    private String startRevision; /* startRevision in recording tag (in real time) */
 
     /**
      * Public constructor
      *
-     * @param atts  Attributes associated with the recording tag
+     * @param atts Attributes associated with the recording tag
      */
     public Recording(Attributes atts) {
 

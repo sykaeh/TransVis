@@ -12,7 +12,7 @@ public class TargetText extends BaseIncident {
     /**
      * Public constructor
      *
-     * @param t the transcript this incident belongs to
+     * @param t    the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
     public TargetText(Transcript t, Attributes atts) {
@@ -27,14 +27,12 @@ public class TargetText extends BaseIncident {
 
         if (start > 0)
             if (transcript.startDrafting == null || start < transcript.startDrafting)
-                transcript.startDrafting = start - 1;
+                transcript.startDrafting = start - 0.1;
     }
 
     private void classify() {
 
         group = IncidentType.TARGETTEXT;
-
-        // TODO: Go over Target text incident classifications
 
         if (validTimes && length() >= 5) {
             subgroup = IncidentType.T_WRITELONG;

@@ -24,7 +24,7 @@ public class Revision extends BaseIncident {
     /**
      * Public constructor
      *
-     * @param t the transcript this incident belongs to
+     * @param t    the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
     public Revision(Transcript t, Attributes atts) {
@@ -59,6 +59,8 @@ public class Revision extends BaseIncident {
         } else if (i_type.contains("undoes")) {
             subgroup = IncidentType.R_UNDOES;
         }
+
+        // ignoring cuts and moves from
 
     }
 

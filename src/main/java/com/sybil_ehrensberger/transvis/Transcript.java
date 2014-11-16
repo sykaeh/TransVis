@@ -18,53 +18,83 @@ import java.util.stream.Collectors;
  */
 public class Transcript {
 
-    private String name;
-    /** Participant ID */
+    /**
+     * Participant ID
+     */
     public String participant;
-    /** Group the participant belongs to */
+    /**
+     * Group the participant belongs to
+     */
     public String group;
-    /** Competence level (i.e. Beg, Pro) */
+    /**
+     * Competence level (i.e. Beg, Pro)
+     */
     public String competence;
-    /** Language version */
+    /**
+     * Language version
+     */
     public String version;
-    /** Name of the source text */
+    /**
+     * Name of the source text
+     */
     public String sourcetextname;
-    /** Recording information added in the XML file */
+    /**
+     * Recording information added in the XML file
+     */
     public Recording recording = null;
-
-    /** Adjustment time [in sec] */
+    /**
+     * Adjustment time [in sec]
+     */
     public int startAdjustment;
-    /** Total time of process (specified by start and end in recording tag) */
+    /**
+     * Total time of process (specified by start and end in recording tag)
+     */
     public int totalTime;
-    /** Beginning of the drafting phase (first write incident) */
-    public Integer startDrafting = null;
-    /** Beginning of the revision phase (specified in recording tag) */
+    /**
+     * Beginning of the drafting phase (first write incident)
+     */
+    public Double startDrafting = null;
+    /**
+     * Beginning of the revision phase (specified in recording tag)
+     */
     public int startRevision;
-
-    /** Whether this transcript is from a workplace environment */
+    /**
+     * Whether this transcript is from a workplace environment
+     */
     public boolean workPlace;
-
-    /** Name of the selection (e.g. Complete Process, Orientation Phase, ...) */
+    /**
+     * Name of the selection (e.g. Complete Process, Orientation Phase, ...)
+     */
     public String selection;
-    /** Beginning of the selection [in sec] */
-    public int startSelection;
-    /** End of the selection [in sec] */
-    public int endSelection;
-    /** Total duration of the selection [in sec] */
-    public int durationSelection;
-
-    /** List of all found incidents */
+    /**
+     * Beginning of the selection [in sec]
+     */
+    public double startSelection;
+    /**
+     * End of the selection [in sec]
+     */
+    public double endSelection;
+    /**
+     * Total duration of the selection [in sec]
+     */
+    public double durationSelection;
+    /**
+     * List of all found incidents
+     */
     List<BaseIncident> incidents;
-    /** List of all incidents within the selection */
+    /**
+     * List of all incidents within the selection
+     */
     List<BaseIncident> validIncidents;
+    private String name;
 
     /**
      * Public constructor for a Transcript.
      *
      * @param fxmlFile the file to be parsed.
      * @throws ParserConfigurationException problem with the parser configuration
-     * @throws SAXException problem with the xml parser
-     * @throws IOException problem with reading the file
+     * @throws SAXException                 problem with the xml parser
+     * @throws IOException                  problem with reading the file
      */
     public Transcript(File fxmlFile) throws ParserConfigurationException, SAXException, IOException {
 
@@ -83,7 +113,33 @@ public class Transcript {
 
     }
 
-    public Transcript() {}
+    public Transcript() {
+    }
+
+    /**
+     * Converts the given timestring of the format HH:MM:SS to seconds
+     * (an int).
+     *
+     * @param timestring the time (format HH:MM:SS)
+     * @return the elapsed time in seconds
+     */
+    public static int convertToSeconds(String timestring) {
+
+        String[] times = timestring.trim().split(":");
+        int time = Integer.parseInt(times[0]) * 3600
+                + Integer.parseInt(times[1]) * 60 + Integer.parseInt(times[2]);
+
+        return time;
+    }
+
+    /**
+     * The name of the file to be analyzed (also specified in the name attribute)
+     *
+     * @return the name of the file to be analyzed
+     */
+    public String getName() {
+        return name;
+    }
 
     /**
      * Parse the name attribute of the document in to individual parts and throw a fatal error if is malformed.
@@ -106,15 +162,6 @@ public class Transcript {
         } else
             throw new TranscriptParseError(n + ": Invalid name attribute. ");
         name = n;
-    }
-
-    /**
-     * The name of the file to be analyzed (also specified in the name attribute)
-     *
-     * @return the name of the file to be analyzed
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -146,9 +193,9 @@ public class Transcript {
      * Set the selection according to the given type and given start and end times. Filter the incidents accordingly
      * so only incidents within that time span will be used.
      *
-     * @param type number indicating which type was chosen in the GUI (0: partial, 1: complete, 2: orientation, 3: drafting, 4: revision)
+     * @param type  number indicating which type was chosen in the GUI (0: partial, 1: complete, 2: orientation, 3: drafting, 4: revision)
      * @param start the start time in seconds for partial processes
-     * @param end the end time in seconds for partial processes
+     * @param end   the end time in seconds for partial processes
      */
     public void setSelection(int type, int start, int end) {
 
@@ -206,22 +253,24 @@ public class Transcript {
     }
 
     /**
-     * Adjust the times of each incident to the current selection.
-     *
+     * Adjust the times of each incident to the current selection. Only adjust if the boolean adjust is true.
+     * <p>
      * Function to be used in the graphs so that an incident a the start of a phase (orientation, drafting, revision)
      * will always have start time 0. This way, processes with different phase lengths can be compared accurately.
      * Beware this function adjusts the times in place (i.e. each incident is modified).
      *
+     * @param adjust whether to adjust the times or not
      */
-    public void adjustTimesToSelection() {
+    public void adjustTimesToSelection(boolean adjust) {
 
-        for (BaseIncident b: validIncidents) {
-            b.start = b.start - startSelection;
-            b.end = b.end - startSelection;
+        if (adjust) {
+            for (BaseIncident b : validIncidents) {
+                b.start = b.start - startSelection;
+                b.end = b.end - startSelection;
+            }
         }
 
     }
-
 
     /**
      * Converts a time (String) of the format HH:MM:SS to seconds and adjusts
@@ -243,22 +292,6 @@ public class Transcript {
      */
     public int adjustTime(int t) {
         return t - startAdjustment;
-    }
-
-    /**
-     * Converts the given timestring of the format HH:MM:SS to seconds
-     * (an int).
-     *
-     * @param timestring the time (format HH:MM:SS)
-     * @return the elapsed time in seconds
-     */
-    public static int convertToSeconds(String timestring) {
-
-        String[] times = timestring.trim().split(":");
-        int time = Integer.parseInt(times[0]) * 3600
-                + Integer.parseInt(times[1]) * 60 + Integer.parseInt(times[2]);
-
-        return time;
     }
 
 }

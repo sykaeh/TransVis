@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.sybil_ehrensberger.transvis.GeneralView">
-  <grid id="27dc6" binding="main_panel" layout-manager="GridLayoutManager" row-count="4" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="main_panel" layout-manager="GridLayoutManager" row-count="3" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="844" height="567"/>
+      <xy x="20" y="20" width="1071" height="567"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -16,7 +16,7 @@
           <text value="Choose folder"/>
         </properties>
       </component>
-      <component id="b7f26" class="javax.swing.JButton" binding="chooseFileSButton" default-binding="true">
+      <component id="b7f26" class="javax.swing.JButton" binding="chooseFilesButton" default-binding="true">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="29"/>
@@ -28,14 +28,14 @@
       </component>
       <tabbedpane id="eb89e" binding="tabbedPane1" default-binding="true">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="200" height="200"/>
+          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="400"/>
           </grid>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="8f461" layout-manager="GridLayoutManager" row-count="9" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="8f461" layout-manager="GridLayoutManager" row-count="10" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="5" bottom="0" right="0"/>
             <constraints>
               <tabbedpane title="Standard Graphs"/>
@@ -86,7 +86,7 @@
               </component>
               <component id="b5e4b" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="Revisions display options:"/>
@@ -94,7 +94,7 @@
               </component>
               <component id="8f6e7" class="javax.swing.JRadioButton" binding="onlyRevisionRadioButton1" default-binding="true">
                 <constraints>
-                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <selected value="true"/>
@@ -103,7 +103,7 @@
               </component>
               <component id="b77ea" class="javax.swing.JRadioButton" binding="combinedRevisionStandard">
                 <constraints>
-                  <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="revision and revision2"/>
@@ -111,7 +111,7 @@
               </component>
               <component id="644ed" class="javax.swing.JButton" binding="displayGraphsButton" default-binding="true">
                 <constraints>
-                  <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="Display graphs"/>
@@ -119,12 +119,17 @@
               </component>
               <vspacer id="5bec4">
                 <constraints>
-                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <vspacer id="b4619">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
             </children>
           </grid>
-          <grid id="71aaf" layout-manager="GridLayoutManager" row-count="11" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="71aaf" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="5" bottom="0" right="0"/>
             <constraints>
               <tabbedpane title="Custom graph"/>
@@ -190,7 +195,7 @@
               </component>
               <component id="71c7a" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="Revision display options"/>
@@ -198,7 +203,7 @@
               </component>
               <component id="11cc2" class="javax.swing.JRadioButton" binding="onlyRevisionRadioButton" default-binding="true">
                 <constraints>
-                  <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <selected value="true"/>
@@ -207,7 +212,7 @@
               </component>
               <component id="eabc8" class="javax.swing.JRadioButton" binding="combinedRevisionCustom">
                 <constraints>
-                  <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="revision and revision2"/>
@@ -215,7 +220,7 @@
               </component>
               <component id="5d822" class="javax.swing.JButton" binding="displayGraphButton" default-binding="true">
                 <constraints>
-                  <grid row="10" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="11" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="Display graph"/>
@@ -255,7 +260,7 @@
               </component>
               <vspacer id="ff123">
                 <constraints>
-                  <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
               <component id="5fc8a" class="javax.swing.JCheckBox" binding="matchesCheckBox" default-binding="true">
@@ -266,6 +271,11 @@
                   <text value="Matches"/>
                 </properties>
               </component>
+              <vspacer id="4a07d">
+                <constraints>
+                  <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
             </children>
           </grid>
           <grid id="818d4" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -376,10 +386,12 @@
           </grid>
         </children>
       </tabbedpane>
-      <grid id="b38ea" layout-manager="GridLayoutManager" row-count="10" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="30" left="0" bottom="0" right="0"/>
+      <grid id="b38ea" layout-manager="GridLayoutManager" row-count="13" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="30" left="0" bottom="15" right="0"/>
         <constraints>
-          <grid row="3" column="2" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="2" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="400"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -473,13 +485,18 @@
             <constraints>
               <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="10" height="-1"/>
-                <preferred-size width="10" height="-1"/>
+                <preferred-size width="15" height="-1"/>
+                <maximum-size width="30" height="-1"/>
               </grid>
             </constraints>
           </hspacer>
           <hspacer id="781b5">
             <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <minimum-size width="10" height="-1"/>
+                <preferred-size width="15" height="-1"/>
+                <maximum-size width="30" height="-1"/>
+              </grid>
             </constraints>
           </hspacer>
           <vspacer id="a4361">
@@ -487,6 +504,31 @@
               <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
+          <component id="387c4" class="javax.swing.JRadioButton" binding="actualTimeInProcessRadioButton" default-binding="true">
+            <constraints>
+              <grid row="11" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <selected value="true"/>
+              <text value="actual time in process"/>
+            </properties>
+          </component>
+          <component id="928c7" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="10" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Time axis:"/>
+            </properties>
+          </component>
+          <component id="898f7" class="javax.swing.JRadioButton" binding="timeInSelectedPhaseRadioButton" default-binding="true">
+            <constraints>
+              <grid row="12" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="time in selected phase"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <component id="8fe6f" class="javax.swing.JLabel">
@@ -505,11 +547,6 @@
           <text value="Clear all"/>
         </properties>
       </component>
-      <vspacer id="ff7a0">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </vspacer>
       <hspacer id="78010">
         <constraints>
           <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -532,7 +569,7 @@
       </scrollpane>
       <scrollpane id="e9fbd">
         <constraints>
-          <grid row="1" column="4" row-span="3" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="1" column="4" row-span="2" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="250" height="-1"/>
             <preferred-size width="300" height="-1"/>
             <maximum-size width="500" height="-1"/>
@@ -545,7 +582,7 @@
             <constraints/>
             <properties>
               <editable value="false"/>
-              <enabled value="false"/>
+              <enabled value="true"/>
               <text value=""/>
             </properties>
           </component>
@@ -612,6 +649,10 @@
     <group name="standardRevisionButtonGroup">
       <member id="8f6e7"/>
       <member id="b77ea"/>
+    </group>
+    <group name="timeAxisRadioButtons">
+      <member id="387c4"/>
+      <member id="898f7"/>
     </group>
   </buttonGroups>
 </form>

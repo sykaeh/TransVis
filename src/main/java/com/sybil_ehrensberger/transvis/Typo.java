@@ -10,7 +10,7 @@ public class Typo extends BaseIncident {
     /**
      * Public constructor
      *
-     * @param t the transcript this incident belongs to
+     * @param t    the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
     public Typo(Transcript t, Attributes atts) {

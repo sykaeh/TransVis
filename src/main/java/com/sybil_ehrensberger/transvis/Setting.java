@@ -12,7 +12,7 @@ public class Setting extends BaseIncident {
     /**
      * Public constructor
      *
-     * @param t the transcript this incident belongs to
+     * @param t    the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
     public Setting(Transcript t, Attributes atts) {

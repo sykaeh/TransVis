@@ -3,8 +3,6 @@ package com.sybil_ehrensberger.transvis;
 import javax.swing.*;
 
 /**
- *
- *
  * @author Sybil Ehrensberger
  */
 public class Main {
@@ -22,6 +20,7 @@ public class Main {
 
 
     public static void fatalError(String msg) {
+
         FatalErrorDialog dialog = new FatalErrorDialog(msg);
         dialog.pack();
         dialog.setVisible(true);

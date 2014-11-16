@@ -2,10 +2,9 @@ package com.sybil_ehrensberger.transvis;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.FileFilter;
 
-class XMLFileFilter extends javax.swing.filechooser.FileFilter {
+class XMLFileChooserFilter extends javax.swing.filechooser.FileFilter {
 
     @Override
     public boolean accept(File file) {
@@ -21,6 +20,17 @@ class XMLFileFilter extends javax.swing.filechooser.FileFilter {
     }
 }
 
+class XMLFileFilter implements FileFilter {
+
+    @Override
+    public boolean accept(File pathname) {
+        if (pathname.getAbsolutePath().endsWith(".xml"))
+            return true;
+        else
+            return false;
+    }
+}
+
 /**
  * The application's main frame.
  *
@@ -29,68 +39,71 @@ class XMLFileFilter extends javax.swing.filechooser.FileFilter {
  */
 public class FileHandler {
 
-    /** List of files that contain the transcripts. */
-    public List<File> fileList;
-    /** Directory to store the excel files to. */
-    public File excelDirectory;
-
-    public FileHandler() {
-        fileList = new LinkedList<>();
-    }
-
     /**
      * Method invoked when the "Add file" button is clicked.
      *
      * @param parent    the parent panel for the dialog window
+     * @return          an array of the selected files
      */
-    public void showAddFileChooser(JPanel parent) {
+    public File[] showAddFileChooser(JPanel parent) {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setDialogTitle("Select transcript");
-        fileChooser.setFileFilter(new XMLFileFilter());
+        fileChooser.setDialogTitle("Select transcript(s)");
+        fileChooser.setFileFilter(new XMLFileChooserFilter());
+        fileChooser.setMultiSelectionEnabled(true);
 
+        File[] files;
         int returnVal = fileChooser.showOpenDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File f = fileChooser.getSelectedFile();
-            fileList.add(f);
+            files = fileChooser.getSelectedFiles();
         } else {
             System.out.println("File access cancelled by user.");
+            files = new File[0];
         }
+
+        return files;
     }
 
     /**
      * Method invoked when the "Add folder" button is clicked.
      *
      * @param parent    the parent panel for the dialog window
-     * @throws TranscriptError if the chosen file is not a folder
+     * @return          an array of the selected files
      */
-    public void showFolderChooser(JPanel parent) throws TranscriptError {
+    public File[] showFolderChooser(JPanel parent) {
 
         JFileChooser folderChooser = new JFileChooser();
         folderChooser.setDialogTitle("Choose directory with transcripts");
         folderChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
+        File[] files;
         int returnVal = folderChooser.showOpenDialog(parent);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File f = folderChooser.getSelectedFile();
-            if (f.isDirectory()) {
-                addSubFiles(f);
-            } else {
-                throw new TranscriptError("Chosen item is not a folder!");
-            }
+            files = f.listFiles(new XMLFileFilter());
 
         } else {
+            files = new File[0];
             System.out.println("File access cancelled by user.");
         }
+
+        return files;
     }
 
-    public void showSaveFileChooser(JPanel parent) {
+    /**
+     * Method invoked to choose a directory to save files to.
+     *
+     * @param parent            the parent panel for the dialog window
+     * @param excelDirectory    the current directory for the file chooser
+     * @return                  the selected directory
+     */
+    public File showSaveFileChooser(JPanel parent, File excelDirectory) {
 
         JFileChooser saveFileChooser = new JFileChooser();
-
         saveFileChooser.setDialogTitle("Select directory to save files");
         saveFileChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
+
         if (excelDirectory != null)
             saveFileChooser.setCurrentDirectory(excelDirectory);
 
@@ -101,25 +114,7 @@ public class FileHandler {
             System.out.println("File access cancelled by user.");
         }
 
-    }
-
-    /**
-     * Recursively goes through the directory f and adds all xml-files
-     * contained in that directory to the fileList.
-     *
-     * @param f the directory to be searched.
-     */
-    private void addSubFiles(File f) {
-
-        String[] subfiles = f.list();
-        for (String s : subfiles) {
-            File newf = new File(f.getAbsolutePath().concat("/" + s));
-            if (newf.isDirectory()) {
-                addSubFiles(newf);
-            } else if (newf.getAbsolutePath().endsWith(".xml")) {
-                fileList.add(newf);
-            }
-        }
+        return excelDirectory;
     }
 
 }

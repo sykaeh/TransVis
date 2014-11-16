@@ -1,7 +1,6 @@
 package com.sybil_ehrensberger.transvis;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -14,8 +13,10 @@ import java.util.List;
  * @author Sybil Ehrensberger
  */
 public class GeneralView {
+    public JPanel main_panel;
+    public JTextPane messages;
     private JButton chooseFolderButton;
-    private JButton chooseFileSButton;
+    private JButton chooseFilesButton;
     private JButton clearAllButton;
     private JTabbedPane tabbedPane1;
     private JButton createExcelFilesButton;
@@ -47,7 +48,6 @@ public class GeneralView {
     private JTextField textField3;
     private JTextField dataXlsTextField;
     private JTextField statsXlsTextField;
-    public JPanel main_panel;
     private JLabel num_files;
     private JList file_list;
     private JTextField startTimeField;
@@ -59,43 +59,36 @@ public class GeneralView {
     private JButton chooseButton;
     private JCheckBox createDataCheckBox;
     private JCheckBox createStatsCheckBox;
-    public JTextPane messages;
+    private JRadioButton actualTimeInProcessRadioButton;
+    private JRadioButton timeInSelectedPhaseRadioButton;
+
+    private List<Transcript> transcripts;
+    private File excelDirectory;
 
     public GeneralView() {
-
-        FileHandler fileHandler = new FileHandler();
 
         chooseFolderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    fileHandler.showFolderChooser(main_panel);
-                    num_files.setText(String.format("%d", fileHandler.fileList.size()));
-                    populateFileList(fileHandler.fileList);
-                } catch (TranscriptError transcriptError) {
-                    Main.fatalError(transcriptError.getMessage());
-                    transcriptError.printStackTrace();
-                }
-
+                File[] files = new FileHandler().showFolderChooser(main_panel);
+                populateFileList(files);
             }
         });
 
-        chooseFileSButton.addActionListener(new ActionListener() {
+        chooseFilesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileHandler.showAddFileChooser(main_panel);
-                num_files.setText(String.format("%d", fileHandler.fileList.size()));
-                populateFileList(fileHandler.fileList);
+                File[] files = new FileHandler().showAddFileChooser(main_panel);
+                populateFileList(files);
             }
         });
 
         clearAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileHandler.fileList.clear();
-                populateFileList(fileHandler.fileList);
-                num_files.setText("0");
-
+                transcripts.clear();
+                messages.setText("");
+                populateFileList(new File[0]);
             }
         });
 
@@ -103,16 +96,10 @@ public class GeneralView {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                try {
-                    Graph graph = new Graph(parseFiles(fileHandler.fileList));
-                    graph.generateGraphsClicked(Arrays.asList(GraphType.CUSTOM), showIndividualSubgraphsCheckBox.isSelected());
-                } catch (TranscriptError transcriptError) {
-                    Main.fatalError(transcriptError.getMessage());
-                    transcriptError.printStackTrace();
-                } catch (Exception ex) {
-                    Main.fatalError("Unexpected error: " + ex.getMessage());
-                    ex.printStackTrace();
-                }
+                setSelectionForAll();
+                Graph graph = new Graph(transcripts, adjust());
+                graph.generateGraphsClicked(Arrays.asList(GraphType.CUSTOM), showIndividualSubgraphsCheckBox.isSelected());
+
 
             }
         });
@@ -123,7 +110,8 @@ public class GeneralView {
                 Graph graph;
 
                 try {
-                    graph = new Graph(parseFiles(fileHandler.fileList));
+                    setSelectionForAll();
+                    graph = new Graph(transcripts, adjust());
                     List<GraphType> types = new ArrayList<>();
 
                     if (mainGraphCheckBox.isSelected())
@@ -137,10 +125,6 @@ public class GeneralView {
 
                     graph.generateGraphsClicked(types, showIndividualSubgraphsCheckBox.isSelected());
 
-                } catch (TranscriptError transcriptError) {
-                    Main.fatalError(transcriptError.getMessage());
-                    transcriptError.printStackTrace();
-
                 } catch (Exception ex) {
                     Main.fatalError("Unexpected error: " + ex.getMessage());
                     ex.printStackTrace();
@@ -152,8 +136,8 @@ public class GeneralView {
         chooseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileHandler.showSaveFileChooser(main_panel);
-                excelDirectoryField.setText(fileHandler.excelDirectory.getAbsolutePath());
+                excelDirectory = new FileHandler().showSaveFileChooser(main_panel, excelDirectory);
+                excelDirectoryField.setText(excelDirectory.getAbsolutePath());
             }
         });
 
@@ -163,7 +147,8 @@ public class GeneralView {
 
                 // TODO: check for proper directory and file names
 
-                String directory_path = fileHandler.excelDirectory.getAbsolutePath();
+                setSelectionForAll();
+                String directory_path = excelDirectory.getAbsolutePath();
 
                 File dataFile = new File(directory_path + "/" + dataXlsTextField.getText());
                 File statsFile = new File(directory_path + "/" + statsXlsTextField.getText());
@@ -175,17 +160,12 @@ public class GeneralView {
                 System.out.println(generate_data + " Data file: " + dataFile.getAbsolutePath());
                 System.out.println(generate_stats + " Stats file: " + statsFile.getAbsolutePath());
 
-                List<Transcript> transcripts = null;
                 try {
-                    transcripts = parseFiles(fileHandler.fileList);
                     ExcelDocument excelDoc = new ExcelDocument(transcripts);
                     if (generate_stats)
                         excelDoc.makeStatsFile(statsFile);
                     if (generate_data)
                         excelDoc.makeDataFile(dataFile);
-
-                } catch (TranscriptError transcriptError) {
-                    Main.fatalError(transcriptError.getMessage());
 
                 } catch (Exception ex) {
                     Main.fatalError("Unexpected error: " + ex.getMessage());
@@ -195,17 +175,34 @@ public class GeneralView {
         });
     }
 
-    private void populateFileList(List<File> files) {
-        file_list.setListData(files.stream().map(f -> f.getName()).toArray());
+    private void populateFileList(File[] files) {
+
+        transcripts = new LinkedList<>();
+        Transcript t;
+
+        for (File f : files) {
+
+            try {
+                t = new Transcript(f);
+                transcripts.add(t);
+            } catch (TranscriptParseError transcriptParseError) {
+                transcriptParseError.printStackTrace();
+                Main.fatalError(transcriptParseError.getMessage());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Main.fatalError("Unknown error while parsing document " + f.getName() + ": \n" + ex.getMessage());
+            }
+        }
+
+        num_files.setText(String.format("%d", transcripts.size()));
+        file_list.setListData(transcripts.stream().map(f -> f.getName()).toArray());
+
     }
 
-    private List<Transcript> parseFiles(List<File> files) throws TranscriptError {
+    private void setSelectionForAll() {
 
-        // TODO: Move to initial selection of files?
-
-        // TODO: Alert if list empty!
-        if (files.isEmpty()) {
-            throw new TranscriptError("No transcripts selected. Please choose at least one transcript.");
+        if (transcripts.isEmpty()) {
+            Main.fatalError("No transcripts selected. Please choose at least one transcript.");
         }
 
         int start = Transcript.convertToSeconds(getStart());
@@ -222,24 +219,18 @@ public class GeneralView {
             type = 4;
         }
 
-        List<Transcript> transcripts = new LinkedList<>();
-        Transcript t;
-
-        for (File f : files) {
-            try {
-                t = new Transcript(f);
-                t.setSelection(type, start, end);
-                transcripts.add(t);
-            } catch (Exception ex) {
-                throw new TranscriptError("Unknown error while parsing document " + f.getName() + ": \n" + ex.getMessage());
-            }
+        for (Transcript t : transcripts) {
+            t.setSelection(type, start, end);
         }
-        return transcripts;
     }
 
     public String getStart() {
 
         return startTimeField.getText();
+    }
+
+    private boolean adjust() {
+        return timeInSelectedPhaseRadioButton.isSelected();
     }
 
     public String getEnd() {

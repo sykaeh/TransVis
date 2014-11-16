@@ -21,7 +21,6 @@ public class ExcelDocument {
 
     private final static Logger LOGGER = Logger.getLogger("TransVis");
     private List<Transcript> transcriptList;
-    private boolean pro;
 
     /**
      * Public constructor
@@ -31,7 +30,6 @@ public class ExcelDocument {
     public ExcelDocument(List<Transcript> transcripts) {
 
         transcriptList = transcripts;
-        pro = true;
 
         try {
             // Create an appending file handler
@@ -109,11 +107,9 @@ public class ExcelDocument {
 
         for (Transcript t : transcriptList) {
 
-            int current_time = 0;
+            double current_time = 0;
             boolean dp = false;
             boolean rp = false;
-            // TODO: Check whether start drafting, revision, end Process, start & end Selection
-            // are ok, the way they are
 
             fillGenericData(sheet, i, t);
             sheet.addCell(new Label(13, i, "Start Selection"));
@@ -131,6 +127,7 @@ public class ExcelDocument {
                 if (!dp && current_time >= t.startDrafting) {
 
                     fillGenericData(sheet, i, t);
+                    sheet.addCell(new Label(12, i, "DP"));
                     sheet.addCell(new Label(13, i, "Start Drafting Phase"));
                     sheet.addCell(new Number(14, i, t.startDrafting));
 
@@ -142,6 +139,7 @@ public class ExcelDocument {
                 if (!rp && current_time >= t.startRevision) {
 
                     fillGenericData(sheet, i, t);
+                    sheet.addCell(new Label(12, i, "RP"));
                     sheet.addCell(new Label(13, i, "Start Revision Phase"));
                     sheet.addCell(new Number(14, i, t.startRevision));
 
@@ -157,12 +155,11 @@ public class ExcelDocument {
                 sheet.addCell(new Label(13, i, e.i_type));
                 sheet.addCell(new Label(16, i, e.i_subtype));
 
-                if (e.validTimes) {
-                    sheet.addCell(new Number(14, i, e.start));
-                    sheet.addCell(new Number(15, i, e.end));
-                } else {
-                    sheet.addCell(new Label(14, i, "n/a"));
-                    sheet.addCell(new Label(15, i, "n/a"));
+                sheet.addCell(new Number(14, i, e.start));
+                sheet.addCell(new Number(15, i, e.end));
+
+                if (!e.validTimes) {
+                    sheet.addCell(new Label(22, i, "no times provided"));
                 }
 
                 // source and item only for consultation incidents
@@ -259,7 +256,7 @@ public class ExcelDocument {
 
     private int addProductions(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
-        float[] prod_stats = getStats(t.validIncidents.stream().filter(inc -> inc.group == IncidentType.TARGETTEXT).iterator());
+        double[] prod_stats = getStats(t.validIncidents.stream().filter(inc -> inc.group == IncidentType.TARGETTEXT).iterator());
 
         if (prod_stats[0] > 0) {
             sheet.addCell(new Number(c++, row, prod_stats[1]));
@@ -277,10 +274,8 @@ public class ExcelDocument {
 
         sheet.addCell(new Number(c++, row, countByGroup(t, IncidentType.TARGETTEXT)));
 
-        // TODO: Double check these numbers with mom!
         sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITESHORT)));
-        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITELONG)
-                + countBySubGroup(t, IncidentType.T_WRITETYPO)));
+        sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITELONG)));
         sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_WRITETYPO)));
         sheet.addCell(new Number(c++, row, countBySubGroup(t, IncidentType.T_MATCH)));
 
@@ -335,7 +330,7 @@ public class ExcelDocument {
 
     private int addConsults(WritableSheet sheet, Transcript t, int row, int c) throws WriteException {
 
-        float[] stats = getStats(t.validIncidents.stream().filter(inc -> inc.group == IncidentType.CONSULTATION).iterator());
+        double[] stats = getStats(t.validIncidents.stream().filter(inc -> inc.group == IncidentType.CONSULTATION).iterator());
 
         if (stats[0] > 0) {
             for (int j = 1; j <= 4; j++)
@@ -361,12 +356,12 @@ public class ExcelDocument {
         return c;
     }
 
-    private float[] getStats(Iterator<BaseIncident> incident_iterator) {
+    private double[] getStats(Iterator<BaseIncident> incident_iterator) {
 
-        float minLength = -1;
-        float maxLength = -1;
-        float totalTime = 0;
-        float noElementsTime = 0;
+        double minLength = -1;
+        double maxLength = -1;
+        double totalTime = 0;
+        double noElementsTime = 0;
 
         BaseIncident b;
 
@@ -385,10 +380,10 @@ public class ExcelDocument {
 
             }
         }
-        float avgLength = totalTime / noElementsTime;
+        double avgLength = totalTime / noElementsTime;
 
 
-        return new float[]{noElementsTime, totalTime, minLength, maxLength, avgLength};
+        return new double[]{noElementsTime, totalTime, minLength, maxLength, avgLength};
 
     }
 }

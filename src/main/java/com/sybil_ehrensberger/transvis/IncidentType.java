@@ -18,7 +18,7 @@ public enum IncidentType {
     UNDEFINED("Undefined"),
     NOSUBGROUP(""),
     WARMUP("Warm up"),
-    SETTING ("Setting"),
+    SETTING("Setting"),
 
 
     // Subtypes settings
@@ -62,7 +62,6 @@ public enum IncidentType {
     T_WRITELONG("Writes ≥ 5 seconds"),
     T_MATCH("Match"),     // <incident type="accepts" subtype="match">
 
-    // TODO: Check revision subtypes
     // Subtypes revision
     R_DELETES("Deletes"),         // <incident type="deletes" subtype="(revision|revision2)">
     R_INSERTS("Inserts"),         // <incident type="inserts" subtype="(revision|revision2)">

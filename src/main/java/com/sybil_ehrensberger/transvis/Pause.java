@@ -7,10 +7,10 @@ import java.util.List;
 
 /**
  * Class for all pause incidents.
- *
+ * <p>
  * The following tags belong to this class:
- *  - {@literal <incident type="pause"></incident>}
- *  - {@literal <incident type="ILPause"></incident>}
+ * - {@literal <incident type="pause"></incident>}
+ * - {@literal <incident type="ILPause"></incident>}
  */
 public class Pause extends BaseIncident {
 
@@ -24,7 +24,7 @@ public class Pause extends BaseIncident {
     /**
      * Public constructor
      *
-     * @param t the transcript this incident belongs to
+     * @param t    the transcript this incident belongs to
      * @param atts attributes for this incident tag
      */
     public Pause(Transcript t, Attributes atts) {
