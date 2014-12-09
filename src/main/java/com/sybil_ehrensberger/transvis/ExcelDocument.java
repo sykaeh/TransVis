@@ -43,7 +43,7 @@ public class ExcelDocument {
 
         try {
             LOGGER.log(Level.INFO, "Getting template_data.xls");
-            Workbook originalWorkbook = Workbook.getWorkbook(new File(getClass().getResource("/template_data.xls").toURI()));
+            Workbook originalWorkbook = Workbook.getWorkbook(getClass().getResourceAsStream("/template_data.xls"));
 
             LOGGER.log(Level.INFO, "Creating new workbook");
             WritableWorkbook workbook = Workbook.createWorkbook(dataFile, originalWorkbook);
@@ -63,7 +63,7 @@ public class ExcelDocument {
 
         try {
             LOGGER.log(Level.INFO, "Getting template_stats.xls");
-            Workbook originalWorkbook = Workbook.getWorkbook(new File(getClass().getResource("/template_stats.xls").toURI()));
+            Workbook originalWorkbook = Workbook.getWorkbook(getClass().getResourceAsStream("/template_stats.xls"));
 
             LOGGER.log(Level.INFO, "Creating new workbook");
             WritableWorkbook workbook = Workbook.createWorkbook(statsFile, originalWorkbook);
